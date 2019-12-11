@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <name>mybatis-starter</name>
-    <url>https://github.com/gomcarter/developer/tree/master/frameworks/mybatis-starter</url>
+    <url>https://github.com/gomcarter/frameworks/tree/master/mybatis-starter</url>
 
     <properties>
         <spring.version>2.0.2.RELEASE</spring.version>

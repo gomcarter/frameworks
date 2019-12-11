@@ -9,7 +9,7 @@
     <description>the spring web base artifact</description>
 
     <name>all</name>
-    <url>https://github.com/gomcarter/developer/tree/master/frameworks</url>
+    <url>https://github.com/gomcarter/frameworks</url>
 
     <modules>
         <module>base</module>
@@ -87,8 +87,8 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/gomcarter/developer</url>
-        <connection>https://github.com/gomcarter/developer/tree/master/frameworks/base</connection>
+        <url>https://github.com/gomcarter/frameworks</url>
+        <connection>https://github.com/gomcarter/frameworks/tree/master/base</connection>
     </scm>
 
     <developers>

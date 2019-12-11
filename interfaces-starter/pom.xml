@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <name>interfaces-starter</name>
-    <url>https://github.com/gomcarter/developer/tree/master/frameworks/interfaces-starter</url>
+    <url>https://github.com/gomcarter/frameworks/tree/master/interfaces-starter</url>
 
     <dependencies>
         <dependency>

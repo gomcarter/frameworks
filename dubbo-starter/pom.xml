@@ -13,7 +13,7 @@
     <packaging>jar</packaging>
 
     <name>dubbo-starter</name>
-    <url>https://github.com/gomcarter/developer/tree/master/frameworks/dubbo-starter</url>
+    <url>https://github.com/gomcarter/frameworks/tree/master/dubbo-starter</url>
 
     <dependencies>
         <dependency>

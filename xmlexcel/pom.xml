@@ -14,7 +14,7 @@
     <description>the xml excel tool</description>
 
     <name>xmlexcel</name>
-    <url>https://github.com/gomcarter/developer/tree/master/frameworks/xmlexcel</url>
+    <url>https://github.com/gomcarter/frameworks/tree/master/xmlexcel</url>
 
     <dependencies>
         <dependency>
