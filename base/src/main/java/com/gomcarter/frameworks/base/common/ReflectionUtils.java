@@ -26,6 +26,10 @@ public abstract class ReflectionUtils {
 
     /**
      * 直接读取对象属性值, 无视private/protected修饰符, 不经过getter函数.
+     *
+     * @param obj obj
+     * @param field field
+     * @return field value
      */
     public static Object getFieldValue(final Object obj, final Field field) {
         Object result = null;

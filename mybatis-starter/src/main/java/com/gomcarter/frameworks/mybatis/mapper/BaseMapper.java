@@ -159,10 +159,10 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      *
      * @param entity    实体对象 (set 条件值,可以为 null)
      * @param condition 查询条件
+     * @param <R>       参数类型
+     * @return 被更新总数
      */
     default <R> int updateBy(T entity, R condition) {
         return this.update(entity, MapperUtils.buildQueryWrapper(condition));
     }
-
-
 }

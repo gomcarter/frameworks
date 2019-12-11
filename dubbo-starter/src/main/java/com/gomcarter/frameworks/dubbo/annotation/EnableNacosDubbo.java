@@ -20,7 +20,6 @@ import java.lang.annotation.*;
  * <p>
  * dubbo.registry.password=password
  * <p>
- * <p>
  * <b style="color:red">应用配置</b>
  * <p>
  * 配置时以dubbo.application前缀开始: <a href="http://dubbo.apache.org/zh-cn/docs/user/references/xml/dubbo-application.html">详情这里</a>
@@ -29,7 +28,6 @@ import java.lang.annotation.*;
  * <p>
  * dubbo.application.name=appName
  * dubbo.application.qosEnable=false
- * <p>
  * <p>
  * <b style="color:red">协议相关配置</b>
  * <p>

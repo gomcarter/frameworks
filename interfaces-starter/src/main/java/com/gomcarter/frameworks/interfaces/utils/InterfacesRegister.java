@@ -2,17 +2,20 @@ package com.gomcarter.frameworks.interfaces.utils;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gomcarter.frameworks.interfaces.dto.ApiInterface;
+import com.gomcarter.frameworks.base.common.CustomStringUtils;
+import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.httpapi.api.BaseApi;
 import com.gomcarter.frameworks.interfaces.annotation.Notes;
 import com.gomcarter.frameworks.interfaces.dto.ApiBean;
+import com.gomcarter.frameworks.interfaces.dto.ApiInterface;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,19 +36,20 @@ import java.util.stream.Collectors;
 /**
  * @author gomcarter on 2019-12-02 09:23:09
  */
+@Slf4j
+@Order
 public class InterfacesRegister implements ApplicationContextAware {
-    private static final Logger logger = LoggerFactory.getLogger(InterfacesRegister.class);
 
     /**
      * the cache for fields default value
      */
-    private Map<Class, Object> instanceMap = new HashMap<>();
+    private WeakHashMap<Class, Object> instanceMap = new WeakHashMap<>();
     /**
      * the class counter for recursion depth
      */
-    private Map<String, Integer> keyClassMap = new HashMap<>();
+    private WeakHashMap<String, Integer> keyClassMap = new WeakHashMap<>();
 
-    public final static int RECURSION_DEPTH = 0;
+    private final static int RECURSION_DEPTH = 0;
 
     /**
      * <b style="color:green">comment：</b>
@@ -99,14 +103,13 @@ public class InterfacesRegister implements ApplicationContextAware {
      * </blockquote>
      *
      * @return list of ApiInterface
-     * @throws Exception Exception
      */
     @Notes("interface of register the interfaces to the interfaces center")
-    public static List<ApiInterface> register() throws Exception {
+    public static List<ApiInterface> register() {
         return new InterfacesRegister().register0();
     }
 
-    private List<ApiInterface> register0() throws Exception {
+    private List<ApiInterface> register0() {
         RequestMappingHandlerMapping bean = applicationContext.getBean(RequestMappingHandlerMapping.class);
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = bean.getHandlerMethods();
 
@@ -184,8 +187,6 @@ public class InterfacesRegister implements ApplicationContextAware {
                 interfaces.setParameters(parameters);
             } catch (Exception ignore) {
                 // if failed， skip it
-            } finally {
-
             }
         }
 
@@ -256,7 +257,7 @@ public class InterfacesRegister implements ApplicationContextAware {
                 }
             }
         } catch (Exception e) {
-            logger.error("generate failed, url: {}, key: {}}, parentType: {}", url, key, parentType.getTypeName(), e);
+            log.error("generate failed, url: {}, key: {}}, parentType: {}", url, key, parentType.getTypeName(), e);
             throw new RuntimeException("oops, the【" + url + "】is failed: " + e.getMessage());
         }
     }
@@ -311,7 +312,7 @@ public class InterfacesRegister implements ApplicationContextAware {
             try {
                 field.setAccessible(true);
                 return field.get(instance);
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
         }
         return null;
@@ -319,8 +320,57 @@ public class InterfacesRegister implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         applicationContext = ac;
+
+        if (InterfacesSynchronizer.NEED_PUSH) {
+            InterfacesSynchronizer synchronizer = new InterfacesSynchronizer();
+            try {
+                synchronizer.afterPropertiesSet();
+                synchronizer.sync();
+            } catch (Exception ignore) {
+
+            } finally {
+                try {
+                    synchronizer.destroy();
+                } catch (Exception ignore) {
+                }
+            }
+        } else {
+            log.info("接口中心地址未配置或者模块 id 未设置，将不会自动提交接口到接口中心");
+        }
+    }
+
+
+    /**
+     * @author gomcarter
+     */
+    private static class InterfacesSynchronizer extends BaseApi {
+
+        private static String INTERFACE_DOMAIN = "interfaces.domain";
+        private static String domain = System.getProperty(INTERFACE_DOMAIN);
+        private static Long javaId = CustomStringUtils.parseLong(System.getProperty("interfaces.javaId"));
+        private static boolean NEED_PUSH = domain != null && domain.startsWith("http") && javaId != null;
+
+        void sync() {
+            this.post(INTERFACE_DOMAIN, Integer.class, new HashMap<String, Object>(2, 1) {{
+                put("javaId", javaId);
+                put("interfaces", JsonMapper.buildNonNullMapper().toJson(register()));
+            }});
+        }
+
+        @Override
+        protected Map<String, String> getUrlRouter() {
+            return new HashMap<String, String>(1, 1) {{
+                if (!domain.endsWith("/")) {
+                    domain += "/";
+                }
+                put(INTERFACE_DOMAIN, domain + "developer/interfaces");
+            }};
+        }
     }
 }

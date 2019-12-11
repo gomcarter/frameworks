@@ -21,5 +21,10 @@
             <artifactId>base</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.gomcarter.frameworks</groupId>
+            <artifactId>http-api-starter</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -43,7 +43,7 @@ public enum DataType {
     object;
 
     public static DataType get(Class kls) {
-        if (BeanUtils.isSimpleProperty(kls) || kls == Object.class) {
+        if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
             return simple;
         } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
             return collection;
