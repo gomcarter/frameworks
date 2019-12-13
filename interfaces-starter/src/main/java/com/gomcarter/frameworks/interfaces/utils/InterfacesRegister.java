@@ -2,14 +2,12 @@ package com.gomcarter.frameworks.interfaces.utils;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gomcarter.frameworks.base.common.CustomStringUtils;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
-import com.gomcarter.frameworks.httpapi.api.BaseApi;
 import com.gomcarter.frameworks.interfaces.annotation.Notes;
 import com.gomcarter.frameworks.interfaces.dto.ApiBean;
 import com.gomcarter.frameworks.interfaces.dto.ApiInterface;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -36,9 +34,10 @@ import java.util.stream.Collectors;
 /**
  * @author gomcarter on 2019-12-02 09:23:09
  */
-@Slf4j
 @Order
 public class InterfacesRegister implements ApplicationContextAware {
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
 
     /**
      * the cache for fields default value
@@ -257,7 +256,7 @@ public class InterfacesRegister implements ApplicationContextAware {
                 }
             }
         } catch (Exception e) {
-            log.error("generate failed, url: {}, key: {}}, parentType: {}", url, key, parentType.getTypeName(), e);
+            logger.error("generate failed, url: {}, key: {}}, parentType: {}", url, key, parentType.getTypeName(), e);
             throw new RuntimeException("oops, the【" + url + "】is failed: " + e.getMessage());
         }
     }
@@ -328,49 +327,13 @@ public class InterfacesRegister implements ApplicationContextAware {
         applicationContext = ac;
 
         if (InterfacesSynchronizer.NEED_PUSH) {
-            InterfacesSynchronizer synchronizer = new InterfacesSynchronizer();
             try {
-                synchronizer.afterPropertiesSet();
-                synchronizer.sync();
-            } catch (Exception ignore) {
-
-            } finally {
-                try {
-                    synchronizer.destroy();
-                } catch (Exception ignore) {
-                }
+                new InterfacesSynchronizer().sync();
+            } catch (Exception e) {
+                logger.error("接口注册失败", e);
             }
         } else {
-            log.info("接口中心地址未配置或者模块 id 未设置，将不会自动提交接口到接口中心");
-        }
-    }
-
-
-    /**
-     * @author gomcarter
-     */
-    private static class InterfacesSynchronizer extends BaseApi {
-
-        private static String INTERFACE_DOMAIN = "interfaces.domain";
-        private static String domain = System.getProperty(INTERFACE_DOMAIN);
-        private static Long javaId = CustomStringUtils.parseLong(System.getProperty("interfaces.javaId"));
-        private static boolean NEED_PUSH = domain != null && domain.startsWith("http") && javaId != null;
-
-        void sync() {
-            this.post(INTERFACE_DOMAIN, Integer.class, new HashMap<String, Object>(2, 1) {{
-                put("javaId", javaId);
-                put("interfaces", JsonMapper.buildNonNullMapper().toJson(register()));
-            }});
-        }
-
-        @Override
-        protected Map<String, String> getUrlRouter() {
-            return new HashMap<String, String>(1, 1) {{
-                if (!domain.endsWith("/")) {
-                    domain += "/";
-                }
-                put(INTERFACE_DOMAIN, domain + "developer/interfaces");
-            }};
+            logger.info("接口中心地址未配置或者模块 id 未设置，将不会自动提交接口到接口中心");
         }
     }
 }

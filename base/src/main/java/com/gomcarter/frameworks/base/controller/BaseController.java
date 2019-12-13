@@ -5,9 +5,8 @@ import com.gomcarter.frameworks.base.json.ErrorCode;
 import com.gomcarter.frameworks.base.json.JsonError;
 import com.gomcarter.frameworks.base.json.JsonObject;
 import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,8 +30,8 @@ import java.util.Map;
  * @author gomcarter  on 2019-11-11 23:17:48
  */
 @ControllerAdvice
+@Slf4j
 public class BaseController {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * @param request   HttpServletRequest
@@ -54,7 +53,7 @@ public class BaseController {
             headerMap.put(header, request.getHeader(header));
         }
 
-        logger.error("{}操作失败, url:{}, method:{}, ip: {}, Referer: {}, UA: {}, params: {}, cookie: {},header: {},",
+        log.error("{}操作失败, url:{}, method:{}, ip: {}, Referer: {}, UA: {}, params: {}, cookie: {},header: {},",
                 this.getClass().getName(),
                 request.getRequestURI(),
                 request.getMethod(),
