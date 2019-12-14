@@ -1,6 +1,6 @@
 package ${entity.servicePackageName};
 
-import com.gomcarter.frameworks.mybatis.pager.Pageable;
+import com.gomcarter.frameworks.base.pager.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ${entity.daoPackageName}.${entity.className}Mapper;

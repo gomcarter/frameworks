@@ -3,7 +3,7 @@ package ${entity.actionPackageName};
 import ${entity.entityPackageName}.${entity.className};
 import ${entity.paramPackage}.${entity.className}Param;
 import ${entity.servicePackageName}.${entity.className}Service;
-import com.gomcarter.frameworks.mybatis.pager.DefaultPager;
+import com.gomcarter.frameworks.base.pager.DefaultPager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
-import com.gomcarter.frameworks.mybatis.pager.DefaultPager;
-import com.gomcarter.frameworks.mybatis.pager.Pageable;
+import com.gomcarter.frameworks.base.pager.DefaultPager;
+import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 
 import java.io.Serializable;

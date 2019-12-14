@@ -8,7 +8,7 @@ import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.mybatis.annotation.Condition;
 import com.gomcarter.frameworks.mybatis.annotation.MatchType;
-import com.gomcarter.frameworks.mybatis.pager.Pageable;
+import com.gomcarter.frameworks.base.pager.Pageable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

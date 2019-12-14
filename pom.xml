@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gomcarter.frameworks</groupId>
     <artifactId>all</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>the spring web base artifact</description>
 
@@ -37,43 +37,43 @@
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>base</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>dubbo-starter</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>http-api-starter</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>interfaces-starter</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>mybatis-starter</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>redis-starter</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>xmlexcel</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -103,15 +103,26 @@
         </developer>
     </developers>
 
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
+
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>rdc-releases</id>
+            <url>https://repo.rdc.aliyun.com/repository/109262-release-GmAhjN/</url>
         </repository>
+        <snapshotRepository>
+            <id>rdc-snapshots</id>
+            <url>https://repo.rdc.aliyun.com/repository/109262-snapshot-5YL6Wb/</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <build>

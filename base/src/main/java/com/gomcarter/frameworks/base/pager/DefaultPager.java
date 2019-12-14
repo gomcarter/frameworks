@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.mybatis.pager;
+package com.gomcarter.frameworks.base.pager;
 
 
 /**
