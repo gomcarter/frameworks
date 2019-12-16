@@ -60,9 +60,9 @@ public class BaseController {
                 getIp(request),
                 request.getHeader("Referer"),
                 request.getHeader("User-Agent"),
-                JsonMapper.buildNotNullMapper().toJson(request.getParameterMap()),
-                JsonMapper.buildNotNullMapper().toJson(request.getCookies()),
-                JsonMapper.buildNotNullMapper().toJson(headerMap),
+                JsonMapper.buildNonNullMapper().toJson(request.getParameterMap()),
+                JsonMapper.buildNonNullMapper().toJson(request.getCookies()),
+                JsonMapper.buildNonNullMapper().toJson(headerMap),
                 exception);
 
         if (exception instanceof MissingServletRequestParameterException) {

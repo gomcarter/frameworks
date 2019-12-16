@@ -34,7 +34,7 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected JsonMapper baseApiJsonMapper = JsonMapper.buildNotNullMapper();
+    protected JsonMapper baseApiJsonMapper = JsonMapper.buildNonNullMapper();
 
     protected TypeFactory typeFactory = TypeFactory.defaultInstance();
 

@@ -3,13 +3,13 @@
     <parent>
         <groupId>com.gomcarter.frameworks</groupId>
         <artifactId>all</artifactId>
-        <version>1.0.6-SNAPSHOT</version>
+        <version>1.0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>base</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>${gomcarter.version}</version>
     <packaging>jar</packaging>
 
     <name>base</name>
@@ -31,10 +31,6 @@
         <apache.commons.io.version>2.4</apache.commons.io.version>
 
         <org.slf4j-version>1.7.25</org.slf4j-version>
-
-        <ch.qos.logback.version>1.1.7</ch.qos.logback.version>
-
-        <logback-ext-spring.version>0.1.4</logback-ext-spring.version>
 
         <guava.version>28.0-jre</guava.version>
 
@@ -216,12 +212,6 @@
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>1.1.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.62</version>
         </dependency>
     </dependencies>
 </project>

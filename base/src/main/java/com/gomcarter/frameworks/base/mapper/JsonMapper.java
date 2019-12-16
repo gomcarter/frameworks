@@ -1,10 +1,3 @@
-/**
- * Copyright (c) 2005-2011 springside.org.cn
- * <p/>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * <p/>
- * $Id: JsonMapper.java 1574 2011-05-09 13:39:10Z calvinxiu $
- */
 package com.gomcarter.frameworks.base.mapper;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -13,9 +6,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,26 +18,23 @@ import java.util.List;
  * <p>
  * 封装不同的输出风格, 使用不同的builder函数创建实例.
  *
- * @author calvin
+ * @author gomcarter
  */
+@Slf4j
 public class JsonMapper {
 
-    private static final JsonMapper defaultMapper = new JsonMapper(Include.NON_NULL);
+    private static class Holder {
+        private static final JsonMapper defaultMapper = new JsonMapper(Include.NON_NULL);
+    }
 
-    private static JsonMapper timeFormatMapper;
-
-    protected final Logger logger = LoggerFactory.getLogger("error_file_log");
+    private static class TimeFormatHolder {
+        private static final JsonMapper timeFormatMapper = new JsonMapper(Include.NON_NULL, "yyyy-MM-dd HH:mm:ss");
+    }
 
     private ObjectMapper mapper;
 
     public JsonMapper(Include inclusion) {
-        mapper = new ObjectMapper();
-        //设置输出时包含属性的风格
-        mapper.setSerializationInclusion(inclusion);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //禁止使用int代表Enum的order()來反序列化Enum,非常危險
-        mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
-        mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        this(inclusion, null);
     }
 
     public JsonMapper(Include inclusion, String timeFormat) {
@@ -56,16 +45,10 @@ public class JsonMapper {
         //禁止使用int代表Enum的order()來反序列化Enum,非常危險
         mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
         mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-        mapper.setDateFormat(new SimpleDateFormat(timeFormat));
-    }
 
-    /**
-     * 创建只输出非空属性到Json字符串的Mapper.
-     *
-     * @return JsonMapper not null
-     */
-    public static JsonMapper buildNotNullMapper() {
-        return defaultMapper;
+        if (timeFormat != null) {
+            mapper.setDateFormat(new SimpleDateFormat(timeFormat));
+        }
     }
 
     /**
@@ -76,14 +59,11 @@ public class JsonMapper {
      * @return JsonMapper
      */
     public static JsonMapper buildNonNullMapper() {
-        return defaultMapper;
+        return Holder.defaultMapper;
     }
 
     public static JsonMapper buildNonNullTimeFormatMapper() {
-        if (timeFormatMapper == null) {
-            timeFormatMapper = new JsonMapper(Include.NON_NULL, "yyyy-MM-dd HH:mm:ss");
-        }
-        return timeFormatMapper;
+        return TimeFormatHolder.timeFormatMapper;
     }
 
     /**
@@ -105,7 +85,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, clazz);
         } catch (IOException e) {
-            logger.error("Json转换出错", e);
+            log.error("Json转换出错", e);
             return null;
         }
     }
@@ -130,11 +110,10 @@ public class JsonMapper {
      * @return json string
      */
     public String toJson(Object object) {
-
         try {
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
-            logger.error("Json转换出错", e);
+            log.error("Json转换出错", e);
             return null;
         }
     }
@@ -158,7 +137,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, javaType);
         } catch (IOException e) {
-            logger.error("Json转换出错", e);
+            log.error("Json转换出错", e);
             return null;
         }
     }
@@ -176,7 +155,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, javaType);
         } catch (IOException e) {
-            logger.error("Json转换出错", e);
+            log.error("Json转换出错", e);
             return null;
         }
     }

@@ -58,7 +58,7 @@ public class CommonConfiguration {
     @Bean
     @Primary
     @ConditionalOnMissingBean(ObjectMapper.class)
-    public ObjectMapper jacksonObjectMapper() {
+    public ObjectMapper objectMapper() {
         CustomMappingJacksonConverter jacksonConverter = new CustomMappingJacksonConverter();
         jacksonConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON_UTF8));
         return jacksonConverter.getObjectMapper();

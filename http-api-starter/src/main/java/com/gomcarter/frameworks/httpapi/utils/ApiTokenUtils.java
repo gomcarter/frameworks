@@ -14,14 +14,12 @@ import java.util.Date;
  */
 public class ApiTokenUtils {
 
-    // TODO: some key you mast redefine
-    private static final String publicKey = "some key you mast redefine";
+    /**
+     * FIXME: some key you have to assign
+     */
+    private static final String publicKey = "some key you have to assign";
 
     public static final String TOKEN_NAME = "backToken";
-
-    public static final String SEC_TIME = "secTime";
-
-    public static final String DOMAIN = "domain";
 
     private static String getKey(int offset) {
         String time = CustomDateUtils.toString(getEnCodeTime(offset));
