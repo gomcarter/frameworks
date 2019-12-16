@@ -43,30 +43,41 @@ public class DubboApiRegistrar implements BeanPostProcessor {
 
     private void registerService(Object bean) {
         Service service = bean.getClass().getAnnotation(Service.class);
+        // 如果打了service标签，则注册到注册中心去
         if (service != null) {
-            // 如果打了service标签，则注册到注册中心去
-            Class[] interfaces = bean.getClass().getInterfaces();
-            if (interfaces != null) {
-                for (Class<?> itfas : interfaces) {
-                    ServiceConfig<Object> sc = new ServiceConfig<>();
-                    sc.setApplication(ac);
-                    sc.setRegistry(rc);
-                    sc.setProtocol(pc);
-                    sc.setInterface(itfas);
-                    sc.setRef(bean);
+            // 手动指定了 service
+            Class<?> interfacesClass = service.interfaceClass();
 
-                    sc.setLoadbalance(service.loadbalance());
-                    sc.setCluster(service.cluster());
-                    sc.setGroup(service.group());
-                    sc.setVersion(service.version());
-
-                    if (service.export()) {
-                        sc.export();
-                    }
-
-                    log.info("dubbo service {} - {} started ", itfas.getName(), bean.getClass().getName());
+            // 没有手动指定，则自动获取
+            if (interfacesClass == void.class) {
+                // 去除代理类，获取原始类的实现接口
+                Class userClass = ReflectionUtils.getUserClass(bean.getClass());
+                Class[] superInterfaces = userClass.getInterfaces();
+                if (superInterfaces == null || superInterfaces.length > 1) {
+                    throw new RuntimeException(userClass.getName() + "注册到 dubbo 的接口不明确！");
                 }
+
+                interfacesClass = superInterfaces[0];
             }
+
+
+            ServiceConfig<Object> sc = new ServiceConfig<>();
+            sc.setApplication(ac);
+            sc.setRegistry(rc);
+            sc.setProtocol(pc);
+            sc.setInterface(interfacesClass);
+            sc.setRef(bean);
+
+            sc.setLoadbalance(service.loadbalance());
+            sc.setCluster(service.cluster());
+            sc.setGroup(service.group());
+            sc.setVersion(service.version());
+
+            if (service.export()) {
+                sc.export();
+            }
+
+            log.info("dubbo service {} - {} started ", interfacesClass.getName(), bean.getClass().getName());
         }
     }
 
@@ -79,10 +90,10 @@ public class DubboApiRegistrar implements BeanPostProcessor {
                 continue;
             }
 
-            Class apiClass = field.getType();
+            Class<?> apiClass = field.getType();
             Object api = ioc.get(apiClass);
             if (api == null) {
-                ReferenceConfig referenceConfig = new ReferenceConfig<>();
+                ReferenceConfig<?> referenceConfig = new ReferenceConfig<>();
 
                 referenceConfig.setApplication(ac);
                 referenceConfig.setRegistry(rc);
