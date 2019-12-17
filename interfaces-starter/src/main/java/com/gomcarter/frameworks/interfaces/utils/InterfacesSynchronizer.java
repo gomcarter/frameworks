@@ -1,7 +1,6 @@
 package com.gomcarter.frameworks.interfaces.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
@@ -17,6 +16,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -27,58 +28,59 @@ import static com.gomcarter.frameworks.interfaces.utils.InterfacesRegister.regis
  * @author gomcarter
  */
 public class InterfacesSynchronizer {
+    private static final Logger logger = LoggerFactory.getLogger(InterfacesSynchronizer.class);
 
-    private static String INTERFACE_DOMAIN_KEY = "interfaces.domain";
-    private static String domain = System.getProperty(INTERFACE_DOMAIN_KEY);
-    private static String javaId = System.getProperty("interfaces.javaId");
-    public static boolean NEED_PUSH = domain != null && domain.startsWith("http") && javaId != null;
+    public static void sync() {
+        String interfaceDomainKey = "interfaces.domain";
+        String domain = System.getProperty(interfaceDomainKey);
+        String javaId = System.getProperty("interfaces.javaId");
 
-    public InterfacesSynchronizer() {
+        if (domain == null || !domain.startsWith("http") || javaId == null) {
+            logger.info("there is no interface center configured, then ignored.");
+            return;
+        }
 
-    }
-
-
-    void sync() throws Exception {
         if (!domain.endsWith("/")) {
             domain += "/";
         }
-        URIBuilder uriBuilder = new URIBuilder(URI.create(domain + "publics/interfaces?javaId=" + javaId));
 
-        HttpPost httpPost = new HttpPost(uriBuilder.build());
-
-        ObjectMapper mapper = new ObjectMapper();
-        //设置输出时包含属性的风格
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //禁止使用int代表Enum的order()來反序列化Enum,非常危險
-        mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
-        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-
-        httpPost.setEntity(new StringEntity(mapper.writeValueAsString(register()), ContentType.APPLICATION_JSON));
-
-        RequestConfig defaultRequestConfig = RequestConfig.custom()
+        RequestConfig defaultRequestConfig = RequestConfig
+                .custom()
                 .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
                 .build();
 
-        CloseableHttpClient httpClientLocal = HttpClients.custom()
+        try (CloseableHttpClient httpClientLocal = HttpClients.custom()
                 .setDefaultRequestConfig(defaultRequestConfig)
-                .build();
+                .build()) {
 
-        httpClientLocal.execute(httpPost, (response) -> {
-            StatusLine statusLine = response.getStatusLine();
+            ObjectMapper mapper = new ObjectMapper()
+                    //设置输出时包含属性的风格
+                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    //禁止使用int代表Enum的order()來反序列化Enum,非常危險
+                    .configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
 
-            if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-                throw new RuntimeException("statusCode=" + statusLine.getStatusCode() + ",reason:" + statusLine.getReasonPhrase());
-            }
+            // build http client
+            URIBuilder uriBuilder = new URIBuilder(URI.create(domain + "publics/interfaces?javaId=" + javaId));
+            HttpPost httpPost = new HttpPost(uriBuilder.build());
+            httpPost.setEntity(new StringEntity(mapper.writeValueAsString(register()), ContentType.APPLICATION_JSON));
 
-            HttpEntity entity = response.getEntity();
-            if (entity == null) {
-                throw new ClientProtocolException("Response no content return.");
-            }
+            httpClientLocal.execute(httpPost, (response) -> {
+                StatusLine statusLine = response.getStatusLine();
 
-            return EntityUtils.toString(entity, Charset.forName("UTF-8"));
-        });
+                if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+                    throw new RuntimeException("statusCode=" + statusLine.getStatusCode() + ",reason:" + statusLine.getReasonPhrase());
+                }
 
-        httpClientLocal.close();
+                HttpEntity entity = response.getEntity();
+                if (entity == null) {
+                    throw new ClientProtocolException("Response no content return.");
+                }
+
+                return EntityUtils.toString(entity, Charset.forName("UTF-8"));
+            });
+        } catch (Exception e) {
+            logger.error("some error happened when interfaces sync: ", e);
+        }
     }
 }

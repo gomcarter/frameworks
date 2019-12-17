@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 @Order
 public class InterfacesRegister implements ApplicationContextAware {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
     /**
@@ -184,8 +184,9 @@ public class InterfacesRegister implements ApplicationContextAware {
                 }
 
                 interfaces.setParameters(parameters);
-            } catch (Exception ignore) {
+            } catch (Exception e) {
                 // if failed， skip it
+                logger.error("failed : {}", kvEntry.getKey().getPatternsCondition().getPatterns(), e);
             }
         }
 
@@ -326,14 +327,7 @@ public class InterfacesRegister implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         applicationContext = ac;
 
-        if (InterfacesSynchronizer.NEED_PUSH) {
-            try {
-                new InterfacesSynchronizer().sync();
-            } catch (Exception e) {
-                logger.error("接口注册失败", e);
-            }
-        } else {
-            logger.info("接口中心地址未配置或者模块 id 未设置，将不会自动提交接口到接口中心");
-        }
+        // sync interfaces
+        InterfacesSynchronizer.sync();
     }
 }
