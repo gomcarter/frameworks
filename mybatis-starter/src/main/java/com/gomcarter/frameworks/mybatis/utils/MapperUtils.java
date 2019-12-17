@@ -2,13 +2,14 @@ package com.gomcarter.frameworks.mybatis.utils;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.mybatis.annotation.Condition;
 import com.gomcarter.frameworks.mybatis.annotation.MatchType;
-import com.gomcarter.frameworks.base.pager.Pageable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -55,21 +56,57 @@ public class MapperUtils {
         return page;
     }
 
+    private static WeakHashMap<Class, List<Field>> FIELD_CACHE_MAP = new WeakHashMap<>();
+
+    public static <T, R> Wrapper<T> buildQueryWrapper(R params, String... columns) {
+        boolean hasColumn = columns != null && columns.length > 0;
+        boolean hasCondition = params != null;
+        QueryWrapper<T> wrapper = null;
+        if (hasColumn || hasCondition) {
+            wrapper = new QueryWrapper<>();
+
+            if (hasColumn) {
+                wrapper.select(columns);
+            }
+
+            if (hasCondition) {
+                return MapperUtils.buildWrapper(wrapper, params);
+            }
+        }
+
+        return wrapper;
+    }
+
+    public static <T, R> Wrapper<T> buildUpdateWrapper(R params, String... columnsToNull) {
+        boolean hasColumn = columnsToNull != null && columnsToNull.length > 0;
+        boolean hasCondition = params != null;
+        UpdateWrapper<T> wrapper = null;
+        if (hasColumn || hasCondition) {
+            wrapper = new UpdateWrapper<>();
+
+            if (hasColumn) {
+                for (String s : columnsToNull) {
+                    wrapper.set(true, s, null);
+                }
+            }
+
+            if (hasCondition) {
+                return MapperUtils.buildWrapper(wrapper, params);
+            }
+        }
+
+        return wrapper;
+    }
+
     /**
-     * 根据params 构建一个 queryWrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
+     * 根据params 构建一个 wrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
      *
      * @param params 参数
      * @param <T>    查询实体类型
      * @param <R>    参数类型
      * @return wrapper
      */
-    public static <T, R> Wrapper<T> buildQueryWrapper(R params) {
-        return null == params ? null : buildQueryWrapper(new QueryWrapper<>(), params);
-    }
-
-    private static WeakHashMap<Class, List<Field>> FIELD_CACHE_MAP = new WeakHashMap<>();
-
-    public static <T, R> QueryWrapper<T> buildQueryWrapper(QueryWrapper<T> wrapper, R params) {
+    public static <T, R> Wrapper<T> buildWrapper(Wrapper<T> wrapper, R params) {
         // cache
         List<Field> fields = FIELD_CACHE_MAP.get(params.getClass());
         if (fields == null) {

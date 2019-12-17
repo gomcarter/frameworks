@@ -1,6 +1,7 @@
 package com.gomcarter.frameworks.mybatis.annotation;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.springframework.beans.BeanUtils;
 
@@ -15,8 +16,8 @@ public enum MatchType {
      */
     EQ {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.eq(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).eq(fieldName, value);
         }
     },
     /**
@@ -24,8 +25,8 @@ public enum MatchType {
      */
     NE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.ne(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).ne(fieldName, value);
         }
     },
     /**
@@ -33,8 +34,8 @@ public enum MatchType {
      */
     LIKE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.like(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).like(fieldName, value);
         }
     },
     /**
@@ -42,8 +43,8 @@ public enum MatchType {
      */
     NOTLIKE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.notLike(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).notLike(fieldName, value);
         }
     },
     /**
@@ -51,8 +52,8 @@ public enum MatchType {
      */
     RIGHTLIKE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.likeRight(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).likeRight(fieldName, value);
         }
     },
     /**
@@ -60,8 +61,8 @@ public enum MatchType {
      */
     LEFTLIKE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.likeLeft(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).likeLeft(fieldName, value);
         }
     },
     /**
@@ -69,8 +70,8 @@ public enum MatchType {
      */
     GT {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.gt(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).gt(fieldName, value);
         }
     },
     /**
@@ -78,8 +79,8 @@ public enum MatchType {
      */
     GE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.ge(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).ge(fieldName, value);
         }
     },
     /**
@@ -87,8 +88,8 @@ public enum MatchType {
      */
     LT {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.lt(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).lt(fieldName, value);
         }
     },
     /**
@@ -96,8 +97,8 @@ public enum MatchType {
      */
     LE {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.le(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).le(fieldName, value);
         }
     },
     /**
@@ -105,8 +106,8 @@ public enum MatchType {
      */
     NULL {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.isNull(fieldName);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).isNull(fieldName);
         }
     },
     /**
@@ -114,8 +115,8 @@ public enum MatchType {
      */
     NOTNULL {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.isNotNull(fieldName);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).isNotNull(fieldName);
         }
     },
     /**
@@ -125,7 +126,8 @@ public enum MatchType {
      */
     IN {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> w, String fieldName, Object value) {
+            AbstractWrapper wrapper = ((AbstractWrapper) w);
             Class kls = value.getClass();
             if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
                 // 判断 kls 是否是基本类型，如果是则直接 in 了
@@ -142,8 +144,8 @@ public enum MatchType {
      */
     NOTIN {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.notIn(fieldName, value);
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).notIn(fieldName, value);
         }
     },
     /**
@@ -153,8 +155,8 @@ public enum MatchType {
      */
     INSQL {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.inSql(fieldName, value + "");
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).inSql(fieldName, value + "");
         }
     },
     /**
@@ -164,8 +166,8 @@ public enum MatchType {
      */
     NOTINSQL {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
-            wrapper.notInSql(fieldName, value + "");
+        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+            ((AbstractWrapper) wrapper).notInSql(fieldName, value + "");
         }
     },
     /**
@@ -174,18 +176,20 @@ public enum MatchType {
      */
     AND {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+            AbstractWrapper wrapper = ((AbstractWrapper) wr);
+
             Class kls = value.getClass();
 
             if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
                 // 判断 kls 是否是基本类型，如果是则直接 or 了
-                wrapper.and(w -> w.eq(fieldName, value));
+                wrapper.and(w -> ((AbstractWrapper) w).eq(fieldName, value));
             } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
                 // 如果是数组或者是Iterable
-                wrapper.and(w -> IN.wrap(w, fieldName, value));
+                wrapper.and(w -> IN.wrap(((AbstractWrapper) w), fieldName, value));
             } else {
                 // 否则去 or 这个类对应下面的所有字段的匹配结果
-                wrapper.and(w -> MapperUtils.buildQueryWrapper(w, value));
+                wrapper.and(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
             }
         }
     },
@@ -195,23 +199,25 @@ public enum MatchType {
      */
     OR {
         @Override
-        public <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+            AbstractWrapper wrapper = ((AbstractWrapper) wr);
+
             Class kls = value.getClass();
 
             if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
                 // 判断 kls 是否是基本类型，如果是则直接 or 了
-                wrapper.or(w -> w.eq(fieldName, value));
+                wrapper.or(w -> ((AbstractWrapper) w).eq(fieldName, value));
             } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
                 // 如果是数组或者是Iterable
-                wrapper.or(w -> IN.wrap(w, fieldName, value));
+                wrapper.or(w -> IN.wrap(((AbstractWrapper) w), fieldName, value));
             } else {
                 // 否则去 or 这个类对应下面的所有字段的匹配结果
-                wrapper.or(w -> MapperUtils.buildQueryWrapper(w, value));
+                wrapper.or(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
             }
         }
     };
 
-    public abstract <T> void wrap(QueryWrapper<T> wrapper, String fieldName, Object value);
+    public abstract <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value);
 
     public static MatchType getDefaultType(Class kls) {
         // 基本类型，默认使用 EQ

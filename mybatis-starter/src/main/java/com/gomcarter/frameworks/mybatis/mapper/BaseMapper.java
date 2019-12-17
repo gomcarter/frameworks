@@ -1,17 +1,24 @@
 package com.gomcarter.frameworks.mybatis.mapper;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gomcarter.frameworks.base.common.CollectionUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.base.pager.DefaultPager;
 import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Mapper 继承该接口后，无需编写 mapper.xml 文件，即可获得CRUD功能
@@ -78,11 +85,87 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * 根据 ID 修改
      *
-     * @param entity 实体对象
+     * @param entity 实体对象 ： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null
      * @return affect rows
      */
     default int update(T entity) {
         return updateById(entity);
+    }
+
+    /**
+     * 根据 ID 修改，数据库主键
+     *
+     * @param id     指定主键
+     * @param column 需要更新的字段
+     * @param value  更新成为什么值
+     * @return affect rows
+     */
+    default int update(Serializable id, String column, Object value) {
+        return update(null, new UpdateWrapper<T>().eq("id", id).set(column, value));
+    }
+
+    /**
+     * 根据 ID 修改，数据库主键
+     *
+     * @param id     指定主键
+     * @param column 需要更新的字段
+     * @param value  更新成为什么值
+     * @return affect rows
+     */
+    default int update(Serializable id, SFunction<T, ?> column, Object value) {
+        return update(null, new UpdateWrapper<T>().eq("id", id).lambda().set(column, value));
+    }
+
+    /**
+     * 根据 ID 修改，数据库主键
+     *
+     * @param entity        实体对象： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null，则使用 columnsToNull
+     * @param columnsToNull 指定更新为 null 的列名
+     * @return affect rows
+     */
+    default int update(Serializable id, T entity, String... columnsToNull) {
+        UpdateWrapper<T> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id", id);
+
+        if (columnsToNull != null && columnsToNull.length > 0) {
+            for (String column : columnsToNull) {
+                wrapper.set(column, null);
+            }
+        }
+
+        return update(entity, wrapper);
+    }
+
+    /**
+     * 根据 ID 修改，数据库主键
+     *
+     * @param entity        实体对象： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null，则使用 columnsToNull
+     * @param columnsToNull 指定更新为 null 的列名
+     * @return affect rows
+     */
+    default int update(T entity, String... columnsToNull) {
+        List<Field> idFieldList = ReflectionUtils.findAllField(entity.getClass())
+                .stream()
+                .filter(s -> s.isAnnotationPresent(TableId.class))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(idFieldList)) {
+            throw new RuntimeException("can not find id for entity");
+        }
+
+        UpdateWrapper<T> wrapper = new UpdateWrapper<>();
+        for (Field field : idFieldList) {
+            TableId tableId = field.getAnnotation(TableId.class);
+            wrapper.eq(StringUtils.defaultIfBlank(tableId.value(), field.getName()), ReflectionUtils.getFieldValue(entity, field));
+        }
+
+        if (columnsToNull != null && columnsToNull.length > 0) {
+            for (String column : columnsToNull) {
+                wrapper.set(column, null);
+            }
+        }
+
+        return update(entity, wrapper);
     }
 
     /**
@@ -116,7 +199,18 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return the list of entity
      */
     default <R> T getUnique(R params) {
-        List<T> result = this.query(params, new DefaultPager(1, 1));
+        return getUnique(params, (String[]) null);
+    }
+
+    /**
+     * 复杂查询，只返回第一条数据
+     *
+     * @param params 查询参数
+     * @param <R>    参数类型
+     * @return the list of entity
+     */
+    default <R> T getUnique(R params, String... columns) {
+        List<T> result = this.query(params, new DefaultPager(1, 1), columns);
         if (result == null || result.size() <= 0) {
             return null;
         }
@@ -135,9 +229,25 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return the list of entity
      */
     default <R> List<T> query(R params, Pageable pageable) {
-        Page<T> page = MapperUtils.buildPage(pageable);
+        return this.query(params, pageable, (String[]) null);
+    }
 
-        IPage<T> result = this.selectPage(page, MapperUtils.buildQueryWrapper(params));
+    /**
+     * 分页查询
+     * <p>
+     * 根据params 构建一个 queryWrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
+     *
+     * @param params   查询参数
+     * @param pageable 分页器
+     * @param columns  需要查询的列
+     * @param <R>      参数类型
+     * @return the list of entity
+     */
+    default <R> List<T> query(R params, Pageable pageable, String... columns) {
+        Page<T> page = MapperUtils.buildPage(pageable);
+        Wrapper<T> wrapper = MapperUtils.buildQueryWrapper(params, columns);
+
+        IPage<T> result = this.selectPage(page, wrapper);
 
         return result.getRecords();
     }
@@ -157,12 +267,25 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * update entity where condition
      *
-     * @param entity    实体对象 (set 条件值,可以为 null)
+     * @param entity    实体对象 (set 条件值，可以为 null): 将字段设置为 null，则改字段不会被更新
      * @param condition 查询条件
      * @param <R>       参数类型
      * @return 被更新总数
      */
     default <R> int updateBy(T entity, R condition) {
-        return this.update(entity, MapperUtils.buildQueryWrapper(condition));
+        return this.updateBy(entity, condition, (String[]) null);
+    }
+
+    /**
+     * update entity where condition
+     *
+     * @param entity        实体对象 (set 条件值，可以为 null): 将字段设置为 null，则改字段不会被更新； 如果设置字段为 null，请设置 columnsToNull
+     * @param condition     查询条件
+     * @param columnsToNull 把什么列更新为 null
+     * @param <R>           参数类型
+     * @return 被更新总数
+     */
+    default <R> int updateBy(T entity, R condition, String... columnsToNull) {
+        return this.update(entity, MapperUtils.buildUpdateWrapper(condition, columnsToNull));
     }
 }
