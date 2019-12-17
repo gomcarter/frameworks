@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
  */
 public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<T> {
 
+    String ID = "id";
+
     /**
      * we have to insert success, throw exception if failed
      *
@@ -94,6 +96,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
 
     /**
      * 根据 ID 修改，数据库主键
+     * 限定 ： 主键字段必须是 id
      *
      * @param id     指定主键
      * @param column 需要更新的字段
@@ -101,11 +104,12 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return affect rows
      */
     default int update(Serializable id, String column, Object value) {
-        return update(null, new UpdateWrapper<T>().eq("id", id).set(column, value));
+        return update(null, new UpdateWrapper<T>().eq(ID, id).set(column, value));
     }
 
     /**
      * 根据 ID 修改，数据库主键
+     * 限定 ： 主键字段必须是 id
      *
      * @param id     指定主键
      * @param column 需要更新的字段
@@ -113,11 +117,12 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return affect rows
      */
     default int update(Serializable id, SFunction<T, ?> column, Object value) {
-        return update(null, new UpdateWrapper<T>().eq("id", id).lambda().set(column, value));
+        return update(null, new UpdateWrapper<T>().eq(ID, id).lambda().set(column, value));
     }
 
     /**
      * 根据 ID 修改，数据库主键
+     * 限定 ： 主键字段必须是 id
      *
      * @param entity        实体对象： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null，则使用 columnsToNull
      * @param columnsToNull 指定更新为 null 的列名
@@ -125,7 +130,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default int update(Serializable id, T entity, String... columnsToNull) {
         UpdateWrapper<T> wrapper = new UpdateWrapper<>();
-        wrapper.eq("id", id);
+        wrapper.eq(ID, id);
 
         if (columnsToNull != null && columnsToNull.length > 0) {
             for (String column : columnsToNull) {
@@ -185,10 +190,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return the list of entity
      */
     default List<T> getByIdList(Collection<? extends Serializable> idList) {
-        return this.selectList(
-                new QueryWrapper<T>()
-                        .in("id", idList)
-        );
+        return selectBatchIds(idList);
     }
 
     /**
