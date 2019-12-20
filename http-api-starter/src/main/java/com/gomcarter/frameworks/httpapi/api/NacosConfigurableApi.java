@@ -15,7 +15,7 @@ public abstract class NacosConfigurableApi extends BaseApi {
 
     private Map<String, Properties> propertiesMap = new HashMap<>();
 
-    public abstract NacosConfig getDiamondConfig();
+    public abstract NacosConfig getConfig();
 
     @Override
     protected Map<String, String> getUrlRouter() {
@@ -26,14 +26,14 @@ public abstract class NacosConfigurableApi extends BaseApi {
                 urlRouterMap.put((String) key, properties.getProperty((String) key));
             }
         } catch (IOException e) {
-            logger.error("初始化接口地址失败：{}", this.getDiamondConfig(), e);
+            logger.error("初始化接口地址失败：{}", this.getConfig(), e);
         }
 
         return urlRouterMap;
     }
 
     synchronized private Properties getProperties() throws IOException {
-        NacosConfig config = getDiamondConfig();
+        NacosConfig config = getConfig();
         String dataId = config.getDataId(),
                 group = config.getGroup(),
                 key = dataId + "_" + group;
