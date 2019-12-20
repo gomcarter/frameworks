@@ -6,7 +6,7 @@
 
 # 核心功能
 
-### 封装 rpc
+### API方式封装 rpc
 
 ##### 服务提供方：
 ```
@@ -69,3 +69,60 @@ public class BarService {
 }
 ```
 
+
+### 注解方式封装 rpc
+##### 服务提供方：
+```
+@RestController
+@RequestMapping("public/foo")
+public class FooController {
+
+    @GetMapping(value = "getById", name = "接口")
+    Foo getById(Long id) {
+        return this.fooService.getById(id);
+    }
+}
+```
+
+##### 创建一个 jar 包
+```
+package com.gomcarter.frameworks.httpapi.demo;
+
+import com.gomcarter.frameworks.httpapi.annotation.*;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author gomcarter
+ */
+@EnableHttp(dataId = "MEMBER", group = "API")
+public interface HttpDemoApi {
+
+    @HttpMethod(method = Method.GET, key = "get.by.idList")
+    Foo getById(@HttpParam("id") Long id);
+
+    default Foo get() {
+        return this.get(1L);
+    }
+}
+```
+
+##### 调用方
+```
+使用
+
+@Service
+public class BarService {
+  @HttpResource
+  HttpDemoApi demoApi;
+  
+  public void funtion() {
+    // ...
+    Foo foo = demoApi.getById(1L);
+    // ...
+  }
+}
+```
+##### demo：<a href="https://github.com/gomcarter/frameworks/tree/master/http-api-starter/src/main/java/com/gomcarter/frameworks/httpapi/demo">戳这里</a>
