@@ -107,7 +107,7 @@ public class BaseController {
      * @param request HttpServletRequest
      * @return ip such as "119.22.11.2"
      */
-    public String getIp(HttpServletRequest request) {
+    public static String getIp(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         if (request.getHeader("X-Forwarded-For") != null) {
             ip = request.getHeader("X-Forwarded-For");
