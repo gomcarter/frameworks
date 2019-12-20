@@ -5,6 +5,7 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.gomcarter.frameworks.base.converter.Convertable;
 import com.gomcarter.frameworks.base.converter.PropertiesConverter;
 import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -165,7 +166,7 @@ public class NacosClientUtils {
      */
     public static Properties getConfigAsProperties(String dataId, String group, long timeoutMs) {
         String content = StringUtils.defaultString(getConfigAsString(dataId, group, timeoutMs), StringUtils.EMPTY);
-        return new PropertiesConverter().convert(content, Properties.class);
+        return Convertable.PROPERTIES_CONVERTER.convert(content, null);
     }
 
     /**
