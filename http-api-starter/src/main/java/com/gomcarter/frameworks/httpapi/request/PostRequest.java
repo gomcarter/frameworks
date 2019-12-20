@@ -1,11 +1,10 @@
 package com.gomcarter.frameworks.httpapi.request;
 
+import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import com.gomcarter.frameworks.httpapi.message.request.PostRequestMessage;
 import com.gomcarter.frameworks.httpapi.utils.RequestTool;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import org.apache.http.entity.ContentType;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
