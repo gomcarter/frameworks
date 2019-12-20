@@ -2,11 +2,11 @@ package com.gomcarter.frameworks.httpapi.impl;
 
 import com.gomcarter.frameworks.httpapi.HttpClientManager;
 import com.gomcarter.frameworks.httpapi.config.HttpClientConfig;
+import com.gomcarter.frameworks.httpapi.impl.handler.DefaultResponseHandler;
 import com.gomcarter.frameworks.httpapi.message.MessageConfig;
 import com.gomcarter.frameworks.httpapi.message.request.PostRequestMessage;
 import com.gomcarter.frameworks.httpapi.message.request.RequestMessage;
 import com.gomcarter.frameworks.httpapi.message.request.RestfulRequestMessage;
-import com.gomcarter.frameworks.httpapi.impl.handler.DefaultResponseHandler;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,17 +20,17 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
-import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -170,8 +170,8 @@ public class HttpClientTemplate {
         }
 
         if (!MapUtils.isEmpty(requestMessage.getFiles())) {
-            for (Map.Entry<String, File> entry : requestMessage.getFiles().entrySet()) {
-                builder.addPart(entry.getKey(), new FileBody(entry.getValue(), requestMessage.getFileContentType()));
+            for (Map.Entry<String, InputStream> entry : requestMessage.getFiles().entrySet()) {
+                builder.addPart(entry.getKey(), new InputStreamBody(entry.getValue(), requestMessage.getFileContentType()));
             }
         }
 
@@ -215,7 +215,7 @@ public class HttpClientTemplate {
     }
 
     private HttpEntity buildFileEntity(PostRequestMessage requestMessage) {
-        return new FileEntity(requestMessage.getFiles().values().iterator().next());
+        return new InputStreamEntity(requestMessage.getFiles().values().iterator().next());
     }
 
     private boolean isNeedMultipart(PostRequestMessage requestMessage) {

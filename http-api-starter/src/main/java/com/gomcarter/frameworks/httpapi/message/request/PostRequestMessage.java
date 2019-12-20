@@ -3,9 +3,8 @@ package com.gomcarter.frameworks.httpapi.message.request;
 import org.apache.http.Consts;
 import org.apache.http.entity.ContentType;
 
-import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,7 +12,7 @@ import java.util.Map;
  */
 public class PostRequestMessage extends RequestMessage {
 
-    private Map<String, File> files = new HashMap<>();
+    private Map<String, InputStream> files;
 
     private String body;
 
@@ -35,18 +34,18 @@ public class PostRequestMessage extends RequestMessage {
         this(apiName, contentType, null, null, charset);
     }
 
-    public PostRequestMessage(String apiName, ContentType contentType, Map<String, File> files, String body, Charset charset) {
+    public PostRequestMessage(String apiName, ContentType contentType, Map<String, InputStream> files, String body, Charset charset) {
         super(apiName, contentType);
         this.files = files;
         this.body = body;
         this.charset = charset == null ? Consts.ISO_8859_1 : charset;
     }
 
-    public Map<String, File> getFiles() {
+    public Map<String, InputStream> getFiles() {
         return files;
     }
 
-    public void setFiles(Map<String, File> files) {
+    public void setFiles(Map<String, InputStream> files) {
         this.files = files;
     }
 

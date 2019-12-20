@@ -22,26 +22,19 @@ public class SSLUnsafeHttpClientManager extends DefaultHttpClientManager {
 
     @Override
     protected Registry<ConnectionSocketFactory> getSocketFactoryRegistry() {
-        SSLContext sslContext = null;
+        SSLContext sslContext;
         try {
-            sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-                @Override
-                public boolean isTrusted(java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
-                    return true;
-                }
-            }).build();
+            sslContext = new SSLContextBuilder().loadTrustMaterial(null, (chain, authType) -> true).build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SniSSLSocketFactory(sslContext,
-                NoopHostnameVerifier.INSTANCE);
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+        SSLConnectionSocketFactory sslConnectionSocketFactory = new SniSSLSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE);
+
+        return RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
                 .register("https", sslConnectionSocketFactory)
                 .build();
-
-        return socketFactoryRegistry;
     }
 
     /**

@@ -6,6 +6,7 @@ import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import org.apache.http.entity.ContentType;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class PostRequest<T> implements ApiRequest {
         return this;
     }
 
-    public PostRequest addFiles(Map<String, File> fileMap) {
+    public PostRequest addFiles(Map<String, InputStream> fileMap) {
         postRequestMessage.setFiles(fileMap);
         return this;
     }

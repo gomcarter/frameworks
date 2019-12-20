@@ -26,8 +26,7 @@ public abstract class NacosConfigurableApi extends BaseApi {
                 urlRouterMap.put((String) key, properties.getProperty((String) key));
             }
         } catch (IOException e) {
-            logger.error("初始化接口地址失败：{}, {}",
-                    getWhoami(), this.getDiamondConfig(), e);
+            logger.error("初始化接口地址失败：{}", this.getDiamondConfig(), e);
         }
 
         return urlRouterMap;

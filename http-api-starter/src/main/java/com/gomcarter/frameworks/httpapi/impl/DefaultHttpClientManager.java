@@ -28,11 +28,11 @@ import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.ssl.SSLContexts;
 
 import javax.net.ssl.SSLContext;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -79,11 +79,7 @@ public class DefaultHttpClientManager implements HttpClientManager {
                     String ip = dnsToIp.get(host.toLowerCase());
 
                     if (!StringUtils.isEmpty(ip)) {
-                        try {
-                            return new InetAddress[]{InetAddress.getByAddress(ip.getBytes("UTF-8"))};
-                        } catch (UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        }
+                        return new InetAddress[]{InetAddress.getByAddress(ip.getBytes(StandardCharsets.UTF_8))};
                     } else {
                         return super.resolve(host);
                     }
@@ -92,20 +88,16 @@ public class DefaultHttpClientManager implements HttpClientManager {
             };
         }
 
-        PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager(
-                getSocketFactoryRegistry(), null, dnsResolver);
-
-        return connManager;
+        return new PoolingHttpClientConnectionManager(getSocketFactoryRegistry(), null, dnsResolver);
     }
 
     protected Registry<ConnectionSocketFactory> getSocketFactoryRegistry() {
         SSLContext sslcontext = SSLContexts.createSystemDefault();
-        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+
+        return RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
                 .register("https", new SSLConnectionSocketFactory(sslcontext))
                 .build();
-
-        return socketFactoryRegistry;
     }
 
     private void setSocketConfig(PoolingHttpClientConnectionManager connManager) {
@@ -148,14 +140,13 @@ public class DefaultHttpClientManager implements HttpClientManager {
                 .setMaxHeaderCount(maxHeaderCount)
                 .setMaxLineLength(maxLineLength)
                 .build();
-        org.apache.http.config.ConnectionConfig connectionConfig = org.apache.http.config.ConnectionConfig.custom()
+
+        return org.apache.http.config.ConnectionConfig.custom()
                 .setMalformedInputAction(CodingErrorAction.IGNORE)
                 .setUnmappableInputAction(CodingErrorAction.IGNORE)
                 .setCharset(Charset.forName(connectionCharset))
                 .setMessageConstraints(messageConstraints)
                 .build();
-
-        return connectionConfig;
     }
 
     private void setRouteConnection(PoolingHttpClientConnectionManager connManager) {
@@ -180,14 +171,12 @@ public class DefaultHttpClientManager implements HttpClientManager {
                 .setSocketTimeout(httpClientConfig.getSoTimeout())
                 .build();
 
-        CloseableHttpClient httpClientLocal = HttpClients.custom()
+        return HttpClients.custom()
                 .setConnectionManager(connManager)
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .setRetryHandler(httpRequestRetryHandler)
                 .setKeepAliveStrategy(connectionKeepAliveStrategy)
                 .build();
-
-        return httpClientLocal;
     }
 
     public void destroy() {
