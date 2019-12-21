@@ -11,8 +11,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Properties;
-import java.util.WeakHashMap;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author gomcarter on 2019-11-15 17:43:37
@@ -20,6 +20,8 @@ import java.util.WeakHashMap;
 public class NacosFieldValueProcessor extends BeanFieldAndMethodProcessor implements ApplicationListener<ContextRefreshedEvent> {
 
     private WeakHashMap<String, String> configMap = new WeakHashMap<>();
+
+    private Map<String, List<Consumer<String>>> comsumerMap = new HashMap<>();
 
     /**
      * @param bean     bean
@@ -57,11 +59,18 @@ public class NacosFieldValueProcessor extends BeanFieldAndMethodProcessor implem
             configMap.put(cacheKey, config);
 
             NacosClientUtils.addListener(dataId, group, (c) -> {
-                // 需要自动刷新
-                if (qiangDaNacosValue.autoRefreshed()) {
-                    fillField(bean, c, key, field);
+                List<Consumer<String>> consumerList = comsumerMap.get(cacheKey);
+                if (consumerList != null) {
+                    consumerList.forEach(d -> d.accept(c));
                 }
             });
+        }
+
+        // 需要自动刷新
+        if (qiangDaNacosValue.autoRefreshed()) {
+            List<Consumer<String>> consumerList = comsumerMap.computeIfAbsent(cacheKey, k -> new ArrayList<>());
+
+            consumerList.add(c -> fillField(bean, c, key, field));
         }
 
         fillField(bean, config, key, field);
