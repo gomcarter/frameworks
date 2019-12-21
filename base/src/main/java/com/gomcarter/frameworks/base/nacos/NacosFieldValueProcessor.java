@@ -21,7 +21,7 @@ public class NacosFieldValueProcessor extends BeanFieldAndMethodProcessor implem
 
     private WeakHashMap<String, String> configMap = new WeakHashMap<>();
 
-    private Map<String, List<Consumer<String>>> comsumerMap = new HashMap<>();
+    private Map<String, List<Consumer<String>>> consumerMap = new HashMap<>();
 
     /**
      * @param bean     bean
@@ -59,7 +59,7 @@ public class NacosFieldValueProcessor extends BeanFieldAndMethodProcessor implem
             configMap.put(cacheKey, config);
 
             NacosClientUtils.addListener(dataId, group, (c) -> {
-                List<Consumer<String>> consumerList = comsumerMap.get(cacheKey);
+                List<Consumer<String>> consumerList = consumerMap.get(cacheKey);
                 if (consumerList != null) {
                     consumerList.forEach(d -> d.accept(c));
                 }
@@ -68,7 +68,7 @@ public class NacosFieldValueProcessor extends BeanFieldAndMethodProcessor implem
 
         // 需要自动刷新
         if (qiangDaNacosValue.autoRefreshed()) {
-            List<Consumer<String>> consumerList = comsumerMap.computeIfAbsent(cacheKey, k -> new ArrayList<>());
+            List<Consumer<String>> consumerList = consumerMap.computeIfAbsent(cacheKey, k -> new ArrayList<>());
 
             consumerList.add(c -> fillField(bean, c, key, field));
         }
