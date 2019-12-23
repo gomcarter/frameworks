@@ -58,7 +58,7 @@ public class Appender {
     }
 
     private static Function defaultCellStyle = value -> {
-        if (value != null && value instanceof Number) {
+        if (value instanceof Number) {
             if (((Number) value).longValue() == ((Number) value).floatValue()) {
                 return DefaultStyle.INTEGER.style.getKey();
             }
@@ -245,7 +245,7 @@ public class Appender {
                             value = formatter.apply(row);
                         }
 
-                        Pair<Integer, Object> current = new Pair(0, value);
+                        Pair<Integer, Object> current = new Pair<>(0, value);
                         put(key, current);
 
                         if (h.getAutoMerge()) {

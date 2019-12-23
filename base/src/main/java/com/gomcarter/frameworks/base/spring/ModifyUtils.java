@@ -35,10 +35,6 @@ public abstract class ModifyUtils {
         return mapper.readValue(jsonString, typeFactory.constructType(type));
     }
 
-    public static <T> T fromJson(String jsonString, Class<T> clazz) throws IOException {
-        return mapper.readValue(jsonString, clazz);
-    }
-
     public static Object calcValue(MethodParameter methodParameter, String[] values) {
         if (values == null) {
             return null;
@@ -65,11 +61,6 @@ public abstract class ModifyUtils {
     }
 
     public static String mark2List(String value) {
-        StringBuilder sb = new StringBuilder(value.length() + 2);
-        sb.append('[');
-        sb.append(value);
-        sb.append(']');
-        value = sb.toString();
-        return value;
+        return '[' + value + ']';
     }
 }
