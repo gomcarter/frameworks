@@ -21,7 +21,6 @@ import java.util.*;
  */
 public abstract class ReflectionUtils {
 
-    public static final String CGLIB_CLASS_SEPARATOR = "$$";
     private static final String DATE_FORMAT_FULL = "yyyy-MM-dd HH:mm:ss";
 
     /**
@@ -193,22 +192,6 @@ public abstract class ReflectionUtils {
             }
         }
         return null;
-    }
-
-    /**
-     * 对于被cglib AOP过的对象, 取得真实的Class类型.
-     *
-     * @param clazz clazz
-     * @return the real Class
-     */
-    public static Class<?> getUserClass(Class<?> clazz) {
-        if (clazz != null && clazz.getName().contains(CGLIB_CLASS_SEPARATOR)) {
-            Class<?> superClass = clazz.getSuperclass();
-            if (superClass != null && !Object.class.equals(superClass)) {
-                return superClass;
-            }
-        }
-        return clazz;
     }
 
     /**

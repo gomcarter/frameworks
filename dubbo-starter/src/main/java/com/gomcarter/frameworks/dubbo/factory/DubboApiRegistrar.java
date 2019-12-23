@@ -1,5 +1,6 @@
 package com.gomcarter.frameworks.dubbo.factory;
 
+import com.gomcarter.frameworks.base.common.AopUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +52,7 @@ public class DubboApiRegistrar implements BeanPostProcessor {
             // 没有手动指定，则自动获取
             if (interfacesClass == void.class) {
                 // 去除代理类，获取原始类的实现接口
-                Class userClass = ReflectionUtils.getUserClass(bean.getClass());
+                Class userClass = AopUtils.getTargetClass(bean.getClass());
                 Class[] superInterfaces = userClass.getInterfaces();
                 if (superInterfaces == null || superInterfaces.length > 1) {
                     throw new RuntimeException(userClass.getName() + "注册到 dubbo 的接口不明确！");
@@ -84,7 +85,9 @@ public class DubboApiRegistrar implements BeanPostProcessor {
     private Map<Class, Object> ioc = new HashMap<>();
 
     private void registerReference(Object bean) {
-        for (Field field : ReflectionUtils.findAllField(bean.getClass())) {
+        // 获取被代理的对象
+        Object target = AopUtils.getTargetObject(bean);
+        for (Field field : ReflectionUtils.findAllField(target.getClass())) {
             Reference reference = field.getAnnotation(Reference.class);
             if (reference == null) {
                 continue;
@@ -129,7 +132,7 @@ public class DubboApiRegistrar implements BeanPostProcessor {
                 ioc.put(apiClass, api);
             }
 
-            ReflectionUtils.setField(bean, field, api);
+            ReflectionUtils.setField(target, field, api);
         }
     }
 
