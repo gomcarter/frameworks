@@ -6,10 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RedisProxy {
 
@@ -34,7 +31,7 @@ public class RedisProxy {
         //不覆盖设置
         NX,
         //覆盖设置
-        XX;
+        XX
     }
 
     /**
@@ -152,24 +149,22 @@ public class RedisProxy {
 
     public boolean set(final String key, final String value, final NXXX nxxx, final EXPX expx, final long time) {
         //redis client有bug，nx可以，xx不行，所以有以下不可思议的代码
-        if (jedisCluster != null) {
+        if (this.jedisCluster != null) {
             if (nxxx == NXXX.NX) {
-                Long a = jedisCluster.setnx(key, value);
                 boolean r;
-                if (r = (a > 0L)) {
+                if (r = (this.jedisCluster.setnx(key, value) > 0L)) {
                     //FIXME: 非原子操作
-                    jedisCluster.expire(key, (int) time);
+                    this.jedisCluster.expire(key, (int) time);
                 }
                 return r;
             } else {
-                return OK.equalsIgnoreCase(jedisCluster.setex(key, getSeconds(expx, time), value));
+                return OK.equalsIgnoreCase(this.jedisCluster.setex(key, getSeconds(expx, time), value));
             }
         } else if (jedisPool != null) {
             try (Jedis jedis = jedisPool.getResource()) {
                 if (nxxx == NXXX.NX) {
-                    Long a = jedis.setnx(key, value);
                     boolean r;
-                    if (r = (a > 0L)) {
+                    if (r = (jedis.setnx(key, value) > 0L)) {
                         //FIXME: 非原子操作
                         jedis.expire(key, (int) time);
                     }
@@ -215,6 +210,14 @@ public class RedisProxy {
             }
         }
         return null;
+    }
+
+    public <T> T get(final String key, Class<T> kls) {
+        return JsonMapper.buildNonNullMapper().fromJson(get(key), kls);
+    }
+
+    public <T> List<T> getAsList(final String key, Class<T> kls) {
+        return JsonMapper.buildNonNullMapper().fromJsonToList(get(key), kls);
     }
 
     public Set<String> smembers(final String key) {
