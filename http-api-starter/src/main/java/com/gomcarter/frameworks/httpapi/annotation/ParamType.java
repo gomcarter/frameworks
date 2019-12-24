@@ -22,16 +22,24 @@ public enum ParamType {
     DEFAULT {
         @Override
         void map(Param params, Parameter parameter, HttpParam param, Object value) {
-            if (params.params == null) {
-                params.params = new HashMap<>();
-            }
+            if (Map.class.isAssignableFrom(parameter.getType())) {
+                if (params.params == null) {
+                    params.params = (Map<String, Object>) value;
+                } else {
+                    params.params.putAll((Map<? extends String, ? extends String>) value);
+                }
+            } else {
+                if (params.params == null) {
+                    params.params = new HashMap<>();
+                }
 
-            String key = param.value();
-            if (StringUtils.isBlank(key)) {
-                throw new RuntimeException("the [" + parameter + "] parameter need key");
-            }
+                String key = param.value();
+                if (StringUtils.isBlank(key)) {
+                    throw new RuntimeException("the [" + parameter + "] parameter need key");
+                }
 
-            params.params.put(key, value);
+                params.params.put(key, value);
+            }
         }
     },
     /**
