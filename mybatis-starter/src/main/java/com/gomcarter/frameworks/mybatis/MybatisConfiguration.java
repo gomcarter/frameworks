@@ -1,9 +1,12 @@
 package com.gomcarter.frameworks.mybatis;
 
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
+import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSource;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSourceProcessor;
+import com.gomcarter.frameworks.mybatis.injector.CustomSqlInjector;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -39,6 +42,11 @@ public class MybatisConfiguration {
     public MybatisSqlSessionFactoryBean sqlSessionFactoryBean(ReadWriteDataSource source) throws Exception {
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
         factoryBean.setDataSource(source);
+
+        // 自定义 sql 注入器
+        GlobalConfig globalConfig = GlobalConfigUtils.defaults();
+        globalConfig.setSqlInjector(new CustomSqlInjector());
+        factoryBean.setGlobalConfig(globalConfig);
 
         // 分页插件
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();

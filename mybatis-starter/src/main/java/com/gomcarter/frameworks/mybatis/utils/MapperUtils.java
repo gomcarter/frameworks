@@ -5,13 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.mybatis.annotation.Condition;
+import com.gomcarter.frameworks.mybatis.annotation.JoinType;
+import com.gomcarter.frameworks.mybatis.annotation.Joinable;
 import com.gomcarter.frameworks.mybatis.annotation.MatchType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -123,25 +129,100 @@ public class MapperUtils {
             }
 
             // 根据字段类型获取默认的匹配类型
-            MatchType type = MatchType.getDefaultType(field.getType());
-            String fieldName = null;
-
-            if (field.isAnnotationPresent(Condition.class)) {
-                Condition condition = field.getAnnotation(Condition.class);
-                // 如果字段标记了@Condition，那么取出匹配类型，如果类型是 EQ 那么还是使用getDefaultType的值
-                if (condition.type() != MatchType.EQ) {
-                    type = condition.type();
-                }
-                fieldName = condition.field();
-            }
-            if (fieldName == null || fieldName.length() == 0) {
-                fieldName = CustomStringUtils.camelToUnderline(field.getName());
-            }
+            Condition condition = field.getAnnotation(Condition.class);
+            MatchType type = MatchType.getDefaultType(condition, field.getType());
+            String fieldName = getFieldName(condition, field);
 
             // 开始包装
             type.wrap(wrapper, fieldName, value);
         }
 
         return wrapper;
+    }
+
+    public static String getFieldName(Condition condition, Field field) {
+        String fieldName = null;
+        if (condition != null) {
+            fieldName = condition.field();
+        }
+
+        if (fieldName == null || fieldName.length() == 0) {
+            fieldName = CustomStringUtils.camelToUnderline(field.getName());
+        }
+
+        return fieldName;
+    }
+
+    public static void buildSql(StringBuilder sql, String mainTable, String paramName, Class paramsClass) {
+        // cache
+        List<Field> fields = ReflectionUtils.findAllField(paramsClass);
+
+        // fields never be null
+        for (Field field : fields) {
+            Class fieldClass = field.getType();
+
+            // 根据字段类型获取默认的匹配类型
+            Condition condition = field.getAnnotation(Condition.class);
+            MatchType type = MatchType.getDefaultType(condition, fieldClass);
+
+            String databaseFieldName = null;
+            if (condition != null) {
+                databaseFieldName = condition.field();
+                // 不带. 证明不是副表的字段，是主表的字段
+                if (databaseFieldName.length() > 0 && !databaseFieldName.contains(".")) {
+                    databaseFieldName = mainTable + ".`" + databaseFieldName + "`";
+                }
+            }
+
+            if (databaseFieldName == null || databaseFieldName.length() == 0) {
+                databaseFieldName = mainTable + ".`" + CustomStringUtils.camelToUnderline(field.getName()) + "`";
+            }
+
+            // 开始包装
+            type.sql(sql, mainTable, databaseFieldName, paramName + "." + field.getName(), fieldClass);
+            sql.append(" \n");
+        }
+    }
+
+
+    /**
+     * 拼接 table join
+     *
+     * @param mainTable
+     * @param joinables joinables
+     * @return generateTable string
+     */
+    public static String generateTable(String mainTable, Joinable[] joinables) {
+        StringBuilder sql = new StringBuilder(String.format(" %s %s ", mainTable, mainTable));
+        for (Joinable joinable : joinables) {
+            String main = joinable.main(),
+                    target = joinable.target(),
+                    mainKey = joinable.mainKey(),
+                    targetKey = joinable.targetKey();
+            JoinType type = joinable.type();
+            AssertUtils.isTrue(StringUtils.isNotBlank(main), "主表不能空");
+            AssertUtils.isTrue(StringUtils.isNotBlank(target), "副表不能空");
+            AssertUtils.isTrue(StringUtils.isNotBlank(mainKey), "主表 join 键不能空");
+            if (StringUtils.isBlank(targetKey)) {
+                targetKey = main + "_id";
+            }
+
+            sql.append(String.format("%s JOIN %s %s ON %s.%s = %s.%s ",
+                    type.name(), target, target, main, mainKey, target, targetKey));
+
+        }
+        return sql.toString();
+    }
+
+    /**
+     * Backport of java.lang.reflect.Method#isDefault()
+     *
+     * @param method method
+     * @return true -- default methods
+     */
+    public static boolean isDefaultMethod(Method method) {
+        return (method.getModifiers()
+                & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC
+                && method.getDeclaringClass().isInterface();
     }
 }

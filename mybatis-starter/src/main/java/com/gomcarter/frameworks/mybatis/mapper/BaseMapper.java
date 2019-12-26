@@ -149,28 +149,29 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return affect rows
      */
     default int update(T entity, String... columnsToNull) {
-        List<Field> idFieldList = ReflectionUtils.findAllField(entity.getClass())
-                .stream()
-                .filter(s -> s.isAnnotationPresent(TableId.class))
-                .collect(Collectors.toList());
-
-        if (CollectionUtils.isEmpty(idFieldList)) {
-            throw new RuntimeException("can not find id for entity");
-        }
-
-        UpdateWrapper<T> wrapper = new UpdateWrapper<>();
-        for (Field field : idFieldList) {
-            TableId tableId = field.getAnnotation(TableId.class);
-            wrapper.eq(StringUtils.defaultIfBlank(tableId.value(), field.getName()), ReflectionUtils.getFieldValue(entity, field));
-        }
-
         if (columnsToNull != null && columnsToNull.length > 0) {
+            List<Field> idFieldList = ReflectionUtils.findAllField(entity.getClass())
+                    .stream()
+                    .filter(s -> s.isAnnotationPresent(TableId.class))
+                    .collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(idFieldList)) {
+                throw new RuntimeException("can not find id for entity");
+            }
+
+            UpdateWrapper<T> wrapper = new UpdateWrapper<>();
+            for (Field field : idFieldList) {
+                TableId tableId = field.getAnnotation(TableId.class);
+                wrapper.eq(StringUtils.defaultIfBlank(tableId.value(), field.getName()), ReflectionUtils.getFieldValue(entity, field));
+            }
+
             for (String column : columnsToNull) {
                 wrapper.set(column, null);
             }
-        }
 
-        return update(entity, wrapper);
+            return update(entity, wrapper);
+        }
+        return update(entity);
     }
 
     /**

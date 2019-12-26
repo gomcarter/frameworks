@@ -19,6 +19,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).eq(fieldName, value);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" = #{").append(javaFieldName).append("}")
+                    .append("</if>");
+        }
     },
     /**
      * where name &lt;&gt; name
@@ -27,6 +34,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).ne(fieldName, value);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" &lt;&gt; #{").append(javaFieldName).append("}")
+                    .append("</if>");
         }
     },
     /**
@@ -37,6 +51,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).like(fieldName, value);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" LIKE concat(\"%\", #{").append(javaFieldName).append("}, \"%\")")
+                    .append("</if>");
+        }
     },
     /**
      * where name NOT LIKE "%name%"
@@ -45,6 +66,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).notLike(fieldName, value);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" NOT LIKE concat(\"%\", #{").append(javaFieldName).append("}, \"%\")")
+                    .append("</if>");
         }
     },
     /**
@@ -55,6 +83,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).likeRight(fieldName, value);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" LIKE concat(#{").append(javaFieldName).append("}, \"%\")")
+                    .append("</if>");
+        }
     },
     /**
      * where name LIKE "%name"
@@ -63,6 +98,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).likeLeft(fieldName, value);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" LIKE concat(\"%\", #{").append(javaFieldName).append("})")
+                    .append("</if>");
         }
     },
     /**
@@ -73,6 +115,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).gt(fieldName, value);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" &gt; #{").append(javaFieldName).append("}")
+                    .append("</if>");
+        }
     },
     /**
      * where name &gt;= name
@@ -81,6 +130,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).ge(fieldName, value);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" &gt;= #{").append(javaFieldName).append("}")
+                    .append("</if>");
         }
     },
     /**
@@ -91,6 +147,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).lt(fieldName, value);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" &lt; #{").append(javaFieldName).append("}")
+                    .append("</if>");
+        }
     },
     /**
      * where name &lt;= name
@@ -99,6 +162,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).le(fieldName, value);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" &lt;= #{").append(javaFieldName).append("}")
+                    .append("</if>");
         }
     },
     /**
@@ -109,6 +179,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).isNull(fieldName);
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" IS NULL")
+                    .append("</if>");
+        }
     },
     /**
      * where name is not null
@@ -117,6 +194,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).isNotNull(fieldName);
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" IS NOT NULL")
+                    .append("</if>");
         }
     },
     /**
@@ -129,13 +213,34 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> w, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) w);
             Class kls = value.getClass();
-            if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
-                // 判断 kls 是否是基本类型，如果是则直接 in 了
-                wrapper.in(fieldName, value);
-            } else if (Iterable.class.isAssignableFrom(kls)) {
+            if (Iterable.class.isAssignableFrom(kls)) {
                 wrapper.in(fieldName, (Collection<?>) value);
             } else {
                 wrapper.in(fieldName, value);
+            }
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            if (BeanUtils.isSimpleValueType(fieldClass) || fieldClass == Object.class) {
+                // 判断 kls 是否是基本类型，如果是则直接 in 了
+                sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                        .append(" AND ").append(databaseFieldName).append(" IN (#{").append(javaFieldName).append("})")
+                        .append("</if>");
+            } else if (Collection.class.isAssignableFrom(fieldClass)) {
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".size > 0\" >")
+                        .append("\n AND ").append(databaseFieldName)
+                        .append(" IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
+            } else {
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".length > 0\" >")
+                        .append("\n AND ").append(databaseFieldName)
+                        .append(" IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
             }
         }
     },
@@ -144,8 +249,38 @@ public enum MatchType {
      */
     NOTIN {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
-            ((AbstractWrapper) wrapper).notIn(fieldName, value);
+        public <T> void wrap(Wrapper<T> w, String fieldName, Object value) {
+            AbstractWrapper wrapper = ((AbstractWrapper) w);
+            Class kls = value.getClass();
+            if (Iterable.class.isAssignableFrom(kls)) {
+                wrapper.notIn(fieldName, (Collection<?>) value);
+            } else {
+                wrapper.notIn(fieldName, value);
+            }
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            if (BeanUtils.isSimpleValueType(fieldClass) || fieldClass == Object.class) {
+                // 判断 kls 是否是基本类型，如果是则直接 in 了
+                sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                        .append(" AND ").append(databaseFieldName).append(" NOT IN (#{").append(javaFieldName).append("})")
+                        .append("</if>");
+            } else if (Collection.class.isAssignableFrom(fieldClass)) {
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".size > 0\" >")
+                        .append("\n AND ").append(databaseFieldName)
+                        .append(" NOT IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
+            } else {
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".length > 0\" >")
+                        .append("\n AND ").append(databaseFieldName)
+                        .append(" NOT IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
+            }
         }
     },
     /**
@@ -158,6 +293,13 @@ public enum MatchType {
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).inSql(fieldName, value + "");
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" IN (#{").append(javaFieldName).append("})")
+                    .append("</if>");
+        }
     },
     /**
      * where name not in (...): nameINSQL是一个 sql 语句： select name from table where id &lt; 3
@@ -168,6 +310,13 @@ public enum MatchType {
         @Override
         public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).notInSql(fieldName, value + "");
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                    .append(" AND ").append(databaseFieldName).append(" NOT IN (#{").append(javaFieldName).append("})")
+                    .append("</if>");
         }
     },
     /**
@@ -188,8 +337,27 @@ public enum MatchType {
                 // 如果是数组或者是Iterable
                 wrapper.and(w -> IN.wrap(((AbstractWrapper) w), fieldName, value));
             } else {
-                // 否则去 or 这个类对应下面的所有字段的匹配结果
+                // 否则去 and 这个类对应下面的所有字段的匹配结果
                 wrapper.and(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
+            }
+        }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            if (BeanUtils.isSimpleValueType(fieldClass) || fieldClass == Object.class) {
+                // 判断 kls 是否是基本类型，如果是则直接 and 了
+                EQ.sql(sql, mainTable, databaseFieldName, javaFieldName, fieldClass);
+            } else if (fieldClass.isArray() || Collection.class.isAssignableFrom(fieldClass)) {
+                // 如果是数组或者是Iterable
+                IN.sql(sql, mainTable, databaseFieldName, javaFieldName, fieldClass);
+            } else {
+                // 否则去 and 这个类对应下面的所有字段的匹配结果
+                sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                        .append(" AND ( 1 = 1");
+
+                MapperUtils.buildSql(sql, mainTable, javaFieldName, fieldClass);
+
+                sql.append(")</if>");
             }
         }
     },
@@ -215,19 +383,63 @@ public enum MatchType {
                 wrapper.or(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
             }
         }
+
+        @Override
+        public void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            if (BeanUtils.isSimpleValueType(fieldClass) || fieldClass == Object.class) {
+                // 判断 kls 是否是基本类型，如果是则直接 or 了
+                sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                        .append(" OR ").append(databaseFieldName).append(" = #{").append(javaFieldName).append("}")
+                        .append("</if>");
+            } else if (Collection.class.isAssignableFrom(fieldClass)) {
+                // 如果是数组或者是Iterable
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".size > 0\" >")
+                        .append("\n OR ").append(databaseFieldName)
+                        .append(" IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
+            } else if (fieldClass.isArray()) {
+                sql.append("<if test=\"").append(javaFieldName).append(" != null and ").append(javaFieldName).append(".length > 0\" >")
+                        .append("\n OR ").append(databaseFieldName)
+                        .append(" IN <foreach collection=\"").append(javaFieldName).append("\"  item=\"_item_\" open=\"(\" close=\")\" separator=\",\" >")
+                        .append("#{_item_}")
+                        .append("</foreach>\n")
+                        .append("</if>");
+            } else {
+                // 否则去 and 这个类对应下面的所有字段的匹配结果
+                sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
+                        .append("\n OR ( 1 = 1");
+
+                MapperUtils.buildSql(sql, mainTable, javaFieldName, fieldClass);
+
+                sql.append(")\n</if>");
+            }
+        }
     };
 
     public abstract <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value);
 
-    public static MatchType getDefaultType(Class kls) {
+    public static MatchType getDefaultType(Condition condition, Class kls) {
+        MatchType type;
         // 基本类型，默认使用 EQ
         if (BeanUtils.isSimpleValueType(kls) || kls == Object.class) {
-            return EQ;
+            type = EQ;
         } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
             // 数组或者Iterable默认使用 in
-            return IN;
+            type = IN;
+        } else {
+            // 复杂类默认使用 and
+            type = AND;
         }
-        // 复杂类默认使用 and
-        return AND;
+
+        // 如果字段标记了@Condition，那么取出匹配类型，如果类型是 EQ 那么还是使用getDefaultType的值
+        if (condition != null && condition.type() != MatchType.EQ) {
+            type = condition.type();
+        }
+
+        return type;
     }
+
+    public abstract void sql(StringBuilder sql, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass);
 }
