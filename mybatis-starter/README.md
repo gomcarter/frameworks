@@ -270,6 +270,7 @@ public class FooParam {
     // XX,YY,ZZ 是FooChildrenParams类里面的字段
     @Condition(type = MatchType.AND)
     private FooChildrenParams children;
+}
 ```
 
 ### 代码自动生成：
@@ -309,6 +310,150 @@ public class Generator {
     }
 }
 ```
+
+### 联表分页查询
+```
+mapper:
+
+import com.gomcarter.frameworks.base.pager.Pageable;
+import com.gomcarter.frameworks.mybatis.annotation.Joinable;
+import com.gomcarter.frameworks.mybatis.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+public interface CategoryMapper extends BaseMapper<Category> {
+
+    // 1，必须标注Joinable
+    // 2，返回类型必须是 java.util.Collection 才支持联表分页查询。
+    // 3，不考虑笛卡尔积，如果有这种情况，请自行实现
+    // 尽量写上Pageable，不然一次性查出太多数据，把自己卡死。
+    // 下面写法等同于： select * from foo foo inner join bar bar on foo.id = bar.foo_id LEFT JOIN baz baz on bar.id = baz.bar_id
+    @Joinable(main = "foo", target = "bar", mainKey = "id", targetKey = "foo_id", type = JoinType.INNER)
+    @Joinable(main = "bar", target = "baz", mainKey = "id", targetKey = "bar_id", type = JoinType.LEFT)
+    List<FooDto> query(@Param("params") FooParam params, @Param("pager") Pageable pager);
+
+    // 下面写法等同于： select count(1) from foo foo inner join bar bar on foo.id = bar.foo_id LEFT JOIN baz baz on bar.id = baz.bar_id
+    @Joinable(main = "foo", target = "bar", mainKey = "id", targetKey = "foo_id", type = JoinType.INNER)
+    @Joinable(main = "bar", target = "baz", mainKey = "id", targetKey = "bar_id", type = JoinType.LEFT)
+    Integer count(@Param("params") FooParam params);
+}
+```
+
+FooParam:
+
+```
+import com.yiayoframework.mybatis.annotation.Condition;
+import com.yiayoframework.mybatis.annotation.MatchType;
+
+public class FooParam {
+    // 什么都不写，主要这个值不为空，则默认表示： where id = id
+    private Long id;
+
+    // 表示： where name like %name%
+    @Condition(type = MatchType.LIKE)
+    private String name;
+
+    //field 表示数据库字段， 此项表示：where sort > sortGT
+    @Condition(field = "sort", type = MatchType.GT)
+    private Integer sortGT;
+
+    // where sort < sortLT
+    @Condition(field = "sort", type = MatchType.LT)
+    private Integer sortLT;
+
+    // where state = state
+    private Boolean state;
+
+    // where url LIKE "%url"
+    @Condition(type = MatchType.LEFTLIKE)
+    private String url;
+
+    // where url LIKE "url%"
+    @Condition(type = MatchType.RIGHTLIKE)
+    private String code;
+
+    // where is_leaf <> isLeaf     自动驼峰转下划线
+    @Condition(type = MatchType.NE)
+    private Boolean isLeaf;
+
+    // where brokerage is null
+    @Condition(type = MatchType.NULL)
+    private Boolean brokerage;
+    
+    // where brokerage is not null
+    @Condition(field = "brokerage", type = MatchType.NOTNULL)
+    private Boolean brokerageNotNull;
+    
+    // where fk_foo_id in (fkFooId)
+    @Condition(type = MatchType.IN)
+    private Long fkFooId;
+
+    // 对于 Iterable和 array 什么都不写默认是 IN   where fk_foo_id in (fkFooId.get(0), fkFooId.get(1) ... ) 
+    private List<Long> fkFooId;
+    // where fk_foo_id in (fkFooId[0], fkFooId[1] ... ) 
+    private Long[] fkFooId;
+    
+    // where fk_foo_id not in (fkFooId[0], fkFooId[1] ... ) 
+    @Condition(field = "fk_foo_id", type = MatchType.NOTIN)
+    private Long[] fkFooId;
+
+    // where ( fk_foo_id in (fooIdListOr) ) or (other condition)
+    @Condition(field = "fk_foo_id", type = MatchType.OR)
+    private List<Long> fooIdListOr;
+
+    // where (XX = XX AND YY = YY OR ZZ = ZZ) or (other condition) 
+    // XX,YY,ZZ 是FooChildrenParams类里面的字段
+    @Condition(type = MatchType.OR)
+    private FooChildrenParams children;
+    
+    // where (XX = XX AND YY = YY OR ZZ = ZZ) and (other condition) 
+    // XX,YY,ZZ 是FooChildrenParams类里面的字段
+    @Condition(type = MatchType.AND)
+    private FooChildrenParams children;
+    
+    // 副表字段
+    @Condition(field = "bar.name", type = MatchType.LIKE)
+    private String barName;
+    
+    // 副表字段
+    @Condition(field = "bar.id", type = MatchType.EQ)
+    private String barId;
+    ...
+}
+```
+
+FooDto:
+```
+import com.baomidou.mybatisplus.annotation.TableField;
+
+public class FooParam {
+    // 主表 id
+    private Long id;
+
+    // 主表name
+    @TableField("name)
+    private String name;
+
+    // 副表bar字段
+    @TableField("bar.name")
+    private String barName;
+    
+    // 副表bar字段
+    @TableField("bar.id")
+    private String barId;
+    
+    // 副表baz字段
+    @TableField("baz.id")
+    private String bazId;
+    
+    // 副表baz字段 notExist 查询不返回
+    @TableField("baz.notExist", exist = false)
+    private String notExist;
+    ...
+}
+```
+
+
+
 
 
 
