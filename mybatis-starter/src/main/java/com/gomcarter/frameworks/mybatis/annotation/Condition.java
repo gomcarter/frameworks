@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * @author gomcarter on 2019-11-09 22:53:32
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Documented
 public @interface Condition {
 

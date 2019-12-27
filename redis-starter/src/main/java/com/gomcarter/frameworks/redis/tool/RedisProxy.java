@@ -24,7 +24,7 @@ public class RedisProxy {
         //秒
         EX,
         //毫秒
-        PX;
+        PX
     }
 
     public enum NXXX {

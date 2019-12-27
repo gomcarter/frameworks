@@ -76,7 +76,8 @@ public class SelectJoinedPage extends AbstractMethod {
                     if (whereSql.length() == 0) {
                         whereSql.append("\n<where> 1 = 1\n");
                     }
-                    MapperUtils.buildSql(whereSql, mainTable, paramName, parameter.getType());
+
+                    MapperUtils.buildParamSql(whereSql, parameter, mainTable, paramName);
                 }
             }
 

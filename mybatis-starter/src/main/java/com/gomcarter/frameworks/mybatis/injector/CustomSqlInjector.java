@@ -3,6 +3,7 @@ package com.gomcarter.frameworks.mybatis.injector;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.AbstractSqlInjector;
 import com.baomidou.mybatisplus.core.injector.methods.*;
+import com.gomcarter.frameworks.mybatis.injector.method.QiangdaSelector;
 import com.gomcarter.frameworks.mybatis.injector.method.SelectJoinedCount;
 import com.gomcarter.frameworks.mybatis.injector.method.SelectJoinedPage;
 
@@ -39,7 +40,9 @@ public class CustomSqlInjector extends AbstractSqlInjector {
                 new SelectList(),
                 new SelectPage(),
                 new SelectJoinedPage(),
-                new SelectJoinedCount()
+                new SelectJoinedCount(),
+                // 万能选择器
+                new QiangdaSelector()
         ).collect(toList());
     }
 }

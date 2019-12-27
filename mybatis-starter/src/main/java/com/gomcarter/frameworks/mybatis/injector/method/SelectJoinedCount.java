@@ -3,12 +3,16 @@ package com.gomcarter.frameworks.mybatis.injector.method;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.gomcarter.frameworks.base.common.AssertUtils;
+import com.gomcarter.frameworks.base.common.CustomStringUtils;
+import com.gomcarter.frameworks.mybatis.annotation.Condition;
 import com.gomcarter.frameworks.mybatis.annotation.Joinable;
+import com.gomcarter.frameworks.mybatis.annotation.MatchType;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -58,7 +62,8 @@ public class SelectJoinedCount extends AbstractMethod {
                 if (whereSql.length() == 0) {
                     whereSql.append("\n<where> 1 = 1\n");
                 }
-                MapperUtils.buildSql(whereSql, mainTable, paramName, parameter.getType());
+
+                MapperUtils.buildParamSql(whereSql, parameter, mainTable, paramName);
             }
 
             if (whereSql.length() > 0) {
