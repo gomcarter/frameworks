@@ -8,6 +8,7 @@ import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.base.pager.Pageable;
+import com.gomcarter.frameworks.mybatis.annotation.Condition;
 import com.gomcarter.frameworks.mybatis.annotation.Joinable;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +78,7 @@ public class SelectJoinedPage extends AbstractMethod {
                         whereSql.append("\n<where> 1 = 1\n");
                     }
 
-                    MapperUtils.buildParamSql(whereSql, parameter, mainTable, paramName);
+                    MapperUtils.buildWhereSql(whereSql, parameter.getAnnotation(Condition.class), mainTable, paramName, parameter.getType());
                 }
             }
 

@@ -8,18 +8,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.base.converter.Convertable;
 import com.gomcarter.frameworks.base.pager.Pageable;
-import com.gomcarter.frameworks.mybatis.annotation.Condition;
-import com.gomcarter.frameworks.mybatis.annotation.JoinType;
-import com.gomcarter.frameworks.mybatis.annotation.Joinable;
-import com.gomcarter.frameworks.mybatis.annotation.MatchType;
+import com.gomcarter.frameworks.mybatis.annotation.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -124,19 +122,36 @@ public class MapperUtils {
 
         // fields never be null
         for (Field field : fields) {
-            Object value = ReflectionUtils.getFieldValue(params, field);
-            // 如果为 null，则跳过此字段
-            if (value == null) {
-                continue;
+            Object value = null;
+            Condition condition = null;
+            MatchStrategy strategy = null;
+            if (field.isAnnotationPresent(Condition.class)) {
+                condition = field.getAnnotation(Condition.class);
+                if (StringUtils.isNotBlank(condition.fixedValue())) {
+                    // 获取默固定认值
+                    Convertable converter = Convertable.getConverter(field.getType());
+                    value = converter.convert(condition.fixedValue(), ObjectUtils.defaultIfNull(field.getGenericType(), field.getType()));
+                }
+
+                strategy = condition.strategy();
             }
 
-            // 根据字段类型获取默认的匹配类型
-            Condition condition = field.getAnnotation(Condition.class);
-            MatchType type = MatchType.getDefaultType(condition, field.getType());
-            String fieldName = getFieldName(condition, field);
+            if (value == null) {
+                value = ReflectionUtils.getFieldValue(params, field);
+            }
 
-            // 开始包装
-            type.wrap(wrapper, fieldName, value);
+            String fieldName = getFieldName(condition, field);
+            // 如果为 null，则跳过
+            if (value == null) {
+                if (strategy == MatchStrategy.IGNORED) {
+                    MatchType.NULL.wrap(wrapper, fieldName, null);
+                }
+            } else {
+                // 根据字段类型获取默认的匹配类型
+                MatchType type = MatchType.getDefaultType(condition, field.getType());
+                // 开始包装
+                type.wrap(wrapper, fieldName, value);
+            }
         }
 
         return wrapper;
@@ -173,22 +188,29 @@ public class MapperUtils {
         return databaseFieldName;
     }
 
-    public static void buildSql(StringBuilder sql, String mainTable, String paramName, Class paramsClass) {
+    public static void buildWhereSql(StringBuilder whereSql, Condition condition, String mainTable, String paramName, Class paramsClass) {
+        // 简单类型， 直接 EQ
+        if (BeanUtils.isSimpleValueType(paramsClass)) {
+            MatchType type = MatchType.getDefaultType(condition, paramsClass);
+            String databaseFieldName = MapperUtils.getDatabaseFieldName(condition, mainTable, paramName);
 
-        // 复杂类型取里面的字段
-        List<Field> fields = ReflectionUtils.findAllField(paramsClass);
-        // fields never be null
-        for (Field field : fields) {
-            Class fieldClass = field.getType();
+            type.sql(whereSql, condition, mainTable, databaseFieldName, paramName, paramsClass);
+        } else {
+            // 复杂类型取里面的字段
+            List<Field> fields = ReflectionUtils.findAllField(paramsClass);
+            // fields never be null
+            for (Field field : fields) {
+                Class fieldClass = field.getType();
 
-            // 根据字段类型获取默认的匹配类型
-            Condition condition = field.getAnnotation(Condition.class);
-            MatchType type = MatchType.getDefaultType(condition, fieldClass);
-            String databaseFieldName = getDatabaseFieldName(condition, mainTable, field.getName());
+                // 根据字段类型获取默认的匹配类型
+                Condition subCondition = field.getAnnotation(Condition.class);
+                MatchType type = MatchType.getDefaultType(subCondition, fieldClass);
+                String databaseFieldName = getDatabaseFieldName(subCondition, mainTable, field.getName());
 
-            // 开始包装
-            type.sql(sql, mainTable, databaseFieldName, paramName + "." + field.getName(), fieldClass);
-            sql.append(" \n");
+                // 开始包装
+                type.sql(whereSql, subCondition, mainTable, databaseFieldName, paramName + "." + field.getName(), fieldClass);
+                whereSql.append(" \n");
+            }
         }
     }
 
@@ -232,17 +254,5 @@ public class MapperUtils {
         return (method.getModifiers()
                 & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC
                 && method.getDeclaringClass().isInterface();
-    }
-
-    public static void buildParamSql(StringBuilder whereSql, Parameter parameter, String mainTable, String javaParamName) {
-        // 简单类型， 直接 EQ
-        if (BeanUtils.isSimpleValueType(parameter.getType())) {
-            Condition condition = parameter.getAnnotation(Condition.class);
-            MatchType type = MatchType.getDefaultType(condition, parameter.getType());
-
-            type.sql(whereSql, mainTable, MapperUtils.getDatabaseFieldName(condition, mainTable, javaParamName), javaParamName, parameter.getType());
-        } else {
-            MapperUtils.buildSql(whereSql, mainTable, javaParamName, parameter.getType());
-        }
     }
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.gomcarter.frameworks.base.pager.Pageable;
+import com.gomcarter.frameworks.mybatis.annotation.Condition;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
@@ -18,12 +19,14 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 /**
+ * 万能查询 sql 自动生成器。
+ * <p>
  * 寻找没有注入 sql 的接口，自动给填充 select 语句和查询条件
  *
  * @author gomcarter
  * @since 2019-12-26 09:11:22
  */
-public class QiangdaSelector extends AbstractMethod {
+public class GodSelector extends AbstractMethod {
 
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo ignore) {
@@ -72,7 +75,7 @@ public class QiangdaSelector extends AbstractMethod {
                         whereSql.append("\n<where> 1 = 1\n");
                     }
 
-                    MapperUtils.buildParamSql(whereSql, parameter, null, paramName);
+                    MapperUtils.buildWhereSql(whereSql, parameter.getAnnotation(Condition.class), null, paramName, parameter.getType());
                 }
             }
 

@@ -226,7 +226,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * <p>
      * 根据params 构建一个 queryWrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
      *
-     * @param params   查询参数
+     * @param params   查询参数，必须是自行封装的 java 类，不能是简单类型或者包装类或者模板类
      * @param pageable 分页器
      * @param <R>      参数类型
      * @return the list of entity
@@ -240,7 +240,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * <p>
      * 根据params 构建一个 queryWrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
      *
-     * @param params   查询参数
+     * @param params   查询参数，必须是自行封装的 java 类，不能是简单类型或者包装类或者模板类
      * @param pageable 分页器
      * @param columns  需要查询的列
      * @param <R>      参数类型
