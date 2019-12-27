@@ -453,6 +453,7 @@ public class FooParam {
 ```
 
 ### 万能查询（单表）
+```
 mapper:
 
 import com.gomcarter.frameworks.base.pager.Pageable;
@@ -484,7 +485,7 @@ class FooDto {
     Long id;
     Long name;
 }
-
+```
 
 
 
