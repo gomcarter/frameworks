@@ -9,7 +9,6 @@
 //    nfs {
 //        @Override
 //        public String getDownloadUrl(Downloader downloader, String fileName) {
-//            // FIXME
 //            return NacosClientUtils.getConfigAsString("nfs", "STORAGE_TYPE") + fileName;
 //        }
 //    },
@@ -19,7 +18,6 @@
 //    oss {
 //        @Override
 //        public String getDownloadUrl(Downloader downloader, String fileName) {
-//            // FIXME
 //            return null;
 //        }
 //    };
