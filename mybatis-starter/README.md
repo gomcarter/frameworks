@@ -320,7 +320,7 @@ import com.gomcarter.frameworks.mybatis.annotation.Joinable;
 import com.gomcarter.frameworks.mybatis.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
-public interface CategoryMapper extends BaseMapper<Category> {
+public interface FooMapper extends BaseMapper<Foo> {
 
     // 1，必须标注Joinable
     // 2，返回类型必须是 java.util.Collection 才支持联表分页查询。
@@ -452,7 +452,38 @@ public class FooParam {
 }
 ```
 
+### 万能查询（单表）
+mapper:
 
+import com.gomcarter.frameworks.base.pager.Pageable;
+import com.gomcarter.frameworks.mybatis.annotation.Joinable;
+import com.gomcarter.frameworks.mybatis.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+
+// 下面的方法如果没有在 xml 中自定义sql，或者使用@Sql，那么这些方法会被自动注入 sql 语句。
+public interface FooMapper extends BaseMapper<Foo> {
+
+    // 1，返回值必须是 java.util.Collection
+    // 2，如果不是java.util.Collection，必须是一个 java 类（必须包含属性，不能是简单类型和包装类）
+    // 3，参数中可以带 Pageable （带上自动分页）
+    // 如果查询数据比较多，尽量写上Pageable，不然一次性查出太多数据，把自己卡死。
+    // 下面写法等同于： select id, name from foo where id = #{id} and name = #{name};
+    // 如果 id 或者 name 为 null，则不计入查询条件： select id, name from foo；
+    FooDto get(@Param("id") Long id, @Param("name") String name);
+
+    // 下面写法等同于： select id, name from foo where name LIKE "%name%"
+    List<FooDto> findByName(@Param("name") @Condition(type = MatchType.LIKE) String name);
+    
+     // 也支持POJO 类作为查询条件, 和分页查询
+    List<FooDto> findByName(@Param("params") FooParam param, @Param("pager") Pageable pageable);
+    
+}
+
+class FooDto {
+    Long id;
+    Long name;
+}
 
 
 
