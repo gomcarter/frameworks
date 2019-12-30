@@ -33,10 +33,9 @@ public class GodSelector extends AbstractMethod {
         // sql 模板
         String sqlTemplate = "<script>\nSELECT %s FROM %s %s %s\n</script>";
 
-        // 1，扫描 mapperClass 中存在支持 join 的方法。
-        Method[] methods = mapperClass.getDeclaredMethods();
-
         MybatisConfiguration configuration = ignore.getConfiguration();
+        Method[] methods = mapperClass.getDeclaredMethods();
+        // 1，扫描 mapperClass 中存在支持自动加 sql 的方法。
         for (Method method : methods) {
             //  如果此方法已经有实现了或者 default 方法，跳过
             if (configuration.hasStatement(method.getName())
