@@ -124,6 +124,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * 根据 ID 修改，数据库主键
      * 限定 ： 主键字段必须是 id
      *
+     * @param id            主键
      * @param entity        实体对象： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null，则使用 columnsToNull
      * @param columnsToNull 指定更新为 null 的列名
      * @return affect rows
@@ -208,8 +209,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * 复杂查询，只返回第一条数据
      *
-     * @param params 查询参数
-     * @param <R>    参数类型
+     * @param params  查询参数
+     * @param <R>     参数类型
+     * @param columns 返回哪些具体数据
      * @return the list of entity
      */
     default <R> T getUnique(R params, String... columns) {

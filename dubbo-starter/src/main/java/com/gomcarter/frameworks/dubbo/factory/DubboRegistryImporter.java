@@ -1,8 +1,11 @@
 package com.gomcarter.frameworks.dubbo.factory;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
-import com.gomcarter.frameworks.base.common.*;
-import com.gomcarter.frameworks.dubbo.annotation.EnableNacosDubbo;
+import com.gomcarter.frameworks.base.common.AssertUtils;
+import com.gomcarter.frameworks.base.common.BeanRegistrationUtils;
+import com.gomcarter.frameworks.base.common.PackageUtils;
+import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.dubbo.annotation.EnableDubbo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
@@ -36,26 +39,31 @@ public class DubboRegistryImporter implements ImportBeanDefinitionRegistrar {
         System.setProperty("dubbo.application.logger", "slf4j");
 
         AnnotationAttributes attributes = AnnotationAttributes
-                .fromMap(annotationMetadata.getAnnotationAttributes(EnableNacosDubbo.class.getName()));
-        AssertUtils.notNull(attributes, new RuntimeException("未配置：EnableNacosDubbo"));
+                .fromMap(annotationMetadata.getAnnotationAttributes(EnableDubbo.class.getName()));
+        AssertUtils.notNull(attributes, new RuntimeException("未配置：@EnableDubbo"));
 
-        String dataId = attributes.getString("dataId"),
-                group = attributes.getString("group");
-        AssertUtils.isTrue(StringUtils.isNotBlank(dataId), new RuntimeException("未配置：dataId"));
-        AssertUtils.isTrue(StringUtils.isNotBlank(group), new RuntimeException("未配置：group"));
+        String[] keys = attributes.getStringArray("value");
+        if (keys.length == 0) {
+            throw new RuntimeException("未配置@EnableDubbo的 value");
+        }
 
         RegistryConfig rc = new RegistryConfig();
         ApplicationConfig ac = new ApplicationConfig();
         ProtocolConfig pc = new ProtocolConfig();
 
+        UnifiedConfigService configService = UnifiedConfigService.getInstance();
         // 从Nacos中读取配置
-        Properties properties = NacosClientUtils.getConfigAsProperties(dataId, group);
+        Properties properties = configService.getConfigAsProperties(keys);
         // 从nacos读取注册中心地址，如果没有获取到，则直接用配置中心作为注册中心（改一下注册中心的协议前缀即可）
         rc.setAddress(StringUtils.defaultIfBlank(properties.getProperty("dubbo.registry.address"),
-                "nacos://" + NacosClientUtils.serverAddr().split("://")[1]));
+                "nacos://" + configService.server().split("://")[1]));
+
         // 设置namespace， nacos注册中心有效
-        Map<String, String> parameters = new HashMap<>(2, 1);
-        parameters.put(PropertyKeyConst.NAMESPACE, NacosClientUtils.namespace());
+        Map<String, String> parameters = new HashMap<>(1, 1);
+        String namespace = configService.namespace();
+        if (namespace != null) {
+            parameters.put("namespace", namespace);
+        }
         rc.setParameters(parameters);
 
         for (Field field : ReflectionUtils.findAllField(RegistryConfig.class)) {
@@ -77,7 +85,7 @@ public class DubboRegistryImporter implements ImportBeanDefinitionRegistrar {
             }
         }
 
-        // 设置proptocol
+        // 设置protocol
         pc.setPort(attributes.getNumber("port"));
         for (Field field : ReflectionUtils.findAllField(ProtocolConfig.class)) {
             String value = properties.getProperty("dubbo.protocol." + field.getName());

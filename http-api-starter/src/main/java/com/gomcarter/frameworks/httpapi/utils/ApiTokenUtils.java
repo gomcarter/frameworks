@@ -1,9 +1,9 @@
 package com.gomcarter.frameworks.httpapi.utils;
 
-import com.alibaba.nacos.client.config.utils.MD5;
 import com.gomcarter.frameworks.base.common.CookieUtils;
 import com.gomcarter.frameworks.base.common.CustomDateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.crypto.hash.Md5Hash;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -13,7 +13,6 @@ import java.util.Date;
  * @author gomcarter on 2019-11-13 10:27:42
  */
 public class ApiTokenUtils {
-
     /**
      * FIXME: some key you have to assign
      */
@@ -31,15 +30,15 @@ public class ApiTokenUtils {
     }
 
     public static String getToken() {
-        return MD5.getInstance().getMD5String(getKey(0));
+        return new Md5Hash(getKey(0)).toHex();
     }
 
     private static String getToken(String time) {
-        return MD5.getInstance().getMD5String(getKey(time));
+        return new Md5Hash(getKey(time)).toHex();
     }
 
     private static String getOffSetToken(int offset) {
-        return MD5.getInstance().getMD5String(getKey(offset));
+        return new Md5Hash(getKey(offset)).toHex();
     }
 
     private static Date getEnCodeTime(int offset) {

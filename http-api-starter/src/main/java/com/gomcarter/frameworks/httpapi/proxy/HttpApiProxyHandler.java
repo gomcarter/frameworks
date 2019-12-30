@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.httpapi.proxy;
 
-import com.gomcarter.frameworks.base.common.NacosClientUtils;
+import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import com.gomcarter.frameworks.base.converter.Convertable;
 import com.gomcarter.frameworks.base.json.JsonData;
 import com.gomcarter.frameworks.base.mapper.JsonMapper;
@@ -160,9 +160,8 @@ public class HttpApiProxyHandler implements InvocationHandler {
 
     public static void main(String[] args) {
         // 从Nacos中读取配置
-        Properties properties = NacosClientUtils.getConfigAsProperties("MEMBER", "API");
+        Properties properties = UnifiedConfigService.getInstance().getConfigAsProperties("MEMBER", "API");
         HttpApiProxyHandler.addRouter(properties);
-
 
         HttpDemoApi demoApi = new HttpApiProxyHandler().getProxy(HttpDemoApi.class);
 //        System.out.println(demoApi.toString());

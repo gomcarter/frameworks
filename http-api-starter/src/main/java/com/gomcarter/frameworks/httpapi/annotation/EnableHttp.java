@@ -11,17 +11,11 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnableHttp {
-    /**
-     * nacos data_id
-     *
-     * @return dataId
-     */
-    String dataId();
 
     /**
-     * nacos group
+     * 找到配置内容的 keys
      *
-     * @return group
+     * @return 根据配置中心不同，传入不同的配置 key
      */
-    String group();
+    String[] value();
 }

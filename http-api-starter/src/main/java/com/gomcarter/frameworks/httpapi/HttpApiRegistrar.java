@@ -1,13 +1,12 @@
 package com.gomcarter.frameworks.httpapi;
 
 import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.common.NacosClientUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import com.gomcarter.frameworks.httpapi.annotation.EnableHttp;
 import com.gomcarter.frameworks.httpapi.annotation.HttpResource;
 import com.gomcarter.frameworks.httpapi.proxy.HttpApiProxyHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.Order;
@@ -42,13 +41,14 @@ public class HttpApiRegistrar implements BeanPostProcessor {
     private void registerHttpApi(Object bean) {
         EnableHttp http = bean.getClass().getAnnotation(EnableHttp.class);
         if (http != null) {
-            String dataId = http.dataId(),
-                    group = http.group();
-            AssertUtils.isTrue(StringUtils.isNotBlank(dataId), new RuntimeException("未配置：dataId"));
-            AssertUtils.isTrue(StringUtils.isNotBlank(group), new RuntimeException("未配置：group"));
+            String[] keys = http.value();
+            AssertUtils.isTrue(keys.length > 0, new RuntimeException("未配置@EnableHttp 的 value"));
 
-            // 从Nacos中读取配置
-            Properties properties = NacosClientUtils.getConfigAsProperties(dataId, group);
+            UnifiedConfigService configService = UnifiedConfigService.getInstance();
+            // 从配置中心读取配置
+            Properties properties = configService.getConfigAsProperties(keys);
+            // 监听配置变化
+            configService.addListenerAsProperties(HttpApiProxyHandler::addRouter, keys);
 
             // 添加 http url 路由
             HttpApiProxyHandler.addRouter(properties);

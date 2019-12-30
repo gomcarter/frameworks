@@ -1,0 +1,1 @@
+com.gomcarter.frameworks.base.config.UnifiedConfigService=com.gomcarter.frameworks.config.nacos.impl.NacosConfigServiceImpl

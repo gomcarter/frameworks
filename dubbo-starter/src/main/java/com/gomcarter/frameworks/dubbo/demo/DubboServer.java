@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.dubbo.demo;
 
-import com.alibaba.nacos.api.PropertyKeyConst;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.ServiceConfig;
@@ -9,6 +8,8 @@ import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * 本 demo 基于 nacos 作为配置中心和注册中心
+ *
  * @author gomcarter
  */
 public class DubboServer {
@@ -23,7 +24,7 @@ public class DubboServer {
         String namespace = System.getenv("NACOS_NAMESPACE");
         RegistryConfig rc = new RegistryConfig("nacos://119.23.240.12:10009");
         rc.setParameters(new HashMap<String, String>() {{
-            put(PropertyKeyConst.NAMESPACE, namespace);
+            put("namespace", namespace);
         }});
 //        rc.setPassword("3zda3caeyx6pn7c5z");
 //        rc.setUsername("anywhocares");

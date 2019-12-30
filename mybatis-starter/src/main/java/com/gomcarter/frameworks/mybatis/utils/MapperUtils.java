@@ -107,9 +107,10 @@ public class MapperUtils {
     /**
      * 根据params 构建一个 wrapper，具体规则见：{@link com.gomcarter.frameworks.mybatis.annotation.Condition}
      *
-     * @param params 参数
-     * @param <T>    查询实体类型
-     * @param <R>    参数类型
+     * @param wrapper queryWrapper or updateWrapper
+     * @param params  参数
+     * @param <T>     查询实体类型
+     * @param <R>     参数类型
      * @return wrapper
      */
     public static <T, R> Wrapper<T> buildWrapper(Wrapper<T> wrapper, R params) {
@@ -218,7 +219,7 @@ public class MapperUtils {
     /**
      * 拼接 table join
      *
-     * @param mainTable
+     * @param mainTable mainTable
      * @param joinables joinables
      * @return generateTable string
      */

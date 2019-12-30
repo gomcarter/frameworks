@@ -1,12 +1,12 @@
 package com.gomcarter.frameworks.redis.aop;
 
-import com.alibaba.nacos.client.config.utils.MD5;
 import com.gomcarter.frameworks.base.exception.NonConcurrencyException;
 import com.gomcarter.frameworks.redis.annotation.Cache;
 import com.gomcarter.frameworks.redis.annotation.DelCache;
 import com.gomcarter.frameworks.redis.annotation.Lock;
 import com.gomcarter.frameworks.redis.tool.RedisProxy;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -207,7 +207,7 @@ public class DataRedisInterceptor {
                     .reduce((a, b) -> a + "_" + b)
                     .orElse(StringUtils.EMPTY);
         } else {
-            return key + "_" + MD5.getInstance().getMD5String(Arrays.stream(argsIndex)
+            return key + "_" + new Md5Hash(Arrays.stream(argsIndex)
                     .mapToObj(s -> {
                         Object arg = args[s];
 
@@ -220,7 +220,7 @@ public class DataRedisInterceptor {
                     })
                     .reduce((a, b) -> a + "_" + b)
                     .orElse(StringUtils.EMPTY)
-            );
+            ).toString();
         }
     }
 

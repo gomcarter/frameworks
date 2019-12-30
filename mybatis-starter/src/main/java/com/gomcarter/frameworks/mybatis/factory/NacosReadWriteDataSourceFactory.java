@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.mybatis.factory;
 
-import com.gomcarter.frameworks.base.common.NacosClientUtils;
+import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,7 @@ public class NacosReadWriteDataSourceFactory implements FactoryBean<ReadWriteDat
 
     private static final Logger logger = LoggerFactory.getLogger(NacosReadWriteDataSourceFactory.class);
 
-    private String dataId;
-    private String group;
+    private String[] keys;
 
     private ReadWriteDataSource readWriteDataSource = new ReadWriteDataSource();
 
@@ -38,15 +37,16 @@ public class NacosReadWriteDataSourceFactory implements FactoryBean<ReadWriteDat
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        NacosClientUtils.addListenerAsProperties(dataId, group, (properties -> {
+        UnifiedConfigService configService = UnifiedConfigService.getInstance();
+        configService.addListenerAsProperties((properties -> {
             try {
                 this.initDatasource(properties);
             } catch (Exception e) {
                 logger.error("update datasource failed:", e);
             }
-        }));
+        }), keys);
 
-        Properties properties = NacosClientUtils.getConfigAsProperties(this.dataId, this.group);
+        Properties properties = configService.getConfigAsProperties(this.keys);
         this.initDatasource(properties);
     }
 
@@ -62,13 +62,12 @@ public class NacosReadWriteDataSourceFactory implements FactoryBean<ReadWriteDat
         ReadWriteDataSourceBuilder.destroy(readWriteDataSource);
     }
 
-    public NacosReadWriteDataSourceFactory setDataId(String dataId) {
-        this.dataId = dataId;
-        return this;
+    public String[] getKeys() {
+        return keys;
     }
 
-    public NacosReadWriteDataSourceFactory setGroup(String group) {
-        this.group = group;
+    public NacosReadWriteDataSourceFactory setKeys(String[] keys) {
+        this.keys = keys;
         return this;
     }
 }

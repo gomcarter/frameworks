@@ -1,5 +1,6 @@
 package com.gomcarter.frameworks.base.common;
 
+import com.gomcarter.frameworks.base.streaming.Streamable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,16 +23,13 @@ public class CookieUtils {
      * @return map
      */
     public static Map<String, String> getCookieMap(HttpServletRequest request) {
-        Map<String, String> map = new HashMap<>();
         if (request == null || request.getCookies() == null) {
-            return map;
+            return new HashMap<>(0);
         }
 
-        for (Cookie cookie : request.getCookies()) {
-            map.put(cookie.getName(), cookie.getValue());
-        }
-
-        return map;
+        return Streamable.valueOf(request.getCookies())
+                .uniqueGroupbySafely(Cookie::getName, Cookie::getValue)
+                .collect();
     }
 
     /**

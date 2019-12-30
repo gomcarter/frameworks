@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.base.streaming;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -28,7 +27,7 @@ public class Groupable<KEY, VAL> {
         Map<KEY, VAL> map = this.map;
         Map<KEY, OTHER> otherMap = other.map;
         return of(new HashMap<KEY, Pair<VAL, OTHER>>(this.map.size()) {{
-            map.forEach((k, m) -> Optional.ofNullable(otherMap.get(k)).ifPresent(s -> put(k, new ImmutablePair<>(m, s))));
+            map.forEach((k, m) -> Optional.ofNullable(otherMap.get(k)).ifPresent(s -> put(k, Pair.of(m, s))));
         }});
     }
 
@@ -36,7 +35,7 @@ public class Groupable<KEY, VAL> {
         Map<KEY, VAL> map = this.map;
         Map<KEY, OTHER> otherMap = other.map;
         return of(new HashMap<KEY, Pair<VAL, OTHER>>(this.map.size()) {{
-            map.forEach((k, m) -> put(k, new ImmutablePair<>(m, otherMap.get(k))));
+            map.forEach((k, m) -> put(k, Pair.of(m, otherMap.get(k))));
         }});
     }
 

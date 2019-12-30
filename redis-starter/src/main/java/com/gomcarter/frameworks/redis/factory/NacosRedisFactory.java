@@ -1,9 +1,7 @@
 package com.gomcarter.frameworks.redis.factory;
 
-import com.gomcarter.frameworks.base.common.NacosClientUtils;
+import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import com.gomcarter.frameworks.redis.tool.RedisProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -13,8 +11,6 @@ import java.util.Properties;
  * @author gomcarter on 2019-11-19 11:07:19
  */
 public class NacosRedisFactory implements FactoryBean<RedisProxy>, InitializingBean {
-    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private String dataId = "CONNECTION";
     private String group = "REDIS";
 
@@ -37,11 +33,11 @@ public class NacosRedisFactory implements FactoryBean<RedisProxy>, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        NacosClientUtils.addListenerAsProperties(dataId, group, (p) -> {
-            RedisConnectionBuilder.of(proxy, p);
-        });
+        UnifiedConfigService configService = UnifiedConfigService.getInstance();
 
-        Properties properties = NacosClientUtils.getConfigAsProperties(this.dataId, this.group);
+        configService.addListenerAsProperties((p) -> RedisConnectionBuilder.of(proxy, p), dataId, group);
+
+        Properties properties = configService.getConfigAsProperties(this.dataId, this.group);
         RedisConnectionBuilder.of(proxy, properties);
     }
 

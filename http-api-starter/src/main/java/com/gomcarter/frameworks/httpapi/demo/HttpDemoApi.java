@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 本示例是基于 nacos （diamond）作为配置中心的
+ *
  * @author gomcarter
  */
-@EnableHttp(dataId = "MEMBER", group = "API")
+@EnableHttp({"MEMBER", "API"})
 public interface HttpDemoApi {
 
     /**

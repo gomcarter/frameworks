@@ -23,7 +23,7 @@ public class FooController {
 
 ##### 创建一个 jar 包
 ```
-import com.gomcarter.frameworks.httpapi.api.NacosConfigurableApi
+import com.gomcarter.frameworks.httpapi.api.AbstractConfigurableApi
 
 public class DemoApi extends NacosConfigurableApi {
     
