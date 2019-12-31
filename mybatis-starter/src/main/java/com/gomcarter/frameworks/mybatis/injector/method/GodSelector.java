@@ -82,7 +82,11 @@ public class GodSelector extends AbstractMethod {
                 whereSql.append("</where>\n");
             }
 
-            TableInfo tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            TableInfo tableInfo = ignore;
+            if (returnType != modelClass) {
+                tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            }
+
             String selectColumns = sqlSelectColumns(tableInfo, false);
 
             String sql = String.format(sqlTemplate, selectColumns,

@@ -88,7 +88,11 @@ public class SelectJoinedPage extends AbstractMethod {
 
             // 获取返回值，以及对应的 sql
             Class returnType = (Class) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
-            TableInfo tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            TableInfo tableInfo = ignore;
+            if (returnType != modelClass) {
+                tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            }
+
             String selectColumns = generateSelectColumns(mainTable, returnType);
             String sql = String.format(sqlTemplate, selectColumns, table, whereSql.toString(), pageSql);
 

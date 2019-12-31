@@ -49,7 +49,10 @@ public class ConfigurableSqlSelector extends AbstractMethod {
                 returnType = (Class) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
             }
 
-            TableInfo tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            TableInfo tableInfo = ignore;
+            if (returnType != modelClass) {
+                tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
+            }
             SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
 
             this.addSelectMappedStatementForTable(mapperClass, method.getName(), sqlSource, tableInfo);
