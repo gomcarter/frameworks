@@ -3,6 +3,7 @@ package com.gomcarter.frameworks.dubbo.factory;
 import com.gomcarter.frameworks.base.common.AopUtils;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.*;
 import org.apache.dubbo.config.annotation.Reference;
@@ -68,6 +69,7 @@ public class DubboApiRegistrar implements BeanPostProcessor {
             sc.setProtocol(pc);
             sc.setInterface(interfacesClass);
             sc.setRef(bean);
+            sc.setTimeout(ObjectUtils.defaultIfNull(service.timeout(), 2000));
 
             sc.setLoadbalance(service.loadbalance());
             sc.setCluster(service.cluster());
@@ -123,6 +125,7 @@ public class DubboApiRegistrar implements BeanPostProcessor {
                 referenceConfig.setLayer(reference.layer());
                 referenceConfig.setId(reference.id());
                 referenceConfig.setProxy(reference.proxy());
+                referenceConfig.setTimeout(ObjectUtils.defaultIfNull(reference.timeout(), 2000));
                 referenceConfig.setLazy(reference.lazy());
                 referenceConfig.setListener(StringUtils.join(reference.listener(), ","));
                 referenceConfig.setMock(reference.mock());
