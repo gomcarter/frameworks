@@ -30,13 +30,13 @@ public class BeanFieldConfigurableProcessor extends BeanFieldAndMethodProcessor 
     @Override
     protected final void processField(Object bean, String beanName, Field field) {
 
-        ConfigurableValue qiangDaNacosValue = field.getAnnotation(ConfigurableValue.class);
-        if (qiangDaNacosValue == null) {
+        ConfigurableValue value = field.getAnnotation(ConfigurableValue.class);
+        if (value == null) {
             return;
         }
 
         // 获取表达式
-        String expression = qiangDaNacosValue.value();
+        String expression = value.value();
         String[] expressionArray = expression.split("\\.");
         // 校验
         if (expressionArray.length < 2) {
@@ -50,6 +50,7 @@ public class BeanFieldConfigurableProcessor extends BeanFieldAndMethodProcessor 
                 dataId = expressionArray[1],
                 key = StringUtils.join(keyArray, "."),
                 cacheKey = dataId + "_" + group;
+        String defaultValue = value.defaultValue();
 
         // 每个 dataid，group 缓存起来
         String config = configMap.get(cacheKey);
@@ -67,24 +68,24 @@ public class BeanFieldConfigurableProcessor extends BeanFieldAndMethodProcessor 
         }
 
         // 需要自动刷新
-        if (qiangDaNacosValue.autoRefreshed()) {
+        if (value.autoRefreshed()) {
             List<Consumer<String>> consumerList = consumerMap.computeIfAbsent(cacheKey, k -> new ArrayList<>());
 
-            consumerList.add(c -> fillField(bean, c, key, field));
+            consumerList.add(c -> fillField(bean, c, key, field, defaultValue));
         }
 
-        fillField(bean, config, key, field);
+        fillField(bean, config, key, field, defaultValue);
     }
 
-    private void fillField(Object bean, String config, String key, Field field) {
+    private void fillField(Object bean, String config, String key, Field field, String defaultValue) {
         String value;
         if (StringUtils.isNotBlank(key)) {
             Properties properties = Convertable.PROPERTIES_CONVERTER.convert(config, null);
             // properties配置中的某一项配置属于这个变量
-            value = properties.getProperty(key);
+            value = properties.getProperty(key, defaultValue);
         } else {
             // 整个dataId + group的数据都属于这个变量
-            value = config;
+            value = StringUtils.defaultIfBlank(config, defaultValue);
         }
 
         ReflectionUtils.setFieldIfNotMatchConvertIt(bean, field, value);

@@ -41,4 +41,9 @@ public @interface ConfigurableValue {
      * @return true the value will be refreshed automatic
      */
     boolean autoRefreshed() default false;
+
+    /**
+     * @return 默认值
+     */
+    String defaultValue() default "";
 }
