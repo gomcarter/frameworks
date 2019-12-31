@@ -82,10 +82,15 @@ public class BeanFieldConfigurableProcessor extends BeanFieldAndMethodProcessor 
         if (StringUtils.isNotBlank(key)) {
             Properties properties = Convertable.PROPERTIES_CONVERTER.convert(config, null);
             // properties配置中的某一项配置属于这个变量
-            value = properties.getProperty(key, defaultValue);
+            value = properties.getProperty(key);
         } else {
             // 整个dataId + group的数据都属于这个变量
-            value = StringUtils.defaultIfBlank(config, defaultValue);
+            value = config;
+        }
+
+        // 如果配置没取到，而且defaultValue不为空，就取默认值
+        if (StringUtils.isBlank(value) && StringUtils.isNotBlank(defaultValue)) {
+            value = defaultValue;
         }
 
         ReflectionUtils.setFieldIfNotMatchConvertIt(bean, field, value);
