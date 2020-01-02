@@ -4,7 +4,6 @@ import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.base.common.BeanRegistrationUtils;
 import com.gomcarter.frameworks.redis.annotation.EnableRedis;
 import com.gomcarter.frameworks.redis.factory.RedisFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -27,8 +26,7 @@ public class RedisRegistrar implements ImportBeanDefinitionRegistrar {
 
         AssertUtils.notNull(attributes, new RuntimeException("未配置：EnableRedis"));
 
-        String keys = attributes.getString("value");
-        AssertUtils.isTrue(StringUtils.isNotBlank(keys), new RuntimeException("未配置：@EnableRedis"));
+        String[] keys = attributes.getStringArray("value");
 
         // 注入redis
         BeanRegistrationUtils.registerBeanDefinitionIfNotExists(registry, "redisProxy",
