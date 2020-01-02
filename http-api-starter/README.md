@@ -1,6 +1,6 @@
 在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/redis-starter
 
-### 使用指南（目前仅支持 nacos 配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
+### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
 
 
 
@@ -29,7 +29,7 @@ public class DemoApi extends NacosConfigurableApi {
     
     @Override
     public NacosConfig getDiamondConfig() {
-        // nacos 配置中心存储 http 的服务地址 如：
+        // 配置中心存储 http 的服务地址 如：
         // demo.api.getbyid=http://fooserver/public/foo/getById
         return NacosConfig.valueOf("GROUP", "DATA_ID");
     }

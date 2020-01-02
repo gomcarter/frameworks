@@ -1,6 +1,7 @@
 //package com.gomcarter.frameworks.xmlexcel.download;
 //
-//import com.gomcarter.frameworks.base.common.NacosClientUtils;
+//
+//import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 //
 //public enum StorageType {
 //    /**
@@ -9,7 +10,7 @@
 //    nfs {
 //        @Override
 //        public String getDownloadUrl(Downloader downloader, String fileName) {
-//            return NacosClientUtils.getConfigAsString("nfs", "STORAGE_TYPE") + fileName;
+//            return UnifiedConfigService.getInstance().getConfig("NFS", "STORAGE_TYPE") + fileName;
 //        }
 //    },
 //    /**

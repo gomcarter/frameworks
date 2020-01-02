@@ -36,7 +36,7 @@ public @interface ConfigurableValue {
     String value();
 
     /**
-     * 是否自动更新，当nacos中变化之后，对应变量自动更新
+     * 是否自动更新，当配置中心内容发生变化，对应变量自动更新
      *
      * @return true the value will be refreshed automatic
      */

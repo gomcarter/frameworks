@@ -16,7 +16,6 @@ import java.util.HashMap;
  * @author gomcarter on 2019-11-09 23:31:48
  */
 @Order
-@EnableMybatis({"ITEM", "MYSQL"})
 public class EnableMybatisRegistrar implements ImportBeanDefinitionRegistrar {
     @Override
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata,

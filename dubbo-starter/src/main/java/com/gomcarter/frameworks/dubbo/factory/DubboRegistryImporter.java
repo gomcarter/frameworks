@@ -54,7 +54,7 @@ public class DubboRegistryImporter implements ImportBeanDefinitionRegistrar {
         UnifiedConfigService configService = UnifiedConfigService.getInstance();
         // 从Nacos中读取配置
         Properties properties = configService.getConfigAsProperties(keys);
-        // 从nacos读取注册中心地址，如果没有获取到，则直接用配置中心作为注册中心（改一下注册中心的协议前缀即可）
+        // 读取注册中心地址，如果没有获取到，则直接用配置中心作为注册中心（改一下注册中心的协议前缀即可）
         rc.setAddress(StringUtils.defaultIfBlank(properties.getProperty("dubbo.registry.address"),
                 "nacos://" + configService.server().split("://")[1]));
 

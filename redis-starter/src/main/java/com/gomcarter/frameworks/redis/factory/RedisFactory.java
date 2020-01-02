@@ -10,9 +10,8 @@ import java.util.Properties;
 /**
  * @author gomcarter on 2019-11-19 11:07:19
  */
-public class NacosRedisFactory implements FactoryBean<RedisProxy>, InitializingBean {
-    private String dataId = "CONNECTION";
-    private String group = "REDIS";
+public class RedisFactory implements FactoryBean<RedisProxy>, InitializingBean {
+    private String[] keys;
 
     private RedisProxy proxy = new RedisProxy();
 
@@ -35,19 +34,18 @@ public class NacosRedisFactory implements FactoryBean<RedisProxy>, InitializingB
     public void afterPropertiesSet() throws Exception {
         UnifiedConfigService configService = UnifiedConfigService.getInstance();
 
-        configService.addListenerAsProperties((p) -> RedisConnectionBuilder.of(proxy, p), dataId, group);
+        configService.addListenerAsProperties((p) -> RedisConnectionBuilder.of(proxy, p), keys);
 
-        Properties properties = configService.getConfigAsProperties(this.dataId, this.group);
+        Properties properties = configService.getConfigAsProperties(keys);
         RedisConnectionBuilder.of(proxy, properties);
     }
 
-    public NacosRedisFactory setGroup(String group) {
-        this.group = group;
-        return this;
+    public String[] getKeys() {
+        return keys;
     }
 
-    public NacosRedisFactory setDataId(String dataId) {
-        this.dataId = dataId;
+    public RedisFactory setKeys(String[] keys) {
+        this.keys = keys;
         return this;
     }
 }

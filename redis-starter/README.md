@@ -1,18 +1,18 @@
 在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/redis-starter
 
-### 使用指南（目前仅支持 nacos 配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
+### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
 
 ```
 @SpringBootApplication
-// redis的配置信息
-@EnableNacosRedis(dataId = "DATA_ID", group = "GROUP")
+// redis的配置信息， 配置如下
+@EnableRedis(value = {"DATA_ID", "GROUP"})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 }
 ```
-nacos 中配置如下：
+配置中心内如下：
 ```
 #最大空闲数
 redis.maxIdle=200

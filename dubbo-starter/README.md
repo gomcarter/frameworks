@@ -1,6 +1,6 @@
 在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/dubbo-starter
 
-### 使用指南（目前仅支持 nacos 注册中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">注册中心配置参考</a>）
+### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">注册中心配置参考</a>）
 如：
 ```
 @SpringBootApplication

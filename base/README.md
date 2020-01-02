@@ -2,12 +2,12 @@
 
 在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/base
 
-### 一、配置中心配置自动注入（目前仅支持 nacos 配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">注册中心配置参考</a>）
+### 一、配置中心配置自动注入（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">注册中心配置参考</a>）
 如：
 ```
 @SpringBootApplication
 // 加上标签
-@NacosAutoConfig
+@EnableValueAutoConfiguration
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -19,9 +19,11 @@ public class FooService {
     
     /**
     * 配置如：
-    * foo=123
+    * theKeysForConfigCenter 为在配置中心找到具体配置的 key（如 nacos： dataId.group 找到配置）
+    * foo： 是配置内容中 foo=123
+    * defaultValue： 默认值
     */
-    @QiangDaNacosValue(value = "GROUP.DATAID.foo", autoRefreshed = true)
+    @ConfigurableValue(value = "theKeysForConfigCenter.foo", autoRefreshed = true, defaultValue = "12")
     private String value;
 
     /**
@@ -29,7 +31,7 @@ public class FooService {
     * foo=123
     * bar=456
     */
-    @QiangDaNacosValue(value = "GROUP.DATAID", autoRefreshed = true)
+    @ConfigurableValue(value = "theKeysForConfigCenter", autoRefreshed = true)
     private Properties properties;
 
     /**
@@ -37,21 +39,21 @@ public class FooService {
     * foo=1234
     * bar=4565
     */
-    @QiangDaNacosValue(value = "GROUP.DATAID", autoRefreshed = true)
+    @ConfigurableValue(value = "theKeysForConfigCenter", autoRefreshed = true)
     private Map map;
 
     /**
     * 配置如： 
     * {"id":123,"name":"foo"}
     */
-    @QiangDaNacosValue(value = "GROUP.DATAID", autoRefreshed = true)
+    @ConfigurableValue(value = "theKeysForConfigCenter", autoRefreshed = true)
     private SomeClass value;
 
     /**
     * 配置如： 
     * [{"id":123,"name":"foo"}]
     */
-    @QiangDaNacosValue(value = "GROUP.DATAID", autoRefreshed = false)
+    @ConfigurableValue(value = "theKeysForConfigCenter", autoRefreshed = false)
     private Set<SomeClass> valueList;
 }
 ```

@@ -18,7 +18,7 @@ public @interface HttpMethod {
     Method method();
 
     /**
-     * @return 在 nacos 配置：   key=http://xx.com/yy/zz  中的 key
+     * @return 在配置中心配置：   key=http://xx.com/yy/zz  中的 key
      */
     String key();
 

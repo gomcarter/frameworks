@@ -1,14 +1,14 @@
 //package com.gomcarter.frameworks.xmlexcel.download;
 //
 //
-//import com.alibaba.nacos.client.config.utils.MD5;
+//import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 //import com.google.common.collect.Lists;
 //import com.gomcarter.frameworks.base.common.AssertUtils;
 //import com.gomcarter.frameworks.base.common.CustomDateUtils;
 //import com.gomcarter.frameworks.base.common.CustomStringUtils;
-//import com.gomcarter.frameworks.base.common.NacosClientUtils;
 //import com.gomcarter.frameworks.base.mapper.JsonMapper;
 //import com.gomcarter.frameworks.redis.tool.RedisProxy;
+//import org.apache.shiro.crypto.hash.Md5Hash;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@
 //    public static final String DOWNLOAD_TITLES = "downloadTitles";
 //
 //    public String getRootDir() {
-//        return NacosClientUtils.getConfigAsString("xx", "xx");
+//        return UnifiedConfigService.getInstance().getConfig("xx", "xx");
 //    }
 //
 //    /**
@@ -253,7 +253,7 @@
 //            source.append(UUID.randomUUID().toString());
 //        }*/
 //
-//        return this.appName + "_" + type + "_" + MD5.getInstance().getMD5String(userId + "_" + source.toString());
+//        return this.appName + "_" + type + "_" + new Md5Hash(userId + "_" + source.toString()).toHex();
 //    }
 //
 //    public void setDownloaderMap(Map<String, Downloadable> downloaderMap) {

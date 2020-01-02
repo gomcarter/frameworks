@@ -1,6 +1,6 @@
 在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/mybatis-starter
 
-### 使用指南（目前仅支持 nacos 配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
+### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
 
 ```
 @SpringBootApplication
@@ -15,11 +15,8 @@ public class Application {
 
 ### 读写分离与支持事务
 
-nacos配置如下：
+配置中心内容如下：
 ```
-dataId: DATA_ID
-group: GROUP_NAME
-
 #主库配置
 write.jdbc.url=jdbc:mysql://MYSQL_ADDRESS:3306/developer?useUnicode=true&characterEncoding=utf8&failOverReadOnly=false&useSSL=false
 write.jdbc.user=USER
