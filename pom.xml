@@ -33,7 +33,7 @@
 
         <maven.test.failure.ignore>true</maven.test.failure.ignore>
 
-        <gomcarter.version>2.0.0-SNAPSHOT</gomcarter.version>
+        <gomcarter.version>2.0.0</gomcarter.version>
     </properties>
 
     <dependencyManagement>
@@ -76,7 +76,7 @@
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
-                <artifactId>xmlexcel</artifactId>
+                <artifactId>xml-excel</artifactId>
                 <version>${gomcarter.version}</version>
             </dependency>
         </dependencies>
