@@ -2,12 +2,14 @@ package com.gomcarter.frameworks.config.local.impl;
 
 import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 
-import java.io.*;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
@@ -59,13 +61,15 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
                 } else {
                     Resource resource = new ClassPathResource(path);
 
-                    sb.append(FileUtils.readFileToString(resource.getFile(), Charset.defaultCharset()));
+                    sb.append(new String(FileCopyUtils.copyToByteArray(resource.getInputStream()), Charset.defaultCharset()));
                 }
             } catch (Exception e) {
                 logger.error("获取{}配置示例失败：", path, e);
                 throw new RuntimeException("获取" + path + "配置示例失败");
             }
         }
+
+        logger.info("加载配置 path: {}, content: {}", StringUtils.join(filePath, ","), sb.toString());
 
         return sb.toString();
     }
@@ -79,15 +83,5 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
     @Override
     public void addListener(Consumer<String> consumer, String... filePath) {
         // not support
-    }
-
-    public static void main(String[] args) {
-        UnifiedConfigService configService = UnifiedConfigService.getInstance();
-
-        System.out.println(configService.getClass());
-
-//        String c = configService.getConfig("META-INF/spring.factories");
-        String c = configService.getConfig("/Users/liyin/Documents/projects/gomcarter/frameworks/pom.xml");
-        System.out.println(c);
     }
 }
