@@ -1,8 +1,8 @@
 package com.gomcarter.frameworks.base.converter;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -14,7 +14,7 @@ public class PropertiesConverter implements Convertable {
 
     /**
      * @param sourceValue sourceValue
-     * @param ignore        ignore
+     * @param ignore      ignore
      * @return Properties result
      */
     @Override
@@ -25,7 +25,9 @@ public class PropertiesConverter implements Convertable {
 
         try {
             Properties properties = new Properties();
-            properties.load(new ByteArrayInputStream(sourceValue.toString().getBytes()));
+            InputStream is = new BufferedInputStream(new ByteArrayInputStream(sourceValue.toString().getBytes()));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+            properties.load(bf);
             return properties;
         } catch (IOException e) {
             logger.error("转换失败：{} ", sourceValue, e);
