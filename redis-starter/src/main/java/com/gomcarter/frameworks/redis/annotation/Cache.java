@@ -25,7 +25,7 @@ public @interface Cache {
      *
      * @return time
      */
-    long time() default 0x12C;
+    int time() default 0x12C;
 
     /**
      * 将方法的参数并入到key中（参数将作toString处理，为null则是null字符串）

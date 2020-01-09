@@ -34,7 +34,7 @@ public @interface Lock {
      *
      * @return timeout
      */
-    long timeout() default 120L;
+    int timeout() default 120;
 
     /**
      * <p>

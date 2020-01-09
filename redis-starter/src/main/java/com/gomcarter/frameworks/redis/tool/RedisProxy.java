@@ -62,20 +62,20 @@ public class RedisProxy {
         }
     }
 
-    public boolean set(final String key, final Object value, final NXXX nxxx, final EXPX expx, final long time) {
+    public boolean set(final String key, final Object value, final NXXX nxxx, final EXPX expx, final int time) {
         return this.set(key, JsonMapper.buildNonNullMapper().toJson(value), nxxx, expx, time);
     }
 
-    public boolean sadd(final String key, final Object value, final NXXX nxxx, final EXPX expx, final long time) {
+    public boolean sadd(final String key, final Object value, final NXXX nxxx, final EXPX expx, final int time) {
         return this.sadd(key, value, nxxx, expx, time);
 
     }
 
     public boolean set(final String key, final Object value) {
-        return this.set(key, value, NXXX.XX, EXPX.EX, Long.MAX_VALUE);
+        return this.set(key, value, NXXX.XX, EXPX.EX, Integer.MAX_VALUE);
     }
 
-    public boolean set(final String key, final Object value, Long seconds) {
+    public boolean set(final String key, final Object value, int seconds) {
         return this.set(key, value, NXXX.XX, EXPX.EX, seconds);
     }
 
@@ -119,26 +119,26 @@ public class RedisProxy {
         }
     }
 
-    private int getSeconds(final EXPX expx, final long time) {
+    private int getSeconds(final EXPX expx, final int time) {
         if (time <= 0) {
             return 0;
         }
 
-        int seconds = (int) Math.min(time, Integer.MAX_VALUE);
+        int seconds = Math.min(time, Integer.MAX_VALUE);
         if (expx == EXPX.PX) {
             seconds = seconds / 1000;
         }
         return seconds;
     }
 
-    public boolean expire(final String key, final long time) {
+    public boolean expire(final String key, final int time) {
         //redis client有bug，nx可以，xx不行，所以有以下不可思议的代码
         if (jedisCluster != null) {
-            Long a = jedisCluster.expire(key, (int) time);
+            Long a = jedisCluster.expire(key, time);
             return a > 0L;
         } else if (jedisPool != null) {
             try (Jedis jedis = jedisPool.getResource()) {
-                Long a = jedis.expire(key, (int) time);
+                Long a = jedis.expire(key, time);
                 return a > 0L;
             } catch (Exception e) {
                 logger.error("访问redis失败, set：", e);
@@ -147,7 +147,7 @@ public class RedisProxy {
         return false;
     }
 
-    public boolean set(final String key, final String value, final NXXX nxxx, final EXPX expx, final long time) {
+    public boolean set(final String key, final String value, final NXXX nxxx, final EXPX expx, final int time) {
         //redis client有bug，nx可以，xx不行，所以有以下不可思议的代码
         if (this.jedisCluster != null) {
             if (nxxx == NXXX.NX) {
@@ -180,23 +180,23 @@ public class RedisProxy {
     }
 
     public boolean set(final String key, final String value) {
-        return this.set(key, value, NXXX.XX, EXPX.EX, Long.MAX_VALUE);
+        return this.set(key, value, NXXX.XX, EXPX.EX, Integer.MAX_VALUE);
     }
 
-    public boolean set(final String key, final String value, Long seconds) {
+    public boolean set(final String key, final String value, int seconds) {
         return this.set(key, value, NXXX.XX, EXPX.EX, seconds);
     }
 
-    public boolean lock(final String key, final String value, Long seconds) {
+    public boolean lock(final String key, final String value, int seconds) {
         return this.set(key, value, NXXX.NX, EXPX.EX, seconds);
     }
 
-    public boolean lock(final String key, Long seconds) {
+    public boolean lock(final String key, int seconds) {
         return this.set(key, "true", NXXX.NX, EXPX.EX, seconds);
     }
 
     public boolean lock(final String key) {
-        return this.set(key, "true", NXXX.NX, EXPX.EX, Long.MAX_VALUE);
+        return this.set(key, "true", NXXX.NX, EXPX.EX, Integer.MAX_VALUE);
     }
 
     public String get(final String key) {

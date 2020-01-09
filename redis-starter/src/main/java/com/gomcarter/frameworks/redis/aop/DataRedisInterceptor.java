@@ -73,7 +73,7 @@ public class DataRedisInterceptor {
         int count = 0;
 
         // 默认锁300秒，避免服务挂了，一直锁在哪
-        Long maxLockTime = 300L;
+        int maxLockTime = 300;
         while (!redisProxy.lock(lockerKey, maxLockTime)) {
             if (await <= 0 || count >= sleepTimes) {
                 throw new RuntimeException("服务器繁忙，请稍后重试");
@@ -97,7 +97,7 @@ public class DataRedisInterceptor {
                 // JDATA Mapper谁都不许改！！！！ 因为Jmapper缓存会把jsonIgnore的给去掉
                 String jsonData = dataMapper.toJson(object);
                 if (caches.nullable() || !isEmptyJson(jsonData)) {
-                    long timeout = caches.time();
+                    int timeout = caches.time();
                     if (timeout < 0) {
                         if (!redisProxy.set(key, jsonData)) {
                             logger.error("{}取到数据，但是存入缓存失败", joinPoint.getClass().getName());
