@@ -43,7 +43,7 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
 
     /**
      * @param timeoutMs 超时时间，单位：毫秒
-     * @param filePath  filePath[0] = 文件路径
+     * @param filePath  filePath[0] = 文件路径，多个将被拼接起来（.）分隔开（兼容config.）
      * @return 配置内容
      */
     @Override
@@ -52,21 +52,21 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
             throw new RuntimeException("请配置 filePath");
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (String path : filePath) {
-            try {
-                File f = new File(filePath[0]);
-                if (f.exists()) {
-                    sb.append(FileUtils.readFileToString(f, Charset.defaultCharset()));
-                } else {
-                    Resource resource = new ClassPathResource(path);
+        String path = StringUtils.join(filePath, ".");
 
-                    sb.append(new String(FileCopyUtils.copyToByteArray(resource.getInputStream()), Charset.defaultCharset()));
-                }
-            } catch (Exception e) {
-                logger.error("获取{}配置示例失败：", path, e);
-                throw new RuntimeException("获取" + path + "配置示例失败");
+        StringBuilder sb = new StringBuilder();
+        try {
+            File f = new File(filePath[0]);
+            if (f.exists()) {
+                sb.append(FileUtils.readFileToString(f, Charset.defaultCharset()));
+            } else {
+                Resource resource = new ClassPathResource(path);
+
+                sb.append(new String(FileCopyUtils.copyToByteArray(resource.getInputStream()), Charset.defaultCharset()));
             }
+        } catch (Exception e) {
+            logger.error("获取{}配置示例失败：", path, e);
+            throw new RuntimeException("获取" + path + "配置示例失败");
         }
 
         logger.info("加载配置 path: {}, content: {}", StringUtils.join(filePath, ","), sb.toString());
