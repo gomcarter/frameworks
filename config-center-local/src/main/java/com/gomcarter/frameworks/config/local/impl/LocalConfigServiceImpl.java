@@ -52,11 +52,14 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
             throw new RuntimeException("请配置 filePath");
         }
 
-        String path = StringUtils.join(filePath, ".");
+        String path = filePath[0];
+        if (filePath.length == 2) {
+            path = filePath[1] + "." + filePath[0];
+        }
 
         StringBuilder sb = new StringBuilder();
         try {
-            File f = new File(filePath[0]);
+            File f = new File(path);
             if (f.exists()) {
                 sb.append(FileUtils.readFileToString(f, Charset.defaultCharset()));
             } else {
