@@ -4,23 +4,20 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.gomcarter.frameworks.base.json.JsonTData;
 import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import com.gomcarter.frameworks.httpapi.annotation.Method;
-import com.gomcarter.frameworks.httpapi.auth.ApiAuthStrategy;
-import com.gomcarter.frameworks.httpapi.auth.AuthStrategy;
 import com.gomcarter.frameworks.httpapi.impl.DefaultHttpClientManager;
 import com.gomcarter.frameworks.httpapi.impl.HttpClientTemplate;
-import com.gomcarter.frameworks.httpapi.impl.handler.DefaultResponseHandler;
-import com.gomcarter.frameworks.httpapi.message.request.PostRequestMessage;
 import com.gomcarter.frameworks.httpapi.message.request.RequestMessage;
-import com.gomcarter.frameworks.httpapi.request.GetRequest;
-import com.gomcarter.frameworks.httpapi.request.PostRequest;
+import com.gomcarter.frameworks.httpapi.utils.RequestTool;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +34,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
 
     protected TypeFactory typeFactory = TypeFactory.defaultInstance();
 
+    /**
+     * 可以自定义 HttpClientTemplate 注入
+     */
     protected HttpClientTemplate httpClientTemplate;
-
-    protected AuthStrategy authStrategy = new ApiAuthStrategy();
 
     public void init() {
         if (httpClientTemplate == null) {
@@ -199,9 +197,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
      * @return result
      */
     public String httpExecute(Method method, String urlKey, Map<String, Object> params, List<String> restParams,
-                                 String body, Map<String, String> headers, Map<String, InputStream> files) {
+                              String body, Map<String, String> headers, Map<String, InputStream> files) {
         params = ObjectUtils.defaultIfNull(params, new HashMap<>());
-        logger.info("调用接口：{}，参数 ：{}, {}，{}",
+        logger.info("调用接口：{} {}，参数 ：{}, {}，{}",
+                method.name(),
                 httpClientTemplate.getUrlRequestRouter().get(urlKey),
                 JsonMapper.buildNonNullMapper().toJson(params),
                 body,
@@ -210,38 +209,17 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
 
         String result;
         try {
-            if (method == Method.GET) {
+            RequestMessage requestMessage = new RequestMessage(urlKey, ContentType.APPLICATION_JSON, Charset.forName("UTF-8"));
 
-                /*初始化参数，url，api公有认证headers*/
-                RequestMessage message = authStrategy.init(new GetRequest(urlKey).addAllParams(params).getRequestMessage());
-
-                /*额外headers*/
-                addHeaders(message, headers);
-
-                result = httpClientTemplate.executeGet(message, new DefaultResponseHandler());
-            } else if (method == Method.POST) {
-                PostRequestMessage message = new PostRequest<>(urlKey).addAllParams(params).getPostRequestMessage();
-
-                if (StringUtils.isNotBlank(body)) {
-                    message.setBody(body);
-                }
-
-                if (null != restParams) {
-                    message.setRestParameters(restParams);
-                }
-
-                if (files != null && !files.isEmpty()) {
-                    message.setFiles(files);
-                }
-
-                authStrategy.init(message);
-
-                addHeaders(message, headers);
-
-                result = httpClientTemplate.executePost(message, new DefaultResponseHandler());
-            } else {
-                throw new RuntimeException("method " + method + " not support yet");
+            if (MapUtils.isNotEmpty(params)) {
+                RequestTool.addAllParams(requestMessage, params);
             }
+            requestMessage.setRestParameters(restParams);
+            requestMessage.setBody(body);
+            requestMessage.setHeaders(headers);
+            requestMessage.setFiles(files);
+
+            result = this.httpClientTemplate.execute(method, requestMessage);
         } catch (Exception e) {
             logger.error("接口调用失败，用时：{}ms", System.currentTimeMillis() - start, e);
 
@@ -260,9 +238,6 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         }
     }
 
-    /**
-     * 可以自定义 HttpClientTemplate 注入
-     */
     public void setHttpClientTemplate(HttpClientTemplate httpClientTemplate) {
         this.httpClientTemplate = httpClientTemplate;
     }

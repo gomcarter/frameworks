@@ -11,5 +11,17 @@ public enum Method {
     /**
      * HTTP POST
      */
-    POST
+    POST,
+    /**
+     * HTTP PUT
+     */
+    PUT,
+    /**
+     * HTTP DELETE
+     */
+    DELETE,
+    /**
+     * HTTP PATCH
+     */
+    PATCH
 }

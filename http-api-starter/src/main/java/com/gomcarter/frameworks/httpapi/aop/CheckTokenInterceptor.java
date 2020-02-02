@@ -1,7 +1,7 @@
 package com.gomcarter.frameworks.httpapi.aop;
 
 import com.gomcarter.frameworks.base.exception.NoPermissionException;
-import com.gomcarter.frameworks.httpapi.annotation.NoCheckToken;
+import com.gomcarter.frameworks.httpapi.annotation.CheckToken;
 import com.gomcarter.frameworks.httpapi.utils.ApiTokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,14 +21,18 @@ public class CheckTokenInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws Exception {
 
-        /*复杂请求的探针，这里需要直接通过*/
+        /*复杂请求的探针，这里需要直接通过，这里最好在nginx配置即可*/
         if (StringUtils.equalsIgnoreCase(RequestMethod.OPTIONS.name(), request.getMethod())) {
             return true;
         }
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        NoCheckToken il = handlerMethod.getMethod().getAnnotation(NoCheckToken.class);
-        if (il == null && !ApiTokenUtils.validate(request)) {
+        CheckToken ct = handlerMethod.getMethod().getAnnotation(CheckToken.class);
+        if (ct == null) {
+            return true;
+        }
+
+        if (!new ApiTokenUtils(ct.key(), ct.tokenName()).validate(request)) {
             throw new NoPermissionException();
         }
 

@@ -28,7 +28,7 @@ public @interface HttpParam {
      * there is no param. Switch this to {@code false} if you prefer
      * {@code null} to be passed when the param is {@code null}.
      *
-     * @since 3.2
+     * @return true -- param is required, false -- param is not required
      */
     boolean required() default true;
 

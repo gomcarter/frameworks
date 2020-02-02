@@ -13,35 +13,36 @@ import java.util.Date;
  * @author gomcarter on 2019-11-13 10:27:42
  */
 public class ApiTokenUtils {
-    /**
-     * FIXME: some key you have to assign
-     */
-    private static final String publicKey = "some key you have to assign";
+    private String publicKey;
+    private String tokenName;
 
-    public static final String TOKEN_NAME = "backToken";
+    public ApiTokenUtils(String publicKey, String tokenName) {
+        this.publicKey = publicKey;
+        this.tokenName = tokenName;
+    }
 
-    private static String getKey(int offset) {
+    private String getKey(int offset) {
         String time = CustomDateUtils.toString(getEnCodeTime(offset));
         return getKey(time);
     }
 
-    private static String getKey(String time) {
+    private String getKey(String time) {
         return publicKey + time + publicKey;
     }
 
-    public static String getToken() {
+    public String getToken() {
         return new Md5Hash(getKey(0)).toHex();
     }
 
-    private static String getToken(String time) {
+    private String getToken(String time) {
         return new Md5Hash(getKey(time)).toHex();
     }
 
-    private static String getOffSetToken(int offset) {
+    private String getOffSetToken(int offset) {
         return new Md5Hash(getKey(offset)).toHex();
     }
 
-    private static Date getEnCodeTime(int offset) {
+    private Date getEnCodeTime(int offset) {
         Date current = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(current);
@@ -52,18 +53,17 @@ public class ApiTokenUtils {
         return calendar.getTime();
     }
 
-
-    public static boolean validate(HttpServletRequest request) {
-        return validate(CookieUtils.getByHeaderOrCookies(request, TOKEN_NAME));
+    public boolean validate(HttpServletRequest request) {
+        return validate(CookieUtils.getByHeaderOrCookies(request, this.tokenName));
     }
 
-    public static boolean validate(String token) {
+    public boolean validate(String token) {
         return StringUtils.equals(token, getToken()) ||
                 StringUtils.equals(token, getOffSetToken(1)) ||
                 StringUtils.equals(token, getOffSetToken(-1));
     }
 
     public static void main(String[] args) {
-        System.out.println(ApiTokenUtils.getToken());
+        System.out.println(new ApiTokenUtils("the key", "backToken").getToken());
     }
 }

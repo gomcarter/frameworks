@@ -8,8 +8,14 @@ import java.lang.annotation.Target;
 /**
  * @author gomcarter
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NoCheckToken {
+public @interface HttpBean {
 
+    /**
+     * 找到配置内容的 keys
+     *
+     * @return 根据配置中心不同，传入不同的配置 key
+     */
+    String[] value();
 }

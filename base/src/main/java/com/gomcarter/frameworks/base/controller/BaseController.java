@@ -46,13 +46,6 @@ public class BaseController {
             return null;
         }
 
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Map<String, String> headerMap = new HashMap<>();
-        while (headerNames.hasMoreElements()) {
-            String header = headerNames.nextElement();
-            headerMap.put(header, request.getHeader(header));
-        }
-
         log.error("{}操作失败, url:{}, method:{}, ip: {}, Referer: {}, UA: {}, params: {}, cookie: {},header: {},",
                 this.getClass().getName(),
                 request.getRequestURI(),
@@ -62,7 +55,7 @@ public class BaseController {
                 request.getHeader("User-Agent"),
                 JsonMapper.buildNonNullMapper().toJson(request.getParameterMap()),
                 JsonMapper.buildNonNullMapper().toJson(request.getCookies()),
-                JsonMapper.buildNonNullMapper().toJson(headerMap),
+                JsonMapper.buildNonNullMapper().toJson(headerMap(request)),
                 exception);
 
         if (exception instanceof MissingServletRequestParameterException) {
@@ -143,5 +136,15 @@ public class BaseController {
             buffer.append(line);
         }
         return buffer.toString();
+    }
+
+    public static Map<String, String> headerMap(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Map<String, String> headerMap = new HashMap<>();
+        while (headerNames.hasMoreElements()) {
+            String header = headerNames.nextElement();
+            headerMap.put(header, request.getHeader(header));
+        }
+        return headerMap;
     }
 }

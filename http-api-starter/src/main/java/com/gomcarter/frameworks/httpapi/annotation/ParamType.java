@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gomcarter
@@ -100,7 +97,13 @@ public enum ParamType {
             if (params.restParams == null) {
                 params.restParams = new ArrayList<>();
             }
-            params.restParams.add(value.toString());
+            if (value != null) {
+                if (value instanceof Collection) {
+                    params.restParams.addAll((Collection<? extends String>) value);
+                } else {
+                    params.restParams.add(value.toString());
+                }
+            }
         }
     },
     /**
@@ -109,10 +112,16 @@ public enum ParamType {
     BODY {
         @Override
         void map(Param params, Parameter parameter, HttpParam param, Object value) {
-            if (params.body == null) {
-                params.body = new StringBuilder(JsonMapper.buildNonNullMapper().toJson(value));
-            } else {
-                params.body.append(JsonMapper.buildNonNullMapper().toJson(value));
+            String body = StringUtils.EMPTY;
+            if (value != null) {
+                if (!(value instanceof String)) {
+                    body = JsonMapper.buildNonNullMapper().toJson(value);
+                }
+                if (params.body == null) {
+                    params.body = new StringBuilder(body);
+                } else {
+                    params.body.append(body);
+                }
             }
         }
     };

@@ -1,25 +1,24 @@
 package com.gomcarter.frameworks.httpapi.impl;
 
+import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.httpapi.HttpClientManager;
+import com.gomcarter.frameworks.httpapi.annotation.Method;
 import com.gomcarter.frameworks.httpapi.config.HttpClientConfig;
 import com.gomcarter.frameworks.httpapi.impl.handler.DefaultResponseHandler;
 import com.gomcarter.frameworks.httpapi.message.MessageConfig;
-import com.gomcarter.frameworks.httpapi.message.request.PostRequestMessage;
 import com.gomcarter.frameworks.httpapi.message.request.RequestMessage;
-import com.gomcarter.frameworks.httpapi.message.request.RestfulRequestMessage;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpMessage;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -31,7 +30,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -87,66 +85,27 @@ public class HttpClientTemplate {
         }
     }
 
-    public String executeGet(RequestMessage requestMessage) throws IOException, URISyntaxException {
-        return executeGet(requestMessage, new DefaultResponseHandler());
+    public String execute(Method method, RequestMessage requestMessage) throws IOException, URISyntaxException {
+        HttpRequestBase http = buildHttpRequest(method, requestMessage);
+        return httpClient.execute(http, new DefaultResponseHandler());
     }
 
-    public String executePost(PostRequestMessage requestMessage) throws IOException, URISyntaxException {
-        return executePost(requestMessage, new DefaultResponseHandler());
+    public <T> T execute(Method method, RequestMessage requestMessage, ResponseHandler<T> responseHandler) throws IOException, URISyntaxException {
+        HttpRequestBase http = buildHttpRequest(method, requestMessage);
+        return httpClient.execute(http, responseHandler);
     }
 
-    public <T> T executeGet(RequestMessage requestMessage, ResponseHandler<T> responseHandler)
-            throws URISyntaxException, IOException {
-        HttpGet httpGet = (HttpGet) buildHttpRequest(requestMessage, HttpGet.METHOD_NAME);
-
+    private void addHeader(RequestMessage requestMessage, HttpMessage http) {
         for (Map.Entry<String, String> entry : requestMessage.getHeaders().entrySet()) {
             if (entry.getKey() == null || entry.getValue() == null) {
                 continue;
             }
 
-            httpGet.addHeader(entry.getKey(), entry.getValue());
+            http.addHeader(entry.getKey(), entry.getValue());
         }
-
-        return executeGet(httpGet, responseHandler);
     }
 
-    public <T> T executePut(RequestMessage requestMessage, ResponseHandler<T> responseHandler)
-            throws URISyntaxException, IOException {
-        HttpPut httpPut = (HttpPut) buildHttpRequest(requestMessage, HttpPut.METHOD_NAME);
-
-        for (Map.Entry<String, String> entry : requestMessage.getHeaders().entrySet()) {
-            if (entry.getKey() == null || entry.getValue() == null) {
-                continue;
-            }
-
-            httpPut.addHeader(entry.getKey(), entry.getValue());
-        }
-
-        return executePut(httpPut, responseHandler);
-    }
-
-    public <T> T executePost(PostRequestMessage requestMessage, ResponseHandler<T> responseHandler)
-            throws URISyntaxException, IOException {
-        HttpPost httpPost = (HttpPost) buildHttpRequest(requestMessage, HttpPost.METHOD_NAME);
-
-        for (Map.Entry<String, String> entry : requestMessage.getHeaders().entrySet()) {
-            if (entry.getKey() == null || entry.getValue() == null) {
-                continue;
-            }
-
-            httpPost.addHeader(entry.getKey(), entry.getValue());
-        }
-
-        HttpEntity httpEntity = buildHttpEntity(requestMessage);
-        if (httpEntity != null) {
-            httpPost.setEntity(httpEntity);
-            httpPost.setHeader(httpEntity.getContentType());
-        }
-
-        return executePost(httpPost, responseHandler);
-    }
-
-    private HttpEntity buildHttpEntity(PostRequestMessage requestMessage) throws UnsupportedEncodingException {
+    private HttpEntity buildHttpEntity(RequestMessage requestMessage) {
         if (isNeedMultipart(requestMessage)) {
             return buildMultipartEntity(requestMessage);
         } else {
@@ -154,16 +113,16 @@ public class HttpClientTemplate {
         }
     }
 
-    private HttpEntity buildMultipartEntity(PostRequestMessage requestMessage) throws UnsupportedEncodingException {
+    private HttpEntity buildMultipartEntity(RequestMessage requestMessage) {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-        if (!MapUtils.isEmpty(requestMessage.getParameters())) {
-            for (Map.Entry<String, Set<String>> entry : requestMessage.getParameters().entrySet()) {
-                for (String value : entry.getValue()) {
-                    builder.addPart(entry.getKey(), new StringBody(value, requestMessage.getContentType()));
-                }
-            }
-        }
+//        if (!MapUtils.isEmpty(requestMessage.getParameters())) {
+//            for (Map.Entry<String, Set<String>> entry : requestMessage.getParameters().entrySet()) {
+//                for (String value : entry.getValue()) {
+//                    builder.addPart(entry.getKey(), new StringBody(value, requestMessage.getContentType()));
+//                }
+//            }
+//        }
 
         if (!StringUtils.isEmpty(requestMessage.getBody())) {
             builder.addPart(requestMessage.getBodyPartName(), new StringBody(requestMessage.getBody(), requestMessage.getContentType()));
@@ -171,18 +130,14 @@ public class HttpClientTemplate {
 
         if (!MapUtils.isEmpty(requestMessage.getFiles())) {
             for (Map.Entry<String, InputStream> entry : requestMessage.getFiles().entrySet()) {
-                builder.addPart(entry.getKey(), new InputStreamBody(entry.getValue(), requestMessage.getFileContentType()));
+                builder.addPart(entry.getKey(), new InputStreamBody(entry.getValue(), ContentType.APPLICATION_OCTET_STREAM));
             }
         }
 
         return builder.build();
     }
 
-    private HttpEntity buildSimpleEntity(PostRequestMessage requestMessage) throws UnsupportedEncodingException {
-        if (!MapUtils.isEmpty(requestMessage.getParameters())) {
-            return buildParametersEntity(requestMessage);
-        }
-
+    private HttpEntity buildSimpleEntity(RequestMessage requestMessage) {
         if (!StringUtils.isEmpty(requestMessage.getBody())) {
             return buildBodyEntity(requestMessage);
         }
@@ -194,7 +149,7 @@ public class HttpClientTemplate {
         return null;
     }
 
-    private HttpEntity buildParametersEntity(PostRequestMessage requestMessage) {
+    private HttpEntity buildParametersEntity(RequestMessage requestMessage) {
         List<BasicNameValuePair> params = new ArrayList<>(requestMessage.getParameters().size());
 
         for (Map.Entry<String, Set<String>> entry : requestMessage.getParameters().entrySet()) {
@@ -210,45 +165,19 @@ public class HttpClientTemplate {
         return new UrlEncodedFormEntity(params, requestMessage.getCharset());
     }
 
-    private HttpEntity buildBodyEntity(PostRequestMessage requestMessage) {
+    private HttpEntity buildBodyEntity(RequestMessage requestMessage) {
         return new StringEntity(requestMessage.getBody(), requestMessage.getContentType());
     }
 
-    private HttpEntity buildFileEntity(PostRequestMessage requestMessage) {
+    private HttpEntity buildFileEntity(RequestMessage requestMessage) {
         return new InputStreamEntity(requestMessage.getFiles().values().iterator().next());
     }
 
-    private boolean isNeedMultipart(PostRequestMessage requestMessage) {
-        if (!MapUtils.isEmpty(requestMessage.getFiles())) {
-            return true;
-        }
-
-        int bodyPartNum = 0;
-
-        if (!StringUtils.isEmpty(requestMessage.getBody())) {
-            bodyPartNum++;
-        }
-
-        if (!MapUtils.isEmpty(requestMessage.getParameters())) {
-            bodyPartNum++;
-        }
-
-        return bodyPartNum > 1;
+    private boolean isNeedMultipart(RequestMessage requestMessage) {
+        return MapUtils.isNotEmpty(requestMessage.getFiles()) && StringUtils.isNotBlank(requestMessage.getBody());
     }
 
-    public <T> T executeGet(HttpGet httpGet, ResponseHandler<T> responseHandler) throws IOException {
-        return httpClient.execute(httpGet, responseHandler);
-    }
-
-    public <T> T executePost(HttpPost httpPost, ResponseHandler<T> responseHandler) throws IOException {
-        return httpClient.execute(httpPost, responseHandler);
-    }
-
-    public <T> T executePut(HttpPut httpPut, ResponseHandler<T> responseHandler) throws IOException {
-        return httpClient.execute(httpPut, responseHandler);
-    }
-
-    private String replacePlaceHolders(RestfulRequestMessage requestMessage, String apiPath) {
+    private String replacePlaceHolders(RequestMessage requestMessage, String apiPath) {
         if (!CollectionUtils.isEmpty(requestMessage.getRestParameters())) {
             apiPath = String.format(apiPath, requestMessage.getRestParameters().toArray());
         }
@@ -256,7 +185,7 @@ public class HttpClientTemplate {
         return apiPath;
     }
 
-    private HttpRequestBase buildHttpRequest(RequestMessage requestMessage, String methodName) throws URISyntaxException {
+    private HttpEntityEnclosingRequestBase buildHttpRequest(Method method, RequestMessage requestMessage) throws URISyntaxException {
         MessageConfig messageConfig = requestRouter.get(requestMessage.getApiName());
 
         URIBuilder uriBuilder = null;
@@ -279,32 +208,42 @@ public class HttpClientTemplate {
             throw new IllegalArgumentException("No message config for api " + requestMessage.getApiName());
         }
 
-        return buildMethod(uriBuilder, requestMessage, methodName);
+        HttpEntityEnclosingRequestBase http = buildMethod(method, uriBuilder, requestMessage);
+        // 加header
+        addHeader(requestMessage, http);
+
+        // 加body和file
+        HttpEntity httpEntity = buildHttpEntity(requestMessage);
+        if (httpEntity != null) {
+            http.setEntity(httpEntity);
+            http.setHeader(httpEntity.getContentType());
+        }
+        return http;
     }
 
-    private HttpRequestBase buildMethod(URIBuilder uriBuilder, RequestMessage requestMessage, String methodName) throws URISyntaxException {
-        if (HttpGet.METHOD_NAME.equals(methodName)) {
-            for (Map.Entry<String, Set<String>> entry : requestMessage.getParameters().entrySet()) {
-                if (entry.getKey() == null || entry.getValue() == null) {
-                    continue;
-                }
+    private HttpEntityEnclosingRequestBase buildMethod(Method method, URIBuilder uriBuilder, RequestMessage requestMessage) throws URISyntaxException {
+        AssertUtils.notNull(method);
 
-                String value = StringUtils.join(entry.getValue(), ",");
-                uriBuilder.setParameter(entry.getKey(), value);
+        requestMessage.getParameters().forEach((key, valueSet) -> {
+            if (StringUtils.isNotBlank(key) && CollectionUtils.isNotEmpty(valueSet)) {
+                valueSet.forEach(v -> uriBuilder.addParameter(key, v));
             }
+        });
 
-            return new HttpGet(uriBuilder.build());
+        switch (method) {
+            case GET:
+                return new HttpGetSupportBody(uriBuilder.build());
+            case POST:
+                return new HttpPost(uriBuilder.build());
+            case PUT:
+                return new HttpPut(uriBuilder.build());
+            case PATCH:
+                return new HttpPatch(uriBuilder.build());
+            case DELETE:
+                return new HttpDeleteSupportBody(uriBuilder.build());
+            default:
+                throw new IllegalArgumentException("Not support method " + method);
         }
-
-        if (HttpPost.METHOD_NAME.equals(methodName)) {
-            return new HttpPost(uriBuilder.build());
-        }
-
-        if (HttpPut.METHOD_NAME.equals(methodName)) {
-            return new HttpPut(uriBuilder.build());
-        }
-
-        throw new IllegalArgumentException("Not support method " + methodName);
     }
 
     public HttpClientManager getHttpClientManager() {

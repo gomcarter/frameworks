@@ -11,15 +11,17 @@ import java.util.Map;
  *
  * @author gomcarter
  */
-@EnableHttp({"MEMBER", "API"})
+@HttpBean({"MEMBER", "API"})
 public interface HttpDemoApi {
 
     /**
-     * @param data        body 类型
-     * @param id          基本参数类型
-     * @param header      放置 header 中
-     * @param restParams  如果接口为： http://domain.com/%s/%s?id=%s， 那么restParams依次替换接口 %s 占位符
-     * @param inputStream 上传文件流 Map&lt;key, inputStream &gt;   也可以是非 Map 参数直接是 InputStream
+     * @param data           body 类型
+     * @param id             基本参数类型
+     * @param header         放置 header 中
+     * @param headerMap      headerMap
+     * @param restParams     如果接口为： http://domain.com/%s/%s?id=%s， 那么restParams依次替换接口 %s 占位符
+     * @param inputStream    上传文件流
+     * @param inputStreamMap 上传文件流 Map&lt;key, inputStream &gt;   也可以是非 Map 参数直接是 InputStream
      * @return 返回结果
      */
     @HttpMethod(method = Method.GET, key = "member.get.by.idList")
