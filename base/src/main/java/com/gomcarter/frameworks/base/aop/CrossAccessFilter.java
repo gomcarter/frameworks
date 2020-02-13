@@ -27,7 +27,7 @@ public class CrossAccessFilter extends OncePerRequestFilter {
         /* 允许请求的方式 */
         response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE");
         /* 支持带头,  header名不能用下划线(_), 会接受不到 */
-        response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, backToken");
+        response.addHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, backToken, token");
         /* 预检有效期 */
         response.addHeader("Access-Control-Max-Age", "172800");
     }
