@@ -96,12 +96,14 @@ public class HttpClientTemplate {
     }
 
     private void addHeader(RequestMessage requestMessage, HttpMessage http) {
-        for (Map.Entry<String, String> entry : requestMessage.getHeaders().entrySet()) {
-            if (entry.getKey() == null || entry.getValue() == null) {
-                continue;
-            }
+        if (requestMessage.getHeaders() != null) {
+            for (Map.Entry<String, String> entry : requestMessage.getHeaders().entrySet()) {
+                if (entry.getKey() == null || entry.getValue() == null) {
+                    continue;
+                }
 
-            http.addHeader(entry.getKey(), entry.getValue());
+                http.addHeader(entry.getKey(), entry.getValue());
+            }
         }
     }
 
