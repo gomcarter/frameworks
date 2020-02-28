@@ -97,7 +97,7 @@ public class HttpApiProxyHandler implements InvocationHandler {
         if (checkToken != null) {
             Map<String, String> header = httpParams.getHeader();
             if (header == null) {
-                header = new HashMap<>(2);
+                header = new HashMap<>(1, 1);
             }
             header.put(checkToken.tokenName(), new ApiTokenUtils(checkToken.key(), checkToken.tokenName()).getToken());
             httpParams.setHeader(header);
