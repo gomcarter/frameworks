@@ -25,6 +25,7 @@ public interface HttpDemoApi {
      * @return 返回结果
      */
     @HttpMethod(method = Method.GET, key = "member.get.by.idList")
+    @CheckToken(key = "key_xxxx", tokenName = "token")
     List<DemoDto> post(@HttpParam(type = ParamType.BODY) DemoDto data,
                        @HttpParam("idList") Long id,
                        @HttpParam(value = "headerKey", type = ParamType.HEADER, defaultValue = "123") Object header,

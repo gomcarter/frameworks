@@ -4,12 +4,14 @@ import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 import com.gomcarter.frameworks.base.converter.Convertable;
 import com.gomcarter.frameworks.base.json.JsonData;
 import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.httpapi.annotation.CheckToken;
 import com.gomcarter.frameworks.httpapi.annotation.HttpMethod;
 import com.gomcarter.frameworks.httpapi.annotation.HttpParam;
 import com.gomcarter.frameworks.httpapi.annotation.ParamType;
 import com.gomcarter.frameworks.httpapi.api.BaseApi;
 import com.gomcarter.frameworks.httpapi.demo.DemoDto;
 import com.gomcarter.frameworks.httpapi.demo.HttpDemoApi;
+import com.gomcarter.frameworks.httpapi.utils.ApiTokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -88,6 +90,17 @@ public class HttpApiProxyHandler implements InvocationHandler {
 
             // 加入到 params 中
             param.type().defaultMap(httpParams, parameter, param, defaultValue);
+        }
+
+        // 加上认证header
+        CheckToken checkToken = method.getAnnotation(CheckToken.class);
+        if (checkToken != null) {
+            Map<String, String> header = httpParams.getHeader();
+            if (header == null) {
+                header = new HashMap<>();
+            }
+            header.put(checkToken.tokenName(), new ApiTokenUtils(checkToken.key(), checkToken.tokenName()).getToken());
+            httpParams.setHeader(header);
         }
 
         String stringResult = Holder.baseApi.httpExecute(http.method(), http.key(),
