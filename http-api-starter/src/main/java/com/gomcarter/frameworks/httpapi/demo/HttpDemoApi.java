@@ -8,10 +8,12 @@ import java.util.Map;
 
 /**
  * 本示例是基于 nacos （diamond）作为配置中心的
+ * 如需接入其他配置中心见参考多配置中心如何配置
  *
  * @author gomcarter
  */
 @HttpBean({"MEMBER", "API"})
+// @HttpBean("api.properties")  -  本地模式
 public interface HttpDemoApi {
 
     /**
