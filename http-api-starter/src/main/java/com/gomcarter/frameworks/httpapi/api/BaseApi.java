@@ -66,27 +66,27 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         return this.httpExecute(Method.POST, urlKey, params, null, null, headers, files);
     }
 
-    protected String postWithBody(String urlKey, String body, Map<String, String> headers) {
+    public String postWithBody(String urlKey, String body, Map<String, String> headers) {
         return this.httpExecute(Method.POST, urlKey, null, null, body, headers, null);
     }
 
-    protected <T> T postWithBody(String urlKey, Class<T> kls, String body, Map<String, String> headers) {
+    public <T> T postWithBody(String urlKey, Class<T> kls, String body, Map<String, String> headers) {
         return this.post(urlKey, kls, null, null, headers, body);
     }
 
-    protected String postWithBody(String urlKey, List<String> restParams, String body, Map<String, String> headers) {
+    public String postWithBody(String urlKey, List<String> restParams, String body, Map<String, String> headers) {
         return this.httpExecute(Method.POST, urlKey, null, restParams, body, headers, null);
     }
 
-    protected <T> List<T> postList(String urlKey, Class<T> kls) {
+    public <T> List<T> postList(String urlKey, Class<T> kls) {
         return this.postList(urlKey, kls, null, null);
     }
 
-    protected <T> List<T> postList(String urlKey, Class<T> kls, Map<String, Object> params) {
+    public <T> List<T> postList(String urlKey, Class<T> kls, Map<String, Object> params) {
         return this.postList(urlKey, kls, params, null);
     }
 
-    protected <T> List<T> postList(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
+    public <T> List<T> postList(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
         String r = this.httpExecute(Method.POST, urlKey, params, headers);
 
         JsonTData<List<T>> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class,
@@ -98,23 +98,23 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         return data.getExtra();
     }
 
-    protected <T> T post(String urlKey, Class<T> kls) {
+    public <T> T post(String urlKey, Class<T> kls) {
         return this.post(urlKey, kls, null, null, null, null);
     }
 
-    protected <T> T post(String urlKey, Class<T> kls, Map<String, Object> params) {
+    public <T> T post(String urlKey, Class<T> kls, Map<String, Object> params) {
         return this.post(urlKey, kls, params, null, null, null);
     }
 
-    protected <T> T post(String urlKey, Class<T> kls, List<String> restParams) {
+    public <T> T post(String urlKey, Class<T> kls, List<String> restParams) {
         return this.post(urlKey, kls, null, restParams, null, null);
     }
 
-    protected <T> T post(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> header) {
+    public <T> T post(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> header) {
         return this.post(urlKey, kls, params, null, header, null);
     }
 
-    protected <T> T post(String urlKey, Class<T> kls, Map<String, Object> params, List<String> restParams, Map<String, String> headers, String body) {
+    public <T> T post(String urlKey, Class<T> kls, Map<String, Object> params, List<String> restParams, Map<String, String> headers, String body) {
         String r = this.httpExecute(Method.POST, urlKey, params, restParams, body, headers, null);
 
         JsonTData<T> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class, typeFactory.constructType(kls)));
@@ -129,15 +129,15 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
     /* *******************
      * 以下GET方法
      ******************* */
-    protected <T> List<T> getList(String urlKey, Class<T> kls) {
+    public <T> List<T> getList(String urlKey, Class<T> kls) {
         return this.getList(urlKey, kls, null, null);
     }
 
-    protected <T> List<T> getList(String urlKey, Class<T> kls, Map<String, Object> params) {
+    public <T> List<T> getList(String urlKey, Class<T> kls, Map<String, Object> params) {
         return this.getList(urlKey, kls, params, null);
     }
 
-    protected <T> List<T> getList(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
+    public <T> List<T> getList(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
         String r = this.httpExecute(Method.GET, urlKey, params, headers);
 
         JsonTData<List<T>> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class,
@@ -149,15 +149,15 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         return data.getExtra();
     }
 
-    protected <T> T get(String urlKey, Class<T> kls) {
+    public <T> T get(String urlKey, Class<T> kls) {
         return this.get(urlKey, kls, null, null);
     }
 
-    protected <T> T get(String urlKey, Class<T> kls, Map<String, Object> params) {
+    public <T> T get(String urlKey, Class<T> kls, Map<String, Object> params) {
         return this.get(urlKey, kls, params, null);
     }
 
-    protected <T> T get(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
+    public <T> T get(String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
         String r = this.httpExecute(Method.GET, urlKey, params, headers);
 
 
@@ -170,19 +170,19 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         return data.getExtra();
     }
 
-    protected <T> T httpExecute(Method method, String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
+    public <T> T httpExecute(Method method, String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {
         return JsonMapper.buildNonNullMapper().fromJson(this.httpExecute(method, urlKey, params, headers), kls);
     }
 
-    protected String httpExecute(Method method, String urlKey) {
+    public String httpExecute(Method method, String urlKey) {
         return this.httpExecute(method, urlKey, null, null);
     }
 
-    protected String httpExecute(Method method, String urlKey, Map<String, Object> params) {
+    public String httpExecute(Method method, String urlKey, Map<String, Object> params) {
         return this.httpExecute(method, urlKey, params, null);
     }
 
-    protected String httpExecute(Method method, String urlKey, Map<String, Object> params, Map<String, String> headers) {
+    public String httpExecute(Method method, String urlKey, Map<String, Object> params, Map<String, String> headers) {
         return this.httpExecute(method, urlKey, params, null, null, headers, null);
     }
 
