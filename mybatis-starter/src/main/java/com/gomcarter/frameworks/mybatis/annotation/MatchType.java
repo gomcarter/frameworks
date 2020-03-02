@@ -13,7 +13,7 @@ import java.util.Collection;
  */
 public enum MatchType {
     /**
-     * where name = name
+     * where table_column = #{condition}
      */
     EQ {
         @Override
@@ -41,7 +41,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name &lt;&gt; name
+     * where table_column &lt;&gt; #{condition}
      */
     NE {
         @Override
@@ -69,7 +69,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name LIKE "%name%"
+     * where table_column LIKE concat('%', #{condition}, '%')
      */
     LIKE {
         @Override
@@ -97,7 +97,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name NOT LIKE "%name%"
+     * where table_column NOT LIKE concat('%', #{condition}, '%')
      */
     NOTLIKE {
         @Override
@@ -125,7 +125,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name LIKE "name%"
+     * where table_column LIKE concat(#{condition}, '%')
      */
     RIGHTLIKE {
         @Override
@@ -153,7 +153,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name LIKE "%name"
+     * where table_column LIKE concat('%', #{condition})
      */
     LEFTLIKE {
         @Override
@@ -181,7 +181,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name &gt; name
+     * where table_column &gt; #{condition}
      */
     GT {
         @Override
@@ -209,7 +209,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name &gt;= name
+     * where table_column &gt;= #{condition}
      */
     GE {
         @Override
@@ -237,7 +237,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name &lt; name
+     * where table_column &lt; #{condition}
      */
     LT {
         @Override
@@ -265,7 +265,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name &lt;= name
+     * where table_column &lt;= #{condition}
      */
     LE {
         @Override
@@ -293,7 +293,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name is null
+     * where table_column is null
      */
     NULL {
         @Override
@@ -317,7 +317,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name is not null
+     * where table_column is not null
      */
     NOTNULL {
         @Override
@@ -341,7 +341,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name in (...) : name 字段必须是 iterable 或者 array，且模板类必须是基础类型
+     * where table_column in (#{condition}) —— condition 字段必须是 iterable 或者 array，且模板类必须是基础类型
      */
     IN {
         @Override
@@ -383,7 +383,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name not in (...) :name 必须是 iterable 或者 array，且模板类必须是基础类型
+     * where table_column not in (#{condition}) —— #{condition} 必须是 iterable 或者 array，且模板类必须是基础类型
      */
     NOTIN {
         @Override
@@ -425,7 +425,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name in (...): nameINSQL是一个 sql 语句： select id from table where id &lt; 3
+     * where table_column in (#{condition}) —— condition是一个 sql 语句， 如： select id from table where id &lt; 3
      * <p>
      * 尽量不要使用这个，有 sql注入 的风险
      */
@@ -448,7 +448,7 @@ public enum MatchType {
         }
     },
     /**
-     * where name not in (...): nameINSQL是一个 sql 语句： select name from table where id &lt; 3
+     * where table_column not in (#{condition}) —— condition是一个 sql 语句： select name from table where id &lt; 3
      * <p>
      * 尽量不要使用这个，有 sql注入 的风险
      */
@@ -518,7 +518,7 @@ public enum MatchType {
         }
     },
     /**
-     * 当此字段是基础类型： where name = name or other
+     * 当此字段是基础类型： where table_column = #{condition} or other
      * 当此字段是一个自定义类：where (XX = XX AND YY == YY OR ZZ = ZZ) or other ———— XX,YY,ZZ 是此字段类里面的字段
      */
     OR {
