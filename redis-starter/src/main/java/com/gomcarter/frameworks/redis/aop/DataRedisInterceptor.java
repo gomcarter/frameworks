@@ -1,6 +1,9 @@
 package com.gomcarter.frameworks.redis.aop;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.gomcarter.frameworks.base.exception.NonConcurrencyException;
+import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import com.gomcarter.frameworks.redis.annotation.Cache;
 import com.gomcarter.frameworks.redis.annotation.DelCache;
 import com.gomcarter.frameworks.redis.annotation.Lock;
@@ -10,7 +13,6 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.codehaus.jackson.map.type.TypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,7 @@ public class DataRedisInterceptor {
 
     private RedisProxy redisProxy;
 
-    private RedisDataMapper dataMapper = RedisDataMapper.buildNormalMapper();
+    private JsonMapper dataMapper = new JsonMapper(JsonInclude.Include.ALWAYS);
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
