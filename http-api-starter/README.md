@@ -57,7 +57,7 @@ public class Configuration {
 使用
 @Service
 public class BarService {
-  @Autowired
+  @Resource
   DemoApi demoApi;
   
   public void funtion() {

@@ -1,11 +1,11 @@
 package ${entity.servicePackageName};
 
 import com.gomcarter.frameworks.base.pager.Pageable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ${entity.daoPackageName}.${entity.className}Mapper;
 import ${entity.entityPackageName}.${entity.className};
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class ${entity.className}Service {
 
-    @Autowired
+    @Resource
     private ${entity.className}Mapper ${entity.classInstanceName}Mapper;
 
     public void insert(${entity.className} ${entity.classInstanceName}) {

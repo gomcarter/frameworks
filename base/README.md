@@ -76,7 +76,7 @@ public class Application {
 @RestController
 @RequestMapping("test")
 public class ItemController {
-	  @Autowired
+	@Resource
     private TestService testService;
 
     @GetMapping(value = "query", name = "接口")

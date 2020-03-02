@@ -62,7 +62,7 @@ import com.gomcarter.frameworks.redis.annotation.Lock;
 @Service
 public class FooService {
 
-    @Autowired
+    @Resource
     private FooMapper fooMapper;
     
     @Cache(key = "FooService.getById", time = -1L, argsIndex = {0}, nullable = true, await = 2000)
@@ -90,7 +90,7 @@ public class FooService {
 @Service
 public class FooService {
 
-    @Autowired
+    @Resource
     private RedisProxy redisProxy;
     
     public Foo getById(Long id) {

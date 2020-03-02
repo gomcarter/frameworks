@@ -4,11 +4,11 @@ import ${entity.entityPackageName}.${entity.className};
 import ${entity.paramPackage}.${entity.className}Param;
 import ${entity.servicePackageName}.${entity.className}Service;
 import com.gomcarter.frameworks.base.pager.DefaultPager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("${entity.classInstanceName}")
 public class ${entity.className}Controller {
 
-	@Autowired
+	@Resource
     private ${entity.className}Service ${entity.classInstanceName}Service;
 
     @GetMapping(value = "query", name = "接口")

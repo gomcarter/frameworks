@@ -103,7 +103,7 @@ String dbType() default "mysql";
 package com.domain.project.controller;
 
 public class XXController {
-  @Autowired
+  @Resource
   private BarService barService;
   
   @PostMapping("xxx")
@@ -130,7 +130,7 @@ public class XXController {
 package com.domain.project.service;
 
 public class FooService {
-  @Autowired
+  @Resource
   private BarService barService;
   
   public void updateFoo() {
@@ -168,7 +168,7 @@ import com.yiayoframework.mybatis.pager.DefaultPager;
 @RequestMapping("publics/test")
 public class PublicsCategoryController {
 
-    @Autowired
+    @Resource
     private FooService fooService;
 
     @GetMapping(value = "query", name = "分页查询")
@@ -182,7 +182,7 @@ import com.yiayoframework.mybatis.pager.Pageable;
 
 @Service
 public class FooService {
-    @Autowired
+    @Resource
     private FooMapper fooMapper;
 
     public <P> List<Foo> query(P params, Pageable pager) {

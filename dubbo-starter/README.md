@@ -18,7 +18,7 @@ import org.apache.dubbo.config.annotation.Service;
 @Service
 public class FooApiImpl implements FooApi {
 
-    @Autowired
+    @Resource
     private FooService fooService;
 
     @Override

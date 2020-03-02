@@ -11,7 +11,6 @@
 //import org.apache.shiro.crypto.hash.Md5Hash;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
 //
 //import java.util.*;
 //import java.util.concurrent.ExecutorService;
@@ -38,7 +37,7 @@
 //     */
 //    private StorageType storageType = StorageType.nfs;
 //
-//    @Autowired
+//    @Resource
 //    private RedisProxy redisProxy;
 //
 //    public static final String DOWNLOAD_TITLES = "downloadTitles";
