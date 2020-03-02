@@ -3,10 +3,9 @@
 ### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
 
 
-
 # 核心功能
 
-### API方式封装 rpc
+### 一、API方式封装 rpc
 
 ##### 服务提供方：
 ```
@@ -70,7 +69,7 @@ public class BarService {
 ```
 
 
-### 注解方式封装 rpc
+### 二、注解方式封装 rpc
 ##### 服务提供方：
 ```
 @RestController
