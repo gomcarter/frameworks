@@ -24,9 +24,9 @@ public class CustomRequestResponseBodyMethodProcessor extends RequestResponseBod
 
     private BeanFactory beanFactory;
 
-    private final static InvocableResultHandler nullHandler = InvocableResultHandler.nullMethod;
+    private final static InvocableResultHandler NULL_HANDLER = InvocableResultHandler.NULL_METHOD;
 
-    private final static Map<Class<?>, InvocableResultHandler> resultHandleMethod = new ConcurrentHashMap<Class<?>, InvocableResultHandler>();
+    private final static Map<Class<?>, InvocableResultHandler> RESULT_HANDLE_METHOD = new ConcurrentHashMap<Class<?>, InvocableResultHandler>();
 
     public CustomRequestResponseBodyMethodProcessor(List<HttpMessageConverter<?>> messageConverters) {
         super(messageConverters);
@@ -63,7 +63,7 @@ public class CustomRequestResponseBodyMethodProcessor extends RequestResponseBod
 
         InvocableResultHandler handler = getHandler(returnType);
 
-        if (handler == nullHandler) {
+        if (handler == NULL_HANDLER) {
             return doDefaultWrap(returnValue);
         }
         try {
@@ -104,7 +104,7 @@ public class CustomRequestResponseBodyMethodProcessor extends RequestResponseBod
 
         Class<?> clz = returnType.getDeclaringClass();
 
-        InvocableResultHandler handler = resultHandleMethod.get(clz);
+        InvocableResultHandler handler = RESULT_HANDLE_METHOD.get(clz);
         if (handler != null) {
             return handler;
         }
@@ -116,7 +116,7 @@ public class CustomRequestResponseBodyMethodProcessor extends RequestResponseBod
             if (AnnotationUtils.findAnnotation(method, CustomResultHandler.class) != null) {
                 InvocableResultHandler _handler =
                         new InvocableResultHandler(bean, BridgeMethodResolver.findBridgedMethod(method));
-                resultHandleMethod.put(clz, _handler);
+                RESULT_HANDLE_METHOD.put(clz, _handler);
                 return _handler;
             }
         }
@@ -124,8 +124,8 @@ public class CustomRequestResponseBodyMethodProcessor extends RequestResponseBod
     }
 
     private InvocableResultHandler resolveDefault(Class<?> clz) {
-        resultHandleMethod.put(clz, nullHandler);
-        return nullHandler;
+        RESULT_HANDLE_METHOD.put(clz, NULL_HANDLER);
+        return NULL_HANDLER;
     }
 
     private boolean jsonIgnore(MethodParameter returnType) {

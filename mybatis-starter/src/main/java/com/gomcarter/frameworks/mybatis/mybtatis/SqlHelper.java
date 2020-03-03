@@ -130,15 +130,15 @@ public class SqlHelper implements ApplicationContextAware {
         final Class<?>[] argTypes = method.getParameterTypes();
         for (int i = 0; i < argTypes.length; i++) {
             if (!RowBounds.class.isAssignableFrom(argTypes[i]) && !ResultHandler.class.isAssignableFrom(argTypes[i])) {
-                String paramName = "param" + String.valueOf(params.size() + 1);
+                String paramName = "param" + (params.size() + 1);
                 paramName = getParamNameFromAnnotation(method, i, paramName);
                 params.put(paramName, i >= args.length ? null : args[i]);
             }
         }
-        if (args != null && args.length == 1) {
-            Object _params = wrapCollection(args[0]);
-            if (_params instanceof Map) {
-                params.putAll((Map) _params);
+        if (args.length == 1) {
+            Object local_params = wrapCollection(args[0]);
+            if (local_params instanceof Map) {
+                params.putAll((Map) local_params);
             }
         }
         return getNamespaceSql(session, fullMapperMethodName, params);

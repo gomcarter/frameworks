@@ -24,34 +24,34 @@ public class ReadWriteDataSourceDecision {
     }
 
 
-    private static final ThreadLocal<DataSourceType> holder = new ThreadLocal<DataSourceType>();
+    private static final ThreadLocal<DataSourceType> DATASOURCE_TYPE_HOLDER = new ThreadLocal<>();
 
     public static void markWrite() {
-        holder.set(DataSourceType.write);
+        DATASOURCE_TYPE_HOLDER.set(DataSourceType.write);
     }
 
     public static void markRead() {
-        holder.set(DataSourceType.read);
+        DATASOURCE_TYPE_HOLDER.set(DataSourceType.read);
     }
 
     public static boolean unmarked() {
-        return holder.get() == null;
+        return DATASOURCE_TYPE_HOLDER.get() == null;
     }
 
     public static void reset() {
-        holder.set(null);
+        DATASOURCE_TYPE_HOLDER.remove();
     }
 
     public static boolean isChoiceNone() {
-        return null == holder.get();
+        return null == DATASOURCE_TYPE_HOLDER.get();
     }
 
     public static boolean isChoiceWrite() {
-        return DataSourceType.write == holder.get();
+        return DataSourceType.write == DATASOURCE_TYPE_HOLDER.get();
     }
 
     public static boolean isChoiceRead() {
-        return DataSourceType.read == holder.get();
+        return DataSourceType.read == DATASOURCE_TYPE_HOLDER.get();
     }
 
 }

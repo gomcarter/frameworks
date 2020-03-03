@@ -81,11 +81,11 @@ public class ImageUtils {
      * @param title  text
      * @param color  color
      * @param font   font
-     * @param startX position of x
-     * @param startY position of y
+     * @param startx position of x
+     * @param starty position of y
      * @return result BufferedImage
      */
-    public static BufferedImage insertTitle(BufferedImage target, String title, Color color, Font font, int startX, int startY) {
+    public static BufferedImage insertTitle(BufferedImage target, String title, Color color, Font font, int startx, int starty) {
         if (StringUtils.isBlank(title)) {
             return target;
         }
@@ -101,7 +101,7 @@ public class ImageUtils {
         ats.addAttribute(TextAttribute.FONT, font, 0, title.length());
         AttributedCharacterIterator iter = ats.getIterator();
 
-        g.drawString(iter, startX, startY);
+        g.drawString(iter, startx, starty);
         //添加水印的文字和设置水印文字出现的内容 ----位置
         g.dispose();//画笔结束
         return target;
@@ -113,12 +113,12 @@ public class ImageUtils {
      * @param target target image BufferedImage
      * @param title  text
      * @param color  color
-     * @param startX position of x
-     * @param startY position of y
+     * @param startx position of x
+     * @param starty position of y
      * @return result BufferedImage
      */
-    public static BufferedImage insertTitle(BufferedImage target, String title, Color color, int startX, int startY) {
-        return insertTitle(target, title, color, new Font("Serif", Font.BOLD, 13), startX, startY);
+    public static BufferedImage insertTitle(BufferedImage target, String title, Color color, int startx, int starty) {
+        return insertTitle(target, title, color, new Font("Serif", Font.BOLD, 13), startx, starty);
     }
 
     /**
@@ -126,17 +126,17 @@ public class ImageUtils {
      *
      * @param target   源图片
      * @param inserted 插入图片file
-     * @param startX   开始X坐标
-     * @param startY   开始Y坐标
+     * @param startx   开始X坐标
+     * @param starty   开始Y坐标
      * @return result BufferedImage
      * @throws Exception IOException for read inserted
      */
     public static BufferedImage insertImage(BufferedImage target,
                                             File inserted,
-                                            int startX,
-                                            int startY) throws Exception {
+                                            int startx,
+                                            int starty) throws Exception {
 
-        return insertImage(target, ImageIO.read(inserted), startX, startY);
+        return insertImage(target, ImageIO.read(inserted), startx, starty);
     }
 
     /**
@@ -144,20 +144,20 @@ public class ImageUtils {
      *
      * @param target   源图片
      * @param inserted 插入图片
-     * @param startX   开始X坐标
-     * @param startY   开始Y坐标
+     * @param startx   开始X坐标
+     * @param starty   开始Y坐标
      * @return result BufferedImage
      */
     public static BufferedImage insertImage(BufferedImage target,
                                             Image inserted,
-                                            int startX,
-                                            int startY) {
+                                            int startx,
+                                            int starty) {
 
         int width = inserted.getWidth(null),
                 height = inserted.getHeight(null);
         Graphics2D graph = target.createGraphics();
-        graph.drawImage(inserted, startX, startY, width, height, null);
-//        Shape shape = new RoundRectangle2D.Float(startX, startY, width, height, 6, 6);
+        graph.drawImage(inserted, startx, starty, width, height, null);
+//        Shape shape = new RoundRectangle2D.Float(startx, starty, width, height, 6, 6);
 //        graph.setStroke(new BasicStroke(3f));
 //        graph.draw(shape);
         graph.dispose();

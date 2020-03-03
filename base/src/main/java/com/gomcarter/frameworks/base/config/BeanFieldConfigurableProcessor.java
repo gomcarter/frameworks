@@ -3,7 +3,7 @@ package com.gomcarter.frameworks.base.config;
 import com.gomcarter.frameworks.base.annotation.ConfigurableValue;
 import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.base.converter.Convertable;
-import com.gomcarter.frameworks.base.spring.BeanFieldAndMethodProcessor;
+import com.gomcarter.frameworks.base.spring.AbstractBeanFieldAndMethodProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 /**
  * @author gomcarter on 2019-11-15 17:43:37
  */
-public class BeanFieldConfigurableProcessor extends BeanFieldAndMethodProcessor implements ApplicationListener<ContextRefreshedEvent> {
+public class BeanFieldConfigurableProcessor extends AbstractBeanFieldAndMethodProcessor implements ApplicationListener<ContextRefreshedEvent> {
 
     private WeakHashMap<String, String> configMap = new WeakHashMap<>();
 

@@ -10,7 +10,7 @@ public class InvocableResultHandler {
     private Object bean;
     private Method method;
 
-    public final static InvocableResultHandler nullMethod = new InvocableResultHandler();
+    public final static InvocableResultHandler NULL_METHOD = new InvocableResultHandler();
 
     private InvocableResultHandler() {
 

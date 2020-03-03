@@ -15,6 +15,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBody
 
 import java.util.List;
 
+/**
+ * @author gomcarter
+ */
 public class RequestMappingHandlerAdapterModify implements BeanFactoryAware, InitializingBean {
 
     private BeanFactory beanFactory;
@@ -22,6 +25,8 @@ public class RequestMappingHandlerAdapterModify implements BeanFactoryAware, Ini
     private boolean wrapReturnValue = true;
 
     private boolean resolverArgument = true;
+
+    private Class<?> wrapperClass;
 
     public void setResolverArgument(boolean resolverArgument) {
         this.resolverArgument = resolverArgument;
@@ -41,9 +46,6 @@ public class RequestMappingHandlerAdapterModify implements BeanFactoryAware, Ini
 
         RequestMappingHandlerAdapter bean = beanFactory.getBean(RequestMappingHandlerAdapter.class);
 
-        if (bean == null) {
-            return;
-        }
         if (resolverArgument) {
             this.modifyArgumentResolvers(bean);
         }
@@ -74,13 +76,15 @@ public class RequestMappingHandlerAdapterModify implements BeanFactoryAware, Ini
             return;
         }
         List<HandlerMethodArgumentResolver> newList = Lists.newArrayList();
-        Boolean replace = true;
-        for (HandlerMethodArgumentResolver handler : bean.getArgumentResolvers()) {
-            if (handler instanceof RequestParamMethodArgumentResolver && replace) {
-                newList.add(new CustomRequestParamMethodArgumentResolver((ConfigurableBeanFactory) beanFactory, false));
-                replace = false;
-            } else {
-                newList.add(handler);
+        boolean replace = true;
+        if (bean.getArgumentResolvers() != null) {
+            for (HandlerMethodArgumentResolver handler : bean.getArgumentResolvers()) {
+                if (handler instanceof RequestParamMethodArgumentResolver && replace) {
+                    newList.add(new CustomRequestParamMethodArgumentResolver((ConfigurableBeanFactory) beanFactory, false));
+                    replace = false;
+                } else {
+                    newList.add(handler);
+                }
             }
         }
         bean.setArgumentResolvers(newList);

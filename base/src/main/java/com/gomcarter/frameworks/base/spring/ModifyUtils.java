@@ -14,25 +14,24 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 /**
- * 接受
+ * @author gomcarter
  */
 public abstract class ModifyUtils {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private static final TypeFactory typeFactory = TypeFactory.defaultInstance();
+    private static final TypeFactory TYPE_FACTORY = TypeFactory.defaultInstance();
 
     static {
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
-        mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
-        // mapper.configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS, true);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        MAPPER.setSerializationInclusion(Include.NON_NULL);
+        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        MAPPER.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
+        MAPPER.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
     public static <T> T fromJson(String jsonString, Type type) throws IOException {
-        return mapper.readValue(jsonString, typeFactory.constructType(type));
+        return MAPPER.readValue(jsonString, TYPE_FACTORY.constructType(type));
     }
 
     public static Object calcValue(MethodParameter methodParameter, String[] values) {

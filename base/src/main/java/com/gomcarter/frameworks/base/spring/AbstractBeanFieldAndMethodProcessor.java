@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 /**
  * @author gomcarter on 2019-11-15 17:43:37
  */
-public abstract class BeanFieldAndMethodProcessor implements BeanPostProcessor, PriorityOrdered {
+public abstract class AbstractBeanFieldAndMethodProcessor implements BeanPostProcessor, PriorityOrdered {
 
     /**
      * @param bean     bean

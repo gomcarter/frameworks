@@ -117,8 +117,7 @@ public class HttpApiProxyHandler implements InvocationHandler {
 
         if (http.wrap()) {
             // 被 jsonData 包裹的返回值
-            JsonData result = JsonMapper.buildNonNullMapper()
-                    .fromJson(stringResult, JsonData.class);
+            JsonData result = JsonMapper.buildNonNullMapper().fromJson(stringResult, JsonData.class);
 
             if (!result.isSuccess()) {
                 log.error("调用接口失败: {}, {}", result.getCode(), result.getMessage());

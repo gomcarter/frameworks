@@ -64,9 +64,9 @@ public final class CustomStringUtils extends StringUtils {
      * @return abc_def_g
      */
     public static String underscore(String name) {
-        String[] _a = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
-        String[] _b = toLowerCase("_" + join(_a, ",_")).split(",");
-        return replaceEach(name, _a, _b);
+        String[] a = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+        String[] b = toLowerCase("_" + join(a, ",_")).split(",");
+        return replaceEach(name, a, b);
     }
 
     /**
@@ -146,24 +146,24 @@ public final class CustomStringUtils extends StringUtils {
             return str;
         }
 
-        String r = "";
+        StringBuilder r = new StringBuilder();
         for (int i = 0; i < t; ++i) {
             String k = substring(str, i * delt, i * delt + delt);
-            r += k + insert;
+            r.append(k).append(insert);
         }
 
         String c = substring(str, t * delt);
-        r += c + insert;
+        r.append(c).append(insert);
 
-        return trim(r);
+        return trim(r.toString());
     }
 
 
-    private static final String from[] = {
+    private static final String[] FROM = {
             "\\", "/", ":", "*", "?", "\"", "'", "<", ">", "|"
     };
 
-    public static final String to[] = {
+    private static final String[] TO = {
             "_", "_", "_", "_", "_", "_", "_", "_", "_", "_"
     };
 
@@ -174,7 +174,7 @@ public final class CustomStringUtils extends StringUtils {
      * @return the correct file name
      */
     public static String validateFileName(String fileName) {
-        return replaceEach(fileName, from, to);
+        return replaceEach(fileName, FROM, TO);
     }
 
     /**
@@ -186,16 +186,14 @@ public final class CustomStringUtils extends StringUtils {
      */
     public static String[] split(String src, int pos) {
         if (pos <= 0) {
-            String[] r = {src};
-            return r;
+            return new String[]{src};
         }
         src = trim(src);
 
         int length = length(src);
         int t = length / pos;
         if (t == 0) {
-            String[] r = {src};
-            return r;
+            return new String[]{src};
         }
 
         String[] r = new String[t];

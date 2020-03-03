@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class BasicThreadFactory implements ThreadFactory {
 
-    private static final AtomicInteger poolNumber = new AtomicInteger(1);
+    private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
 
     private final ThreadGroup group;
 
@@ -21,7 +21,7 @@ public class BasicThreadFactory implements ThreadFactory {
         group = (s != null) ? s.getThreadGroup() :
                 Thread.currentThread().getThreadGroup();
         namePrefix = poolName +
-                poolNumber.getAndIncrement() +
+                POOL_NUMBER.getAndIncrement() +
                 "-thread-";
     }
 

@@ -57,26 +57,25 @@ public class Demo {
         List<Object> dataList2 = new ArrayList<>();
         for (int i = 0; i < 5; ++i) {
             Map<String, Object> map = new LinkedHashMap<String, Object>();
-            map.put("数字字符串", "0000112312");
-            map.put("字符串", "asdaasd");
-//            map.put("标记为字符串的数字", "'0001232123");
-            map.put("小数的字符串", "24891.24");
-            map.put("中文时间", "2016年4月6日 14:46:56");
-            map.put("时间对象", new Date());
-            map.put("日期字符串1", "2014/04/06");
-            map.put("日期字符串2", "2014-04-07");
-            map.put("时间字符串1", "2014/04/07 11:11:11");
-            map.put("时间字符串2", "2014-04-07 22:22:22");
-            map.put("BigDecimal one", BigDecimal.ONE);
-            map.put("BigDecimal", new BigDecimal(1239129));
-            map.put("double", (double) i);
-            map.put("float", (float) i);
-            map.put("Long", new Random().nextLong());
-            map.put("big double", new Random().nextDouble());
+            map.put("数字字符串1", "0000112312");
+            map.put("字符串1", "asdaasd");
+            map.put("小数的字符串1", "24891.24");
+            map.put("中文时间1", "2016年4月6日 14:46:56");
+            map.put("时间对象1", new Date());
+            map.put("日期字符串a", "2014/04/06");
+            map.put("日期字符串b", "2014-04-07");
+            map.put("时间字符串c", "2014/04/07 11:11:11");
+            map.put("时间字符串d", "2014-04-07 22:22:22");
+            map.put("Decimal one", BigDecimal.ONE);
+            map.put("Decimal", new BigDecimal(1239129));
+            map.put("double 1", (double) i);
+            map.put("float 1", (float) i);
+            map.put("Long 1", new Random().nextLong());
+            map.put("big double 1", new Random().nextDouble());
             dataList2.add(map);
         }
 
-        Collection<Style> styles = Arrays.asList(Style.of("C01", "#FF0000", "#00FF00"));
+        Collection<Style> styles = Collections.singletonList(Style.of("C01", "#FF0000", "#00FF00"));
         try (XmlExcel excel = XmlExcel.of("D:\\mutiplysheet.xls", headers1, styles)
                 .start("first sheet")
                 .appendBody(dataList1)
@@ -118,7 +117,7 @@ public class Demo {
     }
 
     private static void writeMap() throws Exception {
-        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Collection<Map<String, Object>> dataList = new ArrayList<>();
 
         List<Header> headers = new ArrayList<Header>() {{
             add(Header.of("数字字符串"));
@@ -161,16 +160,16 @@ public class Demo {
             dataList.add(map);
         }
 
-        Collection<Style> styles = Arrays.asList(Style.of("C01", "#FF0000", "#00FF00"));
+        Collection<Style> styles = Collections.singletonList(Style.of("C01", "#FF0000", "#00FF00"));
         try (XmlExcel excel = XmlExcel.of("D:\\自定义header.xls", headers, styles)
                 .start()
-                .appendBody((List) dataList)
+                .appendBody(dataList)
                 //可以多次appendBody
                 //addSheet()//第二个sheet等，或者更新header再插入第sheet
                 .finish()) {
         }
 
-        try (XmlExcel excel = XmlExcel.of("D:\\自解析header.xls").write((List) dataList)) {
+        try (XmlExcel excel = XmlExcel.of("D:\\自解析header.xls").write(dataList)) {
         }
     }
 

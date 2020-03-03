@@ -24,11 +24,11 @@ import java.util.List;
 public class JsonMapper {
 
     private static class Holder {
-        private static final JsonMapper defaultMapper = new JsonMapper(Include.NON_NULL);
+        private static final JsonMapper DEFAULT_MAPPER = new JsonMapper(Include.NON_NULL);
     }
 
     private static class TimeFormatHolder {
-        private static final JsonMapper timeFormatMapper = new JsonMapper(Include.NON_NULL, "yyyy-MM-dd HH:mm:ss");
+        private static final JsonMapper TIME_FORMAT_MAPPER = new JsonMapper(Include.NON_NULL, "yyyy-MM-dd HH:mm:ss");
     }
 
     private ObjectMapper mapper;
@@ -59,11 +59,11 @@ public class JsonMapper {
      * @return JsonMapper
      */
     public static JsonMapper buildNonNullMapper() {
-        return Holder.defaultMapper;
+        return Holder.DEFAULT_MAPPER;
     }
 
     public static JsonMapper buildNonNullTimeFormatMapper() {
-        return TimeFormatHolder.timeFormatMapper;
+        return TimeFormatHolder.TIME_FORMAT_MAPPER;
     }
 
     /**

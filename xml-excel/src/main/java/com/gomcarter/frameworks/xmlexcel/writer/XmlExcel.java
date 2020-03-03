@@ -82,7 +82,7 @@ public class XmlExcel implements Closeable {
      * @return XmlExcel
      * @throws IOException IOException
      */
-    public XmlExcel write(Collection<Object> dataList) throws IOException {
+    public XmlExcel write(Collection<?> dataList) throws IOException {
         return write(null, dataList);
     }
 
@@ -94,7 +94,7 @@ public class XmlExcel implements Closeable {
      * @return XmlExcel
      * @throws IOException IOException
      */
-    public XmlExcel write(String sheetName, Collection<Object> dataList) throws IOException {
+    public XmlExcel write(String sheetName, Collection<?> dataList) throws IOException {
         //写头
         return this.start(sheetName)
                 //加主体内容

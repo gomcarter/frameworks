@@ -72,8 +72,8 @@ public class HexCaculateUtils {
      * @param s target
      * @return result
      */
-    public static String CodePlus(String s) {
-        return CodePlus(s, HEX_NUMBER);
+    public static String codePlus(String s) {
+        return codePlus(s, HEX_NUMBER);
     }
 
     /**
@@ -83,7 +83,7 @@ public class HexCaculateUtils {
      * @param decimal decimal
      * @return result
      */
-    public static String CodePlus(String s, int decimal) {
+    public static String codePlus(String s, int decimal) {
         if (decimal > HEX_NUMBER) {
             throw new RuntimeException("超出进制可计算范围");
         }

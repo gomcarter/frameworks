@@ -69,9 +69,9 @@ public class DataRedisInterceptor {
         // 获取最大等待时间
         short await = caches.await();
         // 每次睡100毫秒
-        int sleepPerTimeMS = 100;
+        int sleepPerTimeMs = 100;
         // 总共睡多少次
-        long sleepTimes = await / sleepPerTimeMS + 1;
+        long sleepTimes = await / sleepPerTimeMs + 1;
         int count = 0;
 
         // 默认锁300秒，避免服务挂了，一直锁在哪
@@ -82,7 +82,7 @@ public class DataRedisInterceptor {
             }
 
             // TODO: 自旋锁优化，sleep 会导致核心态用户态切换，性能下降
-            Thread.sleep(sleepPerTimeMS);
+            Thread.sleep(sleepPerTimeMs);
 
             // 超过sleepTimes次没有获得锁，证明前序线程太费时间，更不能进去添乱。就直接熔断降级处理了。
             count++;
@@ -165,9 +165,9 @@ public class DataRedisInterceptor {
         // 获取最大等待时间
         short await = locker.await();
         // 每次睡100毫秒
-        int sleepPerTimeMS = 100;
+        int sleepPerTimeMs = 100;
         // 总共睡多少次
-        long sleepTimes = await / sleepPerTimeMS + 1;
+        long sleepTimes = await / sleepPerTimeMs + 1;
         int count = 0;
         //开始锁定，非公平锁，谁运气好谁的
         while (!redisProxy.lock(key, locker.timeout())) {
@@ -177,7 +177,7 @@ public class DataRedisInterceptor {
 
             // TODO: 自旋锁优化，sleep 会导致核心态用户态切换，性能下降
             // 方案：可以自旋1秒，如果超过1秒还没有获得锁，则直接进入休眠
-            Thread.sleep(sleepPerTimeMS);
+            Thread.sleep(sleepPerTimeMs);
 
             // 超过sleepTimes次没有获得锁，证明前序线程太费时间，更不能进去添乱。就直接熔断降级处理了。
             count++;

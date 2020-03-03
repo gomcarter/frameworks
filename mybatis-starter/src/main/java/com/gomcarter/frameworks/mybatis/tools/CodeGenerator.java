@@ -380,15 +380,15 @@ public class CodeGenerator {
         if (!file.exists()) {
             return;
         }
-        FileReader scrR = new FileReader(file);
-        BufferedReader srcB = new BufferedReader(scrR);
+        FileReader fileReader = new FileReader(file);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
 
         FileWriter fw = new FileWriter(destFile);
-        String lineS = null;
+        String tempLines;
 
         boolean replace = false;
-        while ((lineS = srcB.readLine()) != null) {
-            if (lineS.contains("//@NotReplaceableStart")) {
+        while ((tempLines = bufferedReader.readLine()) != null) {
+            if (tempLines.contains("//@NotReplaceableStart")) {
                 replace = true;
 
                 for (String change : lines) {
@@ -397,17 +397,17 @@ public class CodeGenerator {
             }
 
             if (!replace) {
-                fw.write(lineS + "\r\n");
+                fw.write(tempLines + "\r\n");
             }
 
-            if (lineS.contains("//@NotReplaceableEnd")) {
+            if (tempLines.contains("//@NotReplaceableEnd")) {
                 replace = false;
             }
         }
 
         fw.close();
-        srcB.close();
-        scrR.close();
+        bufferedReader.close();
+        fileReader.close();
 
         FileUtils.copyFile(destFile, file);
         destFile.delete();

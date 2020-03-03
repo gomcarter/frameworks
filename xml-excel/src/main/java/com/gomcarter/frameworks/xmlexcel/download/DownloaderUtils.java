@@ -5,7 +5,7 @@
 //import com.gomcarter.frameworks.base.common.CustomStringUtils;
 //import com.gomcarter.frameworks.base.pager.Pageable;
 //import com.gomcarter.frameworks.xmlexcel.config.Header;
-//import com.gomcarter.frameworks.xmlexcel.utils.CSVUtils;
+//import com.gomcarter.frameworks.xmlexcel.utils.CsvUtils;
 //import org.apache.commons.lang3.ArrayUtils;
 //
 //import java.io.IOException;
@@ -54,7 +54,7 @@
 //        boolean pageable = (pager != null);
 //        /*创建文件或清空文件*/
 //        if (headers != null) {
-//            CSVUtils.createCSV(savePath, headers);
+//            CsvUtils.createCsv(savePath, headers);
 //        }
 //        for (int i = 1; true; i++) {
 //            List<Map<String, Object>> cells = downloader.generate(params, titles, ArrayUtils.add(extraData, pager));
@@ -62,12 +62,12 @@
 //            /** 这里这么做是为了，即使没有数据也能下载一个空的文件 */
 //            if (headers == null && cells != null && !cells.isEmpty()) {
 //                headers = XmlExcelAppender.parseHeaders(cells);
-//                CSVUtils.createCSV(savePath, headers);
+//                CsvUtils.createCsv(savePath, headers);
 //            }
 //
 //            if (cells != null && !cells.isEmpty()) {
 //                /** 往文件里面追加内容 */
-//                CSVUtils.appendCSV(savePath, headers, cells);
+//                CsvUtils.appendCsv(savePath, headers, cells);
 //                /** 不支持翻页，或者查询出来的数据不够 */
 //                if (!pageable || cells.size() < pager.getPageCount()) {
 //                    break;
