@@ -13,7 +13,7 @@ public class Application {
 }
 ```
 
-### 读写分离与支持事务
+### 一、读写分离与支持事务
 
 配置中心内容如下：
 ```
@@ -156,7 +156,7 @@ public class BarService {
 }
 ```
 
-### BaseMapper 的分页查询：
+### 二、BaseMapper 的分页查询：
 
 继承于 https://mybatis.plus/， 也支持其原生的一些写法，但这里有比较强大的封装，<a href="https://github.com/gomcarter/developer/blob/master/frameworks/mybatis-starter/src/main/java/com/gomcarter/frameworks/mybatis/mapper/BaseMapper.java">见源码</a>
 
@@ -270,7 +270,7 @@ public class FooParam {
 }
 ```
 
-### 代码自动生成：
+### 三、代码自动生成：
 ```
 public class Generator {
 
@@ -301,14 +301,17 @@ public class Generator {
          
         // 作者信息
         CodeGenerator.AUTHOR = "gomcarter";
-
-        // 执行生成代码， 不出意外就会生成  TestMapper.xml, TestMapper.java, TestService.java, Test.java, TestParam.java, TestDto.java, TestController.java
+        
+        // 添加数据库字段映射成 java 类
+        // CodeGenerator.addTypeMapping("数据库对应字段类型", Integer.class/*java 对应数据类型*/);
+        
+         // 执行生成代码， 不出意外就会生成  TestMapper.xml, TestMapper.java, TestService.java, Test.java, TestParam.java, TestDto.java, TestController.java
         CodeGenerator.main(null);
     }
 }
 ```
 
-### 联表分页查询
+### 四、自动联表分页查询
 ```
 mapper:
 
@@ -449,7 +452,7 @@ public class FooParam {
 }
 ```
 
-### 万能查询（单表）
+### 万能查询（单表，自动生成sql语句）
 ```
 mapper:
 
