@@ -52,8 +52,9 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
     
     // 参数类，Notes中的备注将被接口中心读取作为接口参数字段描述
     class Params {
+        // 对应字段直接复制，接口中心将读取作为参数的默认值
         @Notes(value = "xxxx", notNull = true)
-        private String name;
+        private String name = "默认值";
       
         @Notes("yyyy")
         private List<ParamsAA> list;
