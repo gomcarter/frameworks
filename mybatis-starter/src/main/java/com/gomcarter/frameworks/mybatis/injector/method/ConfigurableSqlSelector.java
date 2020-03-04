@@ -29,8 +29,9 @@ public class ConfigurableSqlSelector extends AbstractMethod {
         MybatisConfiguration configuration = ignore.getConfiguration();
         Method[] methods = mapperClass.getDeclaredMethods();
         for (Method method : methods) {
+            String id = mapperClass.getName() + "." + method.getName();
             //  如果此方法已经有实现了或者 default 方法，跳过
-            if (configuration.hasStatement(method.getName())
+            if (configuration.hasStatement(id)
                     || MapperUtils.isDefaultMethod(method)
                     || !method.isAnnotationPresent(ConfigurableSql.class)) {
                 continue;
@@ -55,7 +56,7 @@ public class ConfigurableSqlSelector extends AbstractMethod {
             }
             SqlSource sqlSource = languageDriver.createSqlSource(configuration, sql, modelClass);
 
-            this.addSelectMappedStatementForTable(mapperClass, method.getName(), sqlSource, tableInfo);
+            this.addSelectMappedStatementForTable(mapperClass, id, sqlSource, tableInfo);
         }
 
         // 从源码看，这里的返回值是没有意义的。
