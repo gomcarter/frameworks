@@ -28,4 +28,9 @@ public @interface Notes {
      * @return true then not null
      */
     boolean notNull() default false;
+
+    /**
+     * @return mock value
+     */
+    String mock() default "";
 }
