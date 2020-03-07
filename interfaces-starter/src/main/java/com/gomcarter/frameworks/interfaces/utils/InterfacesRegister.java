@@ -222,7 +222,6 @@ public class InterfacesRegister implements ApplicationContextAware {
                     || mp.hasParameterAnnotation(NotNull.class);
 
             String comment = Optional.ofNullable(notes).map(Notes::value).orElse(null);
-            String mock = Optional.ofNullable(notes).map(Notes::mock).orElse(null);
 
             String defaultValue = Optional.ofNullable(requestParam)
                     .map(RequestParam::defaultValue)
@@ -238,14 +237,10 @@ public class InterfacesRegister implements ApplicationContextAware {
                     notNull = notNull || apiParam.required();
                     defaultValue = ObjectUtils.defaultIfNull(defaultValue, apiParam.defaultValue());
                     comment = StringUtils.isBlank(comment) ? apiParam.value() : comment;
-                    mock = StringUtils.isBlank(mock) ? apiParam.example() : mock;
-                    mock = StringUtils.isBlank(mock) ? defaultValue : mock;
                 } else if (mp.hasParameterAnnotation(ApiModelProperty.class)) {
                     ApiModelProperty model = mp.getParameterAnnotation(ApiModelProperty.class);
                     notNull = notNull || model.required();
                     comment = StringUtils.isBlank(comment) ? model.value() : comment;
-                    mock = StringUtils.isBlank(mock) ? model.example() : mock;
-                    mock = StringUtils.isBlank(mock) ? defaultValue : mock;
                 }
             }
 
@@ -254,9 +249,7 @@ public class InterfacesRegister implements ApplicationContextAware {
                     .setNotNull(notNull)
                     .setKey(parameterName)
                     .setBody(requestBody != null)
-                    .setDefaults(defaultValue)
-                    .setMock(mock);
-
+                    .setDefaults(defaultValue);
 
             generateChildrenBean(parameter, parameterName, mp.getGenericParameterType());
 
@@ -318,16 +311,34 @@ public class InterfacesRegister implements ApplicationContextAware {
 
                             Notes notes = field.getAnnotation(Notes.class);
                             Object defaults = getFieldValue(instance, field);
-                            if (defaults == null) {
-                                String mock = Optional.ofNullable(notes).map(Notes::mock).orElse("");
-                                defaults = convert(mock, field);
+                            boolean notNull = Optional.ofNullable(notes).map(Notes::notNull).orElse(false)
+                                    || field.isAnnotationPresent(NotNull.class);
+                            String comment = Optional.ofNullable(notes).map(Notes::value).orElse(null);
+
+                            String mock = Optional.ofNullable(notes).map(Notes::mock).orElse(null);
+                            String fieldName = field.getName();
+
+                            if (swagger) {
+                                if (field.isAnnotationPresent(ApiModelProperty.class)) {
+                                    ApiModelProperty model = field.getAnnotation(ApiModelProperty.class);
+                                    notNull = notNull || model.required();
+                                    comment = StringUtils.isBlank(comment) ? model.value() : comment;
+                                    mock = StringUtils.isBlank(mock) ? model.example() : mock;
+                                } else if (field.isAnnotationPresent(ApiParam.class)) {
+                                    ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                                    notNull = notNull || apiParam.required();
+                                    defaults = ObjectUtils.defaultIfNull(defaults, convert(apiParam.defaultValue(), field));
+                                    comment = StringUtils.isBlank(comment) ? apiParam.value() : comment;
+                                    mock = StringUtils.isBlank(mock) ? apiParam.example() : mock;
+                                }
                             }
 
                             ApiBean child = new ApiBean()
-                                    .setKey(field.getName())
-                                    .setNotNull(Optional.ofNullable(notes).map(Notes::notNull).orElse(false))
-                                    .setComment(Optional.ofNullable(notes).map(Notes::value).orElse(null))
-                                    .setDefaults(defaults);
+                                    .setKey(fieldName)
+                                    .setNotNull(notNull)
+                                    .setComment(comment)
+                                    .setDefaults(defaults)
+                                    .setMock(StringUtils.isNotBlank(mock) ? convert(mock, field) : defaults);
 
                             generateChildrenBean(child, StringUtils.defaultString(key, field.getName()), field.getGenericType());
                             return child;
