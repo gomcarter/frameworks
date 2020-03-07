@@ -80,4 +80,10 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
 ```
 
 
-### 三、后期考虑兼容swagger
+### 三、兼容swagger
+
+    自动读取如下注解配置：
+    ApiOperation
+    ApiParam
+    ApiModelProperty
+    
