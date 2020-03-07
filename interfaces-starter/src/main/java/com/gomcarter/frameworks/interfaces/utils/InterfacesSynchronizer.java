@@ -22,8 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.nio.charset.Charset;
 
-import static com.gomcarter.frameworks.interfaces.utils.InterfacesRegister.register;
-
 /**
  * @author gomcarter
  */
@@ -63,7 +61,7 @@ public class InterfacesSynchronizer {
             // build http client
             URIBuilder uriBuilder = new URIBuilder(URI.create(domain + "publics/interfaces?javaId=" + javaId));
             HttpPost httpPost = new HttpPost(uriBuilder.build());
-            httpPost.setEntity(new StringEntity(mapper.writeValueAsString(register()), ContentType.APPLICATION_JSON));
+            httpPost.setEntity(new StringEntity(mapper.writeValueAsString(InterfacesRegister.register()), ContentType.APPLICATION_JSON));
 
             httpClientLocal.execute(httpPost, (response) -> {
                 StatusLine statusLine = response.getStatusLine();

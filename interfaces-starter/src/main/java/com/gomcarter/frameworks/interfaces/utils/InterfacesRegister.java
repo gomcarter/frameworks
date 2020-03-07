@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gomcarter.frameworks.interfaces.annotation.Notes;
 import com.gomcarter.frameworks.interfaces.dto.ApiBean;
 import com.gomcarter.frameworks.interfaces.dto.ApiInterface;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
+import javax.validation.constraints.NotNull;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -42,6 +47,14 @@ import java.util.stream.Collectors;
 public class InterfacesRegister implements ApplicationContextAware {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    public InterfacesRegister() {
+        // 判断是否使用 swagger
+        try {
+            Class.forName("io.swagger.annotations.Api");
+        } catch (Exception e) {
+            swagger = false;
+        }
+    }
 
     /**
      * the cache for fields default value
@@ -53,6 +66,11 @@ public class InterfacesRegister implements ApplicationContextAware {
     private WeakHashMap<String, Integer> keyClassMap = new WeakHashMap<>();
 
     private final static int RECURSION_DEPTH = 0;
+
+    /**
+     * 是否使用了 swagger
+     */
+    private boolean swagger = true;
 
     /**
      * <b style="color:green">comment：</b>
@@ -120,28 +138,13 @@ public class InterfacesRegister implements ApplicationContextAware {
         for (Map.Entry<RequestMappingInfo, HandlerMethod> kvEntry : handlerMethods.entrySet()) {
             RequestMappingInfo rmi = kvEntry.getKey();
             HandlerMethod handlerMethod = kvEntry.getValue();
-            Method m = handlerMethod.getMethod();
-
-            String interfaceName = rmi.getName();
-            // if the name of RequestMapping is blank，then skip it —— which means the interface has no name.
-            if (interfaceName == null || interfaceName.trim().length() == 0) {
-                continue;
-            }
-
-            boolean deprecated = handlerMethod.getBeanType().getAnnotation(Deprecated.class) != null;
-
-            String url = StringUtils.join(rmi.getPatternsCondition().getPatterns(), ",");
 
             try {
                 // get the base info
-                ApiInterface interfaces = new ApiInterface()
-                        .setMethod(StringUtils.join(rmi.getMethodsCondition().getMethods(), ","))
-                        .setUrl(url)
-                        .setController(m.getDeclaringClass().getSimpleName())
-                        .setDeprecated(deprecated || m.getAnnotation(Deprecated.class) != null)
-                        .setName(interfaceName)
-                        .setMark(Optional.ofNullable(m.getAnnotation(Notes.class)).map(Notes::value).orElse(null));
-                interfacesList.add(interfaces);
+                ApiInterface interfaces = generateBase(handlerMethod, rmi);
+                if (interfaces == null) {
+                    continue;
+                }
 
                 // get the returns
                 keyClassMap.clear();
@@ -152,9 +155,12 @@ public class InterfacesRegister implements ApplicationContextAware {
                 List<ApiBean> parameters = generateParameters(handlerMethod);
                 interfaces.setParameters(parameters);
 
+                // add to api list
+                interfacesList.add(interfaces);
             } catch (Exception e) {
                 // if failed， skip it
-                logger.error("generate failed and skipped : {}", url, e);
+                logger.error("generate failed and skipped : {}",
+                        handlerMethod.getMethod().getDeclaringClass().getName() + "." + handlerMethod.getMethod().getName(), e);
             }
         }
 
@@ -165,6 +171,38 @@ public class InterfacesRegister implements ApplicationContextAware {
         return interfacesList;
     }
 
+    private ApiInterface generateBase(HandlerMethod handlerMethod, RequestMappingInfo rmi) throws ClassNotFoundException {
+        String interfaceName = rmi.getName();
+        Method m = handlerMethod.getMethod();
+        String mark = Optional.ofNullable(m.getAnnotation(Notes.class)).map(Notes::value).orElse(null);
+
+        if (swagger) {
+            ApiOperation api = m.getAnnotation(ApiOperation.class);
+            if (api != null) {
+                interfaceName = StringUtils.isBlank(interfaceName) ? api.value() : interfaceName;
+                mark = StringUtils.isBlank(mark) ? api.notes() : mark;
+            }
+        }
+
+        // if the name of RequestMapping is blank，then skip it —— which means the interface has no name.
+        if (StringUtils.isBlank(interfaceName)) {
+            return null;
+        }
+
+        // 接口是否已废弃
+        boolean deprecated = handlerMethod.getBeanType().getAnnotation(Deprecated.class) != null || m.getAnnotation(Deprecated.class) != null;
+
+        String url = StringUtils.join(rmi.getPatternsCondition().getPatterns(), ",");
+        String method = StringUtils.join(rmi.getMethodsCondition().getMethods(), ",");
+        return new ApiInterface()
+                .setMethod(method)
+                .setUrl(url)
+                .setController(m.getDeclaringClass().getSimpleName())
+                .setDeprecated(deprecated)
+                .setName(interfaceName)
+                .setMark(mark);
+    }
+
     public List<ApiBean> generateParameters(HandlerMethod handlerMethod) {
         List<ApiBean> parameters = new ArrayList<>();
 
@@ -172,7 +210,6 @@ public class InterfacesRegister implements ApplicationContextAware {
         String[] parameterNames = Optional.ofNullable(new DefaultParameterNameDiscoverer().getParameterNames(handlerMethod.getMethod())).orElse(new String[methodParameters.length]);
 
         for (int i = 0; i < methodParameters.length; ++i) {
-
             MethodParameter mp = methodParameters[i];
             Notes notes = mp.getParameterAnnotation(Notes.class);
             RequestParam requestParam = mp.getParameterAnnotation(RequestParam.class);
@@ -181,21 +218,44 @@ public class InterfacesRegister implements ApplicationContextAware {
             boolean notNull = mp.getParameterAnnotation(PathVariable.class) != null
                     || Optional.ofNullable(requestParam).map(RequestParam::required).orElse(false)
                     || Optional.ofNullable(requestBody).map(RequestBody::required).orElse(false)
-                    || Optional.ofNullable(notes).map(Notes::notNull).orElse(false);
+                    || Optional.ofNullable(notes).map(Notes::notNull).orElse(false)
+                    || mp.hasParameterAnnotation(NotNull.class);
+
+            String comment = Optional.ofNullable(notes).map(Notes::value).orElse(null);
+            String mock = Optional.ofNullable(notes).map(Notes::mock).orElse(null);
+
+            String defaultValue = Optional.ofNullable(requestParam)
+                    .map(RequestParam::defaultValue)
+                    .filter(s -> !"\n\t\t\n\t\t\n\ue000\ue001\ue002\n\t\t\t\t\n".equals(s))
+                    .orElse(null);
 
             String parameterName = Optional.ofNullable(requestParam).map(RequestParam::value).orElse(null);
             parameterName = StringUtils.isBlank(parameterName) ? parameterNames[i] : parameterName;
 
+            if (swagger) {
+                if (mp.hasParameterAnnotation(ApiParam.class)) {
+                    ApiParam apiParam = mp.getParameterAnnotation(ApiParam.class);
+                    notNull = notNull || apiParam.required();
+                    defaultValue = ObjectUtils.defaultIfNull(defaultValue, apiParam.defaultValue());
+                    comment = StringUtils.isBlank(comment) ? apiParam.value() : comment;
+                    mock = StringUtils.isBlank(mock) ? apiParam.example() : mock;
+                    mock = StringUtils.isBlank(mock) ? defaultValue : mock;
+                } else if (mp.hasParameterAnnotation(ApiModelProperty.class)) {
+                    ApiModelProperty model = mp.getParameterAnnotation(ApiModelProperty.class);
+                    notNull = notNull || model.required();
+                    comment = StringUtils.isBlank(comment) ? model.value() : comment;
+                    mock = StringUtils.isBlank(mock) ? model.example() : mock;
+                    mock = StringUtils.isBlank(mock) ? defaultValue : mock;
+                }
+            }
+
             ApiBean parameter = new ApiBean()
-                    .setComment(Optional.ofNullable(notes).map(Notes::value).orElse(null))
+                    .setComment(comment)
                     .setNotNull(notNull)
                     .setKey(parameterName)
                     .setBody(requestBody != null)
-                    .setDefaults(Optional.ofNullable(requestParam)
-                            .map(RequestParam::defaultValue)
-                            .filter(s -> !"\n\t\t\n\t\t\n\ue000\ue001\ue002\n\t\t\t\t\n".equals(s))
-                            .orElse(null)
-                    );
+                    .setDefaults(defaultValue)
+                    .setMock(mock);
 
 
             generateChildrenBean(parameter, parameterName, mp.getGenericParameterType());

@@ -40,7 +40,7 @@ public class MockUtils {
         } else if (void.class.getSimpleName().equals(type) || type == null) {
             return null;
         } else {
-            return node.getDefaults();
+            return node.getMock();
         }
     }
 

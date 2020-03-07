@@ -21,6 +21,9 @@ public class ApiBean {
     @Notes("this default value of this field")
     private Object defaults;
 
+    @Notes("this mock value")
+    private Object mock;
+
     @Notes("comment for this field @Notes(value='****') ")
     private String comment;
 
@@ -98,6 +101,15 @@ public class ApiBean {
 
     public ApiBean setBody(boolean body) {
         this.body = body;
+        return this;
+    }
+
+    public Object getMock() {
+        return mock;
+    }
+
+    public ApiBean setMock(Object mock) {
+        this.mock = mock;
         return this;
     }
 }
