@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.httpapi.message.request;
 
-import com.gomcarter.frameworks.httpapi.utils.RequestTool;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.http.entity.ContentType;

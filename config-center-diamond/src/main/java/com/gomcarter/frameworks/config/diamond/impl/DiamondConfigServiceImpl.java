@@ -1,13 +1,11 @@
 package com.gomcarter.frameworks.config.diamond.impl;
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import com.taobao.diamond.client.DiamondConfigure;
 import com.taobao.diamond.client.DiamondConfigureUtil;
 import com.taobao.diamond.client.impl.DiamondEnv;
 import com.taobao.diamond.common.Constants;
 import com.taobao.diamond.manager.ManagerListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
@@ -17,8 +15,6 @@ import java.util.function.Consumer;
  * @author gomcarter on 2019-11-15 15:20:46
  */
 public class DiamondConfigServiceImpl implements UnifiedConfigService {
-    private static final Logger logger = LoggerFactory.getLogger(DiamondConfigServiceImpl.class);
-
     /**
      * export DIAMOND_CONFIG_SERVER_ADDRESS=yy
      * export DIAMOND_CONFIG_SERVER_PORT=8401
@@ -48,8 +44,7 @@ public class DiamondConfigServiceImpl implements UnifiedConfigService {
             DiamondEnv diamondEnv = DiamondEnv.instance();
             return diamondEnv.getConfig(dataId, group, Constants.GETCONFIG_LOCAL_SERVER_SNAPSHOT, timeoutMs);
         } catch (IOException e) {
-            logger.error("获取diamond配置示例失败：{} - {}", dataId, group, e);
-            throw new RuntimeException("获取diamond配置示例失败");
+            throw new RuntimeException("获取diamond配置示例失败", e);
         }
     }
 
@@ -76,7 +71,6 @@ public class DiamondConfigServiceImpl implements UnifiedConfigService {
 
             @Override
             public void receiveConfigInfo(String content) {
-                logger.info("收到diamond配置变化：dataId: {}, group: {}, content: {}", dataId, group, content);
                 consumer.accept(content);
             }
         });

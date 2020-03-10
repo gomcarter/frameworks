@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.httpapi.annotation;
 
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;

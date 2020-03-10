@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.annotation;
+package com.gomcarter.frameworks.config.annotation;
 
 import java.lang.annotation.*;
 

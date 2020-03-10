@@ -14,20 +14,20 @@ import java.util.concurrent.CountDownLatch;
  */
 public class DubboServer {
     public static void main(String[] args) throws InterruptedException {
-//        System.setProperty("dubbo.application.logger", "slf4j");
+        // System.setProperty("dubbo.application.logger", "slf4j");
 
         // 服务实现
         DemoApi demoApi = new DemoApiImpl();
 
         // RegistryConfig rc = new RegistryConfig("zookeeper://172.18.19.251:2181?backup=172.18.20.6:2181,172.18.19.252:2181");
-//        RegistryConfig rc = new RegistryConfig("redis://119.23.240.12:7480");
+        // RegistryConfig rc = new RegistryConfig("redis://119.23.240.12:7480");
         String namespace = System.getenv("NACOS_NAMESPACE");
         RegistryConfig rc = new RegistryConfig("nacos://119.23.240.12:10009");
         rc.setParameters(new HashMap<String, String>() {{
             put("namespace", namespace);
         }});
-//        rc.setPassword("3zda3caeyx6pn7c5z");
-//        rc.setUsername("anywhocares");
+        // rc.setPassword("3zda3caeyx6pn7c5z");
+        // rc.setUsername("anywhocares");
 
         // 当前应用配置
         ApplicationConfig application = new ApplicationConfig();

@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.common;
+package com.gomcarter.frameworks.config.utils;
 
 
 import org.slf4j.Logger;

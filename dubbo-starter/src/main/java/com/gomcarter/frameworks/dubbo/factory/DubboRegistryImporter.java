@@ -1,12 +1,10 @@
 package com.gomcarter.frameworks.dubbo.factory;
 
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.common.BeanRegistrationUtils;
-import com.gomcarter.frameworks.base.common.PackageUtils;
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.utils.BeanRegistrationUtils;
+import com.gomcarter.frameworks.config.utils.PackageUtils;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import com.gomcarter.frameworks.dubbo.annotation.EnableDubbo;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ProtocolConfig;
@@ -29,7 +27,6 @@ import java.util.Properties;
  * @author gomcarter on 2019-11-09 23:31:48
  */
 @Order
-@Slf4j
 public class DubboRegistryImporter implements ImportBeanDefinitionRegistrar {
 
     @Override
@@ -40,7 +37,6 @@ public class DubboRegistryImporter implements ImportBeanDefinitionRegistrar {
 
         AnnotationAttributes attributes = AnnotationAttributes
                 .fromMap(annotationMetadata.getAnnotationAttributes(EnableDubbo.class.getName()));
-        AssertUtils.notNull(attributes, new RuntimeException("未配置：@EnableDubbo"));
 
         String[] keys = attributes.getStringArray("value");
         if (keys.length == 0) {

@@ -51,7 +51,7 @@ public class MybatisConfiguration {
         // 分页插件
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
         // 暂时不支持别的参数配置
-        paginationInterceptor.setDialectType(MybatisConfigHolder.DB_TYPE);
+        paginationInterceptor.setDbType(MybatisConfigHolder.DB_TYPE);
         factoryBean.setPlugins(paginationInterceptor);
 
         factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(MybatisConfigHolder.DAO_XML_PATH));

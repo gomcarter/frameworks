@@ -1,8 +1,7 @@
 package com.gomcarter.frameworks.httpapi;
 
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import com.gomcarter.frameworks.httpapi.annotation.HttpBean;
 import com.gomcarter.frameworks.httpapi.annotation.HttpResource;
 import com.gomcarter.frameworks.httpapi.proxy.HttpApiProxyHandler;
@@ -51,7 +50,10 @@ public class HttpApiRegistrar implements BeanPostProcessor {
             HttpBean httpBean = apiClass.getAnnotation(HttpBean.class);
             if (httpBean != null) {
                 String[] keys = httpBean.value();
-                AssertUtils.isTrue(keys.length > 0, new RuntimeException("未配置@EnableHttp 的 value"));
+                if (keys.length == 0) {
+                    throw new RuntimeException("未配置@EnableHttp 的 value");
+                }
+
                 String cacheKey = StringUtils.join(keys, ",");
                 if (cache.get(cacheKey) == null) {
                     UnifiedConfigService configService = UnifiedConfigService.getInstance();

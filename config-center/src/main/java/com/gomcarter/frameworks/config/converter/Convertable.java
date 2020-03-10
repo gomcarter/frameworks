@@ -1,8 +1,8 @@
-package com.gomcarter.frameworks.base.converter;
+package com.gomcarter.frameworks.config.converter;
 
-import com.gomcarter.frameworks.base.common.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 import java.io.File;
 import java.lang.reflect.Type;

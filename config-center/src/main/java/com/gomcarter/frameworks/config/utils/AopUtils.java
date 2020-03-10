@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.common;
+package com.gomcarter.frameworks.config.utils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -144,7 +144,9 @@ public class AopUtils {
      * @return 返回对象的 user class
      */
     public static Class<?> getUserClass(Object object) {
-        AssertUtils.notNull(object, "Error: Instance must not be null");
+        if (object == null) {
+            throw new RuntimeException("Error: Instance must not be null");
+        }
         return getUserClass(object.getClass());
     }
 
@@ -174,7 +176,9 @@ public class AopUtils {
      * is defined in the default package
      */
     public static String getPackageName(Class<?> clazz) {
-        AssertUtils.notNull(clazz, "Class must not be null");
+        if (clazz == null) {
+            throw new RuntimeException("Class must not be null");
+        }
         return getPackageName(clazz.getName());
     }
 
@@ -187,7 +191,10 @@ public class AopUtils {
      * is defined in the default package
      */
     public static String getPackageName(String fqClassName) {
-        AssertUtils.notNull(fqClassName, "Class name must not be null");
+        if (fqClassName == null) {
+            throw new RuntimeException("Class name must not be null");
+        }
+
         int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
         return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
     }

@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.base.streaming;
 
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 
 import java.util.List;
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.redis.tool;
 
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.gomcarter.frameworks.dubbo.factory;
 
-import com.gomcarter.frameworks.base.common.AopUtils;
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.config.utils.AopUtils;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

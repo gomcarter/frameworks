@@ -1,8 +1,8 @@
 package com.gomcarter.frameworks.mybatis.annotation;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.gomcarter.frameworks.mybatis.EnableMybatisRegistrar;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
@@ -57,5 +57,5 @@ public @interface EnableMybatis {
     /**
      * @return 数据库类型
      */
-    String dbType() default "mysql";
+    DbType dbType() default DbType.MYSQL;
 }

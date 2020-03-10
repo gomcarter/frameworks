@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.common;
+package com.gomcarter.frameworks.config.utils;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

@@ -1,6 +1,7 @@
-package com.gomcarter.frameworks.base.converter;
+package com.gomcarter.frameworks.config.converter;
 
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

@@ -8,22 +8,18 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>dubbo-starter</artifactId>
+    <artifactId>config-center</artifactId>
     <version>${parent.version}</version>
     <packaging>jar</packaging>
+    <description>config center</description>
 
-    <name>dubbo-starter</name>
-    <url>https://github.com/gomcarter/frameworks/tree/master/dubbo-starter</url>
+    <name>config-center-local</name>
+    <url>https://github.com/gomcarter/frameworks/tree/master/config-center</url>
 
     <dependencies>
         <dependency>
-            <groupId>com.gomcarter.frameworks</groupId>
-            <artifactId>config-center</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -36,4 +32,5 @@
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
+
 </project>

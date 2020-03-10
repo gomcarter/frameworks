@@ -1,10 +1,7 @@
 package com.gomcarter.frameworks.config.local.impl;
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
@@ -19,8 +16,6 @@ import java.util.function.Consumer;
  * @author gomcarter on 2019-11-15 15:20:46
  */
 public class LocalConfigServiceImpl implements UnifiedConfigService {
-    private static final Logger logger = LoggerFactory.getLogger(LocalConfigServiceImpl.class);
-
     /**
      * not support
      *
@@ -68,11 +63,8 @@ public class LocalConfigServiceImpl implements UnifiedConfigService {
                 sb.append(new String(FileCopyUtils.copyToByteArray(resource.getInputStream()), Charset.defaultCharset()));
             }
         } catch (Exception e) {
-            logger.error("获取{}配置示例失败：", path, e);
-            throw new RuntimeException("获取" + path + "配置示例失败");
+            throw new RuntimeException("获取" + path + "配置示例失败", e);
         }
-
-        logger.info("加载配置 path: {}, content: {}", StringUtils.join(filePath, ","), sb.toString());
 
         return sb.toString();
     }

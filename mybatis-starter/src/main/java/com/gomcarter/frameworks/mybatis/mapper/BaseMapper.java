@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gomcarter.frameworks.base.common.CollectionUtils;
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
 import com.gomcarter.frameworks.base.pager.DefaultPager;
 import com.gomcarter.frameworks.base.pager.Pageable;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 

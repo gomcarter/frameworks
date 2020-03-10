@@ -1,8 +1,6 @@
 package com.gomcarter.frameworks.redis.factory;
 
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.common.CustomStringUtils;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.redis.tool.RedisProxy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -30,20 +28,19 @@ public class RedisConnectionBuilder {
         GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
 
         //最大空闲数
-        poolConfig.setMaxIdle(CustomStringUtils.parseInt(properties.getProperty("redis.maxIdle"), 200));
-        poolConfig.setMinIdle(CustomStringUtils.parseInt(properties.getProperty("redis.minIdle"), 10));
-        poolConfig.setMaxTotal(CustomStringUtils.parseInt(properties.getProperty("redis.maxTotal"), 1000));
+        poolConfig.setMaxIdle(Integer.valueOf(properties.getProperty("redis.maxIdle", "200")));
+        poolConfig.setMinIdle(Integer.valueOf(properties.getProperty("redis.minIdle", "10")));
+        poolConfig.setMaxTotal(Integer.valueOf(properties.getProperty("redis.maxTotal", "1000")));
         //最大建立连接等待时间
-        poolConfig.setMaxWaitMillis(CustomStringUtils.parseInt(properties.getProperty("redis.maxWait"), 1000));
+        poolConfig.setMaxWaitMillis(Integer.valueOf(properties.getProperty("redis.maxWait", "1000")));
         //是否在从池中取出连接前进行检验,如果检验失败,则从池中去除连接并尝试取出另一个
         poolConfig.setTestOnBorrow(Boolean.valueOf(properties.getProperty("redis.testOnBorrow")));
 
-        Integer timeout = CustomStringUtils.parseInt(properties.getProperty("redis.timeout"), 300000);
-        Integer maxAttempts = CustomStringUtils.parseInt(properties.getProperty("redis.maxAttempts"), 6);
+        Integer timeout = Integer.valueOf(properties.getProperty("redis.timeout", "300000"));
+        Integer maxAttempts = Integer.valueOf(properties.getProperty("redis.maxAttempts", "6"));
         String password = properties.getProperty("redis.password");
 
-        String mode = properties.getProperty("redis.mode");
-        AssertUtils.notNull(mode);
+        String mode = properties.getProperty("redis.mode", "standalone");
 
         Set<HostAndPort> haps = new HashSet<>();
         for (Object key : properties.keySet()) {

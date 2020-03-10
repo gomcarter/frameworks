@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.filter.HttpPutFormContentFilter;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.filter.FormContentFilter;
 
 import javax.servlet.MultipartConfigElement;
 import java.nio.charset.Charset;
@@ -37,11 +38,11 @@ public class CommonConfiguration {
     }
 
     /**
-     * @return HttpPutFormContentFilter
+     * @return FormContentFilter
      */
     @Bean
-    public HttpPutFormContentFilter httpPutFormContentFilter() {
-        return new HttpPutFormContentFilter();
+    public FormContentFilter httpPutFormContentFilter() {
+        return new FormContentFilter();
     }
 
     /**
@@ -60,7 +61,7 @@ public class CommonConfiguration {
     @ConditionalOnMissingBean(ObjectMapper.class)
     public ObjectMapper objectMapper() {
         CustomMappingJacksonConverter jacksonConverter = new CustomMappingJacksonConverter();
-        jacksonConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON_UTF8));
+        jacksonConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON));
         return jacksonConverter.getObjectMapper();
     }
 
@@ -72,10 +73,10 @@ public class CommonConfiguration {
     @Bean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
-        //单个文件最大 --- KB, MB
-        factory.setMaxFileSize("3072000KB");
-        /// 设置总上传数据总大小
-        factory.setMaxRequestSize("3072000KB");
+        // 单个文件最大 --- KB, MB
+        factory.setMaxFileSize(DataSize.ofKilobytes(3072000));
+        // 设置总上传数据总大小
+        factory.setMaxRequestSize(DataSize.ofKilobytes(3072000));
         return factory.createMultipartConfig();
     }
 

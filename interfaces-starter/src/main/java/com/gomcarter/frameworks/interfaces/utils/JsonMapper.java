@@ -1,6 +1,7 @@
 package com.gomcarter.frameworks.interfaces.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -38,6 +39,7 @@ public class JsonMapper {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         //禁止使用int代表Enum的order()來反序列化Enum,非常危險
         mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
+
         mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 
         if (timeFormat != null) {

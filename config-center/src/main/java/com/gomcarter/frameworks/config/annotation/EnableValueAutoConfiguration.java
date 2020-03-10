@@ -1,6 +1,7 @@
-package com.gomcarter.frameworks.base.annotation;
+package com.gomcarter.frameworks.config.annotation;
 
-import com.gomcarter.frameworks.base.config.BeanFieldConfigurableProcessor;
+
+import com.gomcarter.frameworks.config.processor.BeanFieldConfigurableProcessor;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

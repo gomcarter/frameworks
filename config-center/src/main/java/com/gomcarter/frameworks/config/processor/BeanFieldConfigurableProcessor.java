@@ -1,9 +1,9 @@
-package com.gomcarter.frameworks.base.config;
+package com.gomcarter.frameworks.config.processor;
 
-import com.gomcarter.frameworks.base.annotation.ConfigurableValue;
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
-import com.gomcarter.frameworks.base.converter.Convertable;
-import com.gomcarter.frameworks.base.spring.AbstractBeanFieldAndMethodProcessor;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.annotation.ConfigurableValue;
+import com.gomcarter.frameworks.config.converter.Convertable;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

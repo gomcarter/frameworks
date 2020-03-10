@@ -4,7 +4,7 @@ import com.gomcarter.frameworks.base.exception.CustomException;
 import com.gomcarter.frameworks.base.json.ErrorCode;
 import com.gomcarter.frameworks.base.json.JsonError;
 import com.gomcarter.frameworks.base.json.JsonObject;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.MissingServletRequestParameterException;

@@ -1,7 +1,7 @@
 package com.gomcarter.frameworks.httpapi.api;
 
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;

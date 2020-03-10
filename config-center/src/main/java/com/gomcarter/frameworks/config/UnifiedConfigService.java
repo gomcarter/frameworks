@@ -1,7 +1,7 @@
-package com.gomcarter.frameworks.base.config;
+package com.gomcarter.frameworks.config;
 
-import com.gomcarter.frameworks.base.converter.Convertable;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.converter.Convertable;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 import java.util.List;
@@ -11,9 +11,9 @@ import java.util.function.Consumer;
 /**
  * 统一配置中心，SPI 接口，提供商在 META-INF/spring.factories 中写下：
  * <p>
- * com.gomcarter.frameworks.base.config.UnifiedConfigService=具体实现类，如：
+ * com.gomcarter.frameworks.config.UnifiedConfigService=具体实现类，如：
  * <p>
- * com.gomcarter.frameworks.base.config.UnifiedConfigService=com.gomcarter.frameworks.base.config.NacosConfigServiceImpl
+ * com.gomcarter.frameworks.config.UnifiedConfigService=com.gomcarter.frameworks.config.nacos.impl.NacosConfigServiceImpl
  *
  * @author gomcarter on 2019-12-30 10:30:33
  */

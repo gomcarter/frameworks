@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import com.gomcarter.frameworks.mybatis.annotation.ConfigurableSql;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;

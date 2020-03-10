@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.redis.factory;
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import com.gomcarter.frameworks.redis.tool.RedisProxy;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;

@@ -1,7 +1,7 @@
 package com.gomcarter.frameworks.mybatis;
 
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.common.BeanRegistrationUtils;
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.gomcarter.frameworks.config.utils.BeanRegistrationUtils;
 import com.gomcarter.frameworks.mybatis.annotation.EnableMybatis;
 import com.gomcarter.frameworks.mybatis.factory.NacosReadWriteDataSourceFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -23,14 +23,16 @@ public class EnableMybatisRegistrar implements ImportBeanDefinitionRegistrar {
 
         AnnotationAttributes attributes = AnnotationAttributes
                 .fromMap(annotationMetadata.getAnnotationAttributes(EnableMybatis.class.getName()));
-        AssertUtils.notNull(attributes, new RuntimeException("未配置：@EnableMybatis"));
+        if (attributes == null) {
+            throw new RuntimeException("未配置：@EnableMybatis");
+        }
 
         String[] keys = attributes.getStringArray("value");
         if (keys.length == 0) {
             throw new RuntimeException("未配置@EnableMybatis的 value");
         }
 
-        MybatisConfigHolder.DB_TYPE = attributes.getString("dbType");
+        MybatisConfigHolder.DB_TYPE = DbType.getDbType(attributes.getString("dbType"));
         MybatisConfigHolder.DAO_XML_PATH = attributes.getString("daoXmlPath");
         MybatisConfigHolder.DAO_BASE_PACKAGE = attributes.getStringArray("daoBasePackage");
         MybatisConfigHolder.TRANSACTION_POINTCUT_EXPRESSION = attributes.getString("transactionPointcut");

@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.converter;
+package com.gomcarter.frameworks.config.converter;
 
 import java.io.*;
 import java.lang.reflect.Type;

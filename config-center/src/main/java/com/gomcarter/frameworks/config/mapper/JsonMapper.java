@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.mapper;
+package com.gomcarter.frameworks.config.mapper;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -6,10 +6,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -64,6 +66,10 @@ public class JsonMapper {
 
     public static JsonMapper buildNonNullTimeFormatMapper() {
         return TimeFormatHolder.TIME_FORMAT_MAPPER;
+    }
+
+    public <T> T fromJson(String jsonString, Type type) throws IOException {
+        return mapper.readValue(jsonString, TypeFactory.defaultInstance().constructType(type));
     }
 
     /**

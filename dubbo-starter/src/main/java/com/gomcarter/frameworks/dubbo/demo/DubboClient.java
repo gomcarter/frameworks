@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.dubbo.demo;
 
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
@@ -32,7 +31,7 @@ public class DubboClient {
 
         DemoDto result = service.getById(1);
 
-        System.out.println("调用结果：" + JsonMapper.buildNonNullMapper().toJson(result));
+        System.out.println("调用结果：" + result.toString());
 
         new CountDownLatch(1).await();
     }

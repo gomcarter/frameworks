@@ -2,8 +2,7 @@ package com.gomcarter.frameworks.redis.aop;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.gomcarter.frameworks.base.exception.NonConcurrencyException;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.redis.annotation.Cache;
 import com.gomcarter.frameworks.redis.annotation.DelCache;
 import com.gomcarter.frameworks.redis.annotation.Lock;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author gomcarter 2018年1月9日 16:45:42
@@ -172,7 +172,7 @@ public class DataRedisInterceptor {
         //开始锁定，非公平锁，谁运气好谁的
         while (!redisProxy.lock(key, locker.timeout())) {
             if (await <= 0 || count >= sleepTimes) {
-                throw new NonConcurrencyException();
+                throw new TimeoutException();
             }
 
             // TODO: 自旋锁优化，sleep 会导致核心态用户态切换，性能下降

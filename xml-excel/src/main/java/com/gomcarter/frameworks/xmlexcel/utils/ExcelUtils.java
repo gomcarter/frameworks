@@ -1,7 +1,5 @@
 package com.gomcarter.frameworks.xmlexcel.utils;
 
-import com.gomcarter.frameworks.base.common.CollectionUtils;
-import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import jxl.CellView;
 import jxl.Range;
 import jxl.Sheet;
@@ -11,7 +9,6 @@ import jxl.write.*;
 import jxl.write.Number;
 import jxl.write.biff.RowsExceededException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,12 +21,8 @@ import java.util.*;
  */
 public class ExcelUtils {
 
-    public static List<Map<String, String>> upload(MultipartFile multipartFile) throws IOException {
-        return upload(multipartFile.getInputStream(), multipartFile.getOriginalFilename());
-    }
-
     protected static List<Map<String, String>> upload(InputStream is, String fileName) {
-        String fileSuffix = CustomStringUtils.getFileSuffix(fileName);
+        String fileSuffix = getFileSuffix(fileName);
         if (!"xls".contains(fileSuffix)) {
             throw new RuntimeException("excel解析失败，请上传excel2003格式的文档！");
         }
@@ -39,7 +32,7 @@ public class ExcelUtils {
         } catch (Exception e1) {
             throw new RuntimeException("excel解析失败，请上传excel2003格式的文档！", e1);
         }
-        if (CollectionUtils.isEmpty(dataList)) {
+        if (dataList == null || dataList.size() == 0) {
             throw new RuntimeException("上传的文件无内容或有误！");
         }
         return dataList;
@@ -255,5 +248,21 @@ public class ExcelUtils {
         }
         book.write();
         book.close();
+    }
+
+    /**
+     * 获取文件拓展名
+     *
+     * @param filename file name
+     * @return the suffix
+     */
+    private static String getFileSuffix(String filename) {
+        if ((filename != null) && (filename.length() > 0)) {
+            int dot = filename.lastIndexOf('.');
+            if ((dot > -1) && (dot < (filename.length() - 1))) {
+                return filename.substring(dot + 1);
+            }
+        }
+        return filename;
     }
 }

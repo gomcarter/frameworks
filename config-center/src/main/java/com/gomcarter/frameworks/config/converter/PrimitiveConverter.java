@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.base.converter;
+package com.gomcarter.frameworks.config.converter;
 
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.support.GenericConversionService;

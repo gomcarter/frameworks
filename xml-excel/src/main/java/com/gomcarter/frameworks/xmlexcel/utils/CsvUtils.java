@@ -1,7 +1,6 @@
 package com.gomcarter.frameworks.xmlexcel.utils;
 
 
-import com.gomcarter.frameworks.base.common.CustomDateUtils;
 import com.gomcarter.frameworks.xmlexcel.config.Header;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +80,8 @@ public class CsvUtils {
     private static Object formatData(Object data) {
         if (data != null) {
             if (data instanceof Date) {
-                return CustomDateUtils.toString((Date) data);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                return (sdf.format(data));
             }
             if (data instanceof String) {
                 return StringUtils.replaceEach((String) data, new String[]{"\t"}, new String[]{""});

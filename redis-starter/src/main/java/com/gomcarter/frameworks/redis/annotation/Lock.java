@@ -1,7 +1,5 @@
 package com.gomcarter.frameworks.redis.annotation;
 
-import com.gomcarter.frameworks.base.exception.NonConcurrencyException;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -43,7 +41,7 @@ public @interface Lock {
      * <p>
      * 默认不等待，并发时直接讲后进入的熔断
      * </p>
-     * 小于0等于0：不等待（直接返回{@link NonConcurrencyException}）；
+     * 小于0等于0：不等待（直接返回{@link java.util.concurrent.TimeoutException}）；
      * <p>
      * 大于0：表示最大等待时间，超时返回服务器繁忙
      * </p>

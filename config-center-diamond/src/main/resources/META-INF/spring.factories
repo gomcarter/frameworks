@@ -1,1 +1,1 @@
-com.gomcarter.frameworks.base.config.UnifiedConfigService=com.gomcarter.frameworks.config.diamond.impl.DiamondConfigServiceImpl
+com.gomcarter.frameworks.config.UnifiedConfigService=com.gomcarter.frameworks.config.diamond.impl.DiamondConfigServiceImpl

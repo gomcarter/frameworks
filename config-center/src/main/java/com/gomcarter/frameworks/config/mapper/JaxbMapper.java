@@ -1,13 +1,5 @@
-/**
- * Copyright (c) 2005-2011 springside.org.cn
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * <p>
- * $Id: JaxbMapper.java 1591 2011-05-11 01:42:15Z calvinxiu $
- */
-package com.gomcarter.frameworks.base.mapper;
+package com.gomcarter.frameworks.config.mapper;
 
-import com.gomcarter.frameworks.base.exception.CustomException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.*;
@@ -38,7 +30,7 @@ public class JaxbMapper {
         try {
             jaxbContext = JAXBContext.newInstance(rootTypes);
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -65,7 +57,7 @@ public class JaxbMapper {
             createMarshaller(encoding).marshal(root, writer);
             return writer.toString();
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -101,7 +93,7 @@ public class JaxbMapper {
 
             return writer.toString();
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -118,7 +110,7 @@ public class JaxbMapper {
             StringReader reader = new StringReader(xml);
             return (T) createUnmarshaller().unmarshal(reader);
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -140,7 +132,7 @@ public class JaxbMapper {
 
             return marshaller;
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
@@ -153,7 +145,7 @@ public class JaxbMapper {
         try {
             return jaxbContext.createUnmarshaller();
         } catch (JAXBException e) {
-            throw new CustomException(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 

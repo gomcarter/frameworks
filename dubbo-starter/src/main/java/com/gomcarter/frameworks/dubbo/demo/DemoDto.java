@@ -27,4 +27,9 @@ public class DemoDto implements Serializable {
         this.name = name;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return id + ":" + name;
+    }
 }

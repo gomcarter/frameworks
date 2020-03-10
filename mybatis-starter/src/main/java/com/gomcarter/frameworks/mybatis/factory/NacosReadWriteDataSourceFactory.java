@@ -1,6 +1,6 @@
 package com.gomcarter.frameworks.mybatis.factory;
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

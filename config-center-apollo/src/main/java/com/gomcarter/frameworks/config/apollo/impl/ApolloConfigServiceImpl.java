@@ -3,20 +3,18 @@ package com.gomcarter.frameworks.config.apollo.impl;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.model.ConfigChange;
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import com.google.common.collect.Sets;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
 /**
  * @author gomcarter on 2019-11-15 15:20:46
  */
+@Slf4j
 public class ApolloConfigServiceImpl implements UnifiedConfigService {
-    private static final Logger logger = LoggerFactory.getLogger(ApolloConfigServiceImpl.class);
 
     /**
      * get apollo meta
@@ -46,7 +44,7 @@ public class ApolloConfigServiceImpl implements UnifiedConfigService {
 
         String content = config.getProperty(key, StringUtils.EMPTY);
 
-        logger.info("加载apollo配置 keyAndNamespace: {}, content: {}", StringUtils.join(keyAndNamespace, "-"), content);
+        log.info("加载apollo配置 keyAndNamespace: {}, content: {}", StringUtils.join(keyAndNamespace, "-"), content);
         return content;
     }
 
@@ -68,7 +66,7 @@ public class ApolloConfigServiceImpl implements UnifiedConfigService {
             for (String key1 : changeEvent.changedKeys()) {
                 ConfigChange change = changeEvent.getChange(key1);
                 String newValue = change.getNewValue();
-                logger.info("收到apollo配置变化：keyAndNamespace: {},\nold: {} \nnew: {}", key1 + "-" + change.getNamespace(), change.getOldValue(), newValue);
+                log.info("收到apollo配置变化：keyAndNamespace: {},\nold: {} \nnew: {}", key1 + "-" + change.getNamespace(), change.getOldValue(), newValue);
 
                 consumer.accept(newValue);
             }
@@ -107,7 +105,9 @@ public class ApolloConfigServiceImpl implements UnifiedConfigService {
      */
     private static String server0() {
         String serverAddr = StringUtils.defaultIfBlank(System.getProperty("apollo.meta"), System.getenv("APOLLO_META"));
-        AssertUtils.isTrue(StringUtils.isNotBlank(serverAddr), new RuntimeException("未找到 APOLLO META 信息"));
+        if (StringUtils.isBlank(serverAddr)) {
+            throw new RuntimeException("未找到 APOLLO META 信息");
+        }
         return serverAddr;
     }
 }

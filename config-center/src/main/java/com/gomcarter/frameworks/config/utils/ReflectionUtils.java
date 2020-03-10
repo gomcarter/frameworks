@@ -5,9 +5,9 @@
  * <p>
  * $Id: ReflectionUtils.java 1504 2011-03-08 14:49:20Z calvinxiu $
  */
-package com.gomcarter.frameworks.base.common;
+package com.gomcarter.frameworks.config.utils;
 
-import com.gomcarter.frameworks.base.converter.Convertable;
+import com.gomcarter.frameworks.config.converter.Convertable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
@@ -26,7 +26,7 @@ public abstract class ReflectionUtils {
     /**
      * 直接读取对象属性值, 无视private/protected修饰符, 不经过getter函数.
      *
-     * @param obj obj
+     * @param obj   obj
      * @param field field
      * @return field value
      */
@@ -180,7 +180,10 @@ public abstract class ReflectionUtils {
      */
     public static Field getAccessibleField(final Object obj,
                                            final String fieldName) {
-        AssertUtils.notNull(obj, "object不能为空");
+        if (obj == null) {
+            throw new RuntimeException("object不能为空");
+        }
+
         for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass
                 .getSuperclass()) {
             try {
@@ -231,7 +234,9 @@ public abstract class ReflectionUtils {
      */
     public static Method getAccessibleMethod(final Object obj,
                                              final String methodName, final Class<?>... parameterTypes) {
-        AssertUtils.notNull(obj, "object不能为空");
+        if (obj == null) {
+            throw new RuntimeException("object不能为空");
+        }
 
         for (Class<?> superClass = obj.getClass(); superClass != Object.class; superClass = superClass
                 .getSuperclass()) {
@@ -341,9 +346,10 @@ public abstract class ReflectionUtils {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> extractToMap(final Collection<?> collection, final String keyPropertyName, final String valuePropertyName) {
         Map<K, V> map = new HashMap<K, V>();
-        if (CollectionUtils.isEmpty(collection)) {
+        if (collection == null || collection.isEmpty()) {
             return map;
         }
+
         Iterator<?> iterator = collection.iterator();
         Object value = iterator.next();
         Field keyField = getExistAccessibleField(value, keyPropertyName);
@@ -370,9 +376,10 @@ public abstract class ReflectionUtils {
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> tranToMap(final Collection<V> collection, final String keyPropertyName) {
         Map<K, V> map = new HashMap<K, V>();
-        if (CollectionUtils.isEmpty(collection)) {
+        if (collection == null || collection.isEmpty()) {
             return map;
         }
+
         Iterator<V> iterator = collection.iterator();
         V value = iterator.next();
         Field keyField = getExistAccessibleField(value, keyPropertyName);
@@ -420,10 +427,14 @@ public abstract class ReflectionUtils {
      */
     @SuppressWarnings("unchecked")
     private static <K> void fillCollection(final Collection<K> result, final Collection<?> collection, final String propertyName) {
-        AssertUtils.notNull(result, "接收集合错误");
-        if (CollectionUtils.isEmpty(collection)) {
-            return;
+        if (result == null) {
+            throw new RuntimeException("接收集合错误");
         }
+
+        if (collection == null || collection.isEmpty()) {
+            return ;
+        }
+
         Iterator<?> iterator = collection.iterator();
         Object value = iterator.next();
         Field propertyField = getExistAccessibleField(value, propertyName);

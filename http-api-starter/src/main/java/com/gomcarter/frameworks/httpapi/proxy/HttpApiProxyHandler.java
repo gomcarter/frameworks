@@ -1,9 +1,9 @@
 package com.gomcarter.frameworks.httpapi.proxy;
 
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
-import com.gomcarter.frameworks.base.converter.Convertable;
 import com.gomcarter.frameworks.base.json.JsonData;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.converter.Convertable;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.httpapi.annotation.CheckToken;
 import com.gomcarter.frameworks.httpapi.annotation.HttpMethod;
 import com.gomcarter.frameworks.httpapi.annotation.HttpParam;

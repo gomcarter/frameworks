@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.httpapi.aop;
 
-import com.gomcarter.frameworks.base.exception.NoPermissionException;
 import com.gomcarter.frameworks.httpapi.annotation.CheckToken;
 import com.gomcarter.frameworks.httpapi.utils.ApiTokenUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +20,7 @@ public class CheckTokenInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response, Object handler) throws Exception {
 
-        /*复杂请求的探针，这里需要直接通过，这里最好在nginx配置即可*/
+        /*复杂请求的探针，这里需要直接通过，这里最好在 nginx 配置即可*/
         if (StringUtils.equalsIgnoreCase(RequestMethod.OPTIONS.name(), request.getMethod())) {
             return true;
         }
@@ -32,13 +31,9 @@ public class CheckTokenInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        if (!new ApiTokenUtils(ct.key(), ct.tokenName()).validate(request)) {
-            throw new NoPermissionException();
-        }
-
         /*记录访问此接口的信息*/
         /*logger.info(request.getRequestURI() + "【" + 1 + "】：" + JsonMapper.buildNonNullMapper().toJson(request.getParameterMap()));*/
-        return true;
+        return new ApiTokenUtils(ct.key(), ct.tokenName()).validate(request);
     }
 
     @Override

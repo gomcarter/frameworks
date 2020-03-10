@@ -2,7 +2,7 @@ package com.gomcarter.frameworks.httpapi.api;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.gomcarter.frameworks.base.json.JsonTData;
-import com.gomcarter.frameworks.base.mapper.JsonMapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.httpapi.annotation.Method;
 import com.gomcarter.frameworks.httpapi.impl.DefaultHttpClientManager;
 import com.gomcarter.frameworks.httpapi.impl.HttpClientTemplate;

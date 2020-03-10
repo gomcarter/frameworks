@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.httpapi.impl;
 
-import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.httpapi.HttpClientManager;
 import com.gomcarter.frameworks.httpapi.annotation.Method;
 import com.gomcarter.frameworks.httpapi.config.HttpClientConfig;
@@ -224,8 +223,6 @@ public class HttpClientTemplate {
     }
 
     private HttpEntityEnclosingRequestBase buildMethod(Method method, URIBuilder uriBuilder, RequestMessage requestMessage) throws URISyntaxException {
-        AssertUtils.notNull(method);
-
         requestMessage.getParameters().forEach((key, valueSet) -> {
             if (StringUtils.isNotBlank(key) && CollectionUtils.isNotEmpty(valueSet)) {
                 valueSet.forEach(v -> uriBuilder.addParameter(key, v));

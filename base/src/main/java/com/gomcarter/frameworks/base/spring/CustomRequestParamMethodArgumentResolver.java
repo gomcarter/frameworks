@@ -46,10 +46,7 @@ public class CustomRequestParamMethodArgumentResolver extends RequestParamMethod
     private Class<?> getCollectionParameterType(MethodParameter parameter) {
         Class<?> paramType = parameter.getParameterType();
         if (Collection.class.equals(paramType) || List.class.isAssignableFrom(paramType)) {
-            Class<?> valueType = GenericTypeResolver.resolveParameterType(parameter, paramType);
-            if (valueType != null) {
-                return valueType;
-            }
+            return parameter.withContainingClass(paramType).getParameterType();
         }
         return null;
     }
@@ -71,7 +68,7 @@ public class CustomRequestParamMethodArgumentResolver extends RequestParamMethod
 
     private boolean isMultipartFileArray(MethodParameter parameter) {
         Class<?> paramType = parameter.getParameterType().getComponentType();
-        return ((paramType != null) && MultipartFile.class.equals(paramType));
+        return MultipartFile.class.equals(paramType);
     }
 
     private static class RequestPartResolver {

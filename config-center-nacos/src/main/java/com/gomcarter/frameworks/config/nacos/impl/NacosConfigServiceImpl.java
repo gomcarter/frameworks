@@ -5,8 +5,7 @@ import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.gomcarter.frameworks.base.common.AssertUtils;
-import com.gomcarter.frameworks.base.config.UnifiedConfigService;
+import com.gomcarter.frameworks.config.UnifiedConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +143,10 @@ public class NacosConfigServiceImpl implements UnifiedConfigService {
      */
     private static String server0() {
         String serverAddr = StringUtils.defaultIfBlank(System.getProperty("nacos.server.addr"), System.getenv("NACOS_SERVER_ADDR"));
-        AssertUtils.isTrue(StringUtils.isNotBlank(serverAddr), new RuntimeException("未配置环境变量NACOS_SERVER_ADDR"));
+        if (StringUtils.isBlank(serverAddr)) {
+            throw new RuntimeException("请指定 -Dnacos.server.addr");
+        }
+
         return serverAddr;
     }
 }

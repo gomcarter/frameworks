@@ -1,6 +1,6 @@
-package com.gomcarter.frameworks.base.spring;
+package com.gomcarter.frameworks.config.processor;
 
-import com.gomcarter.frameworks.base.common.ReflectionUtils;
+import com.gomcarter.frameworks.config.utils.ReflectionUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.Ordered;
