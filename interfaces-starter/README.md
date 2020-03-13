@@ -62,7 +62,7 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
   
     // 返回值类，Notes中的备注将被接口中心读取作为接口返回字段描述
     class ReturnDto {
-        @Notes(value = "xxxx", notNull = true)
+        @Notes(value = "xxxx", notNull = true, mock="模拟数据")
         private String name;
       
         @Notes("yyyy")
