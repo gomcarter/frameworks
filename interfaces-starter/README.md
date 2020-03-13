@@ -73,7 +73,7 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
 
 **d，启动服务**
 ```
-    java -jar -Xms1g -Xmx2g -Dserver.port=自己服务端口 -Dinterfaces.domain=接口中心地址 -Dinterfaces.javaId=下面配置的java模块id xx-project.jar &
+    java -jar -Xms1g -Xmx2g -Dinterfaces.domain=接口中心地址 -Dinterfaces.javaId=下面配置的java模块id xx-project.jar &
 
     -Dinterfaces.domain：接口中心地址
     -Dinterfaces.javaId：配置后台模块（java）id
