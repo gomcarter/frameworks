@@ -119,12 +119,12 @@ public class HttpApiProxyHandler implements InvocationHandler {
             // 被 jsonData 包裹的返回值
             JsonData result = JsonMapper.buildNonNullMapper().fromJson(stringResult, JsonData.class);
 
-            if (!result.isSuccess()) {
+            if (result.getCode() != 0) {
                 log.error("调用接口失败: {}, {}", result.getCode(), result.getMessage());
                 throw new RuntimeException("调用接口失败");
             }
 
-            stringResult = JsonMapper.buildNonNullMapper().toJson(result.getExtra());
+            stringResult = JsonMapper.buildNonNullMapper().toJson(result.getData());
         }
 
         Convertable converter = Convertable.getConverter(resultType);

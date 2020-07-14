@@ -2,7 +2,7 @@ package com.gomcarter.frameworks.base.json;
 
 public class JsonError extends JsonObject {
 
-    private Object extra;
+    private Object data;
 
     public JsonError() {
     }
@@ -11,8 +11,8 @@ public class JsonError extends JsonObject {
         this(msg, -1);
     }
 
-    public JsonError(ErrorCode erroCode) {
-    	this(erroCode.getMsg(), erroCode.getCode());
+    public JsonError(ErrorCode errorCode) {
+    	this(errorCode.getMsg(), errorCode.getCode());
     }
 
     public JsonError(String msg, Integer code) {
@@ -21,15 +21,14 @@ public class JsonError extends JsonObject {
         }
         this.code = code;
         this.message = msg;
-        this.success = false;
     }
 
-    public Object getExtra() {
-        return extra;
+    public Object getData() {
+        return data;
     }
 
-    public JsonError setExtra(Object extra) {
-        this.extra = extra;
+    public JsonError setData(Object data) {
+        this.data = data;
         return this;
     }
 }

@@ -2,33 +2,27 @@ package com.gomcarter.frameworks.base.json;
 
 public class JsonData extends JsonObject {
 
-	private Object extra;
+	private Object data;
 
 	public JsonData() {
-		this(null, true, null);
+		this(null, null);
 	}
 
 	public JsonData(Object data) {
-        this(data, true, null);
+        this(data, null);
 	}
 
-	public JsonData(Object data, Boolean success, String msg) {
-        this.extra =  data;
+	public JsonData(Object data, String msg) {
+        this.data =  data;
         this.message = msg;
-        if(success != null && success) {
-            this.code = 0;
-        } else {
-            this.code = -1;
-        }
-        this.success = success;
     }
 
-	public Object getExtra() {
-		return extra;
+	public Object getData() {
+		return data;
 	}
 
-	public JsonData setExtra(Object extra) {
-		this.extra = extra;
+	public JsonData setData(Object data) {
+		this.data = data;
 		return this;
 	}
 }

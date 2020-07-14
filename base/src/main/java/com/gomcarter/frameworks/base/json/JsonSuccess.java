@@ -2,7 +2,7 @@ package com.gomcarter.frameworks.base.json;
 
 public class JsonSuccess extends JsonObject {
 
-	private Object extra;
+	private Object data;
 
 	public JsonSuccess() {
 		this("");
@@ -11,15 +11,14 @@ public class JsonSuccess extends JsonObject {
 	public JsonSuccess(String msg) {
 		this.code = 0;
 		this.message = msg;
-		this.success = true;
 	}
 
-	public Object getExtra() {
-		return extra;
+	public Object getData() {
+		return data;
 	}
 
-	public JsonSuccess setExtra(Object extra) {
-		this.extra = extra;
+	public JsonSuccess setData(Object data) {
+		this.data = data;
 		return this;
 	}
 }

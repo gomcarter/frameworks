@@ -4,7 +4,6 @@ public abstract class JsonObject {
 
     protected Integer code = 0;
     protected String message = "";
-    protected boolean success = true;
 
     public JsonObject() {
     }
@@ -23,14 +22,6 @@ public abstract class JsonObject {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
     }
 
     public Long getTimestamp() {

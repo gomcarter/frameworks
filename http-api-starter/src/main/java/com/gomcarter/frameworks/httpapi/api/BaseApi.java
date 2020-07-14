@@ -92,10 +92,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         JsonTData<List<T>> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class,
                 typeFactory.constructParametricType(List.class, kls)));
 
-        if (!data.isSuccess()) {
+        if (data.getCode() != 0) {
             throw new RuntimeException("post list接口调用失败：" + data.getMessage());
         }
-        return data.getExtra();
+        return data.getData();
     }
 
     public <T> T post(String urlKey, Class<T> kls) {
@@ -119,11 +119,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
 
         JsonTData<T> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class, typeFactory.constructType(kls)));
 
-        if (!data.isSuccess()) {
-            throw new RuntimeException("post接口调用失败：" + data.getMessage());
+        if (data.getCode() != 0) {
+            throw new RuntimeException("post list接口调用失败：" + data.getMessage());
         }
-
-        return data.getExtra();
+        return data.getData();
     }
 
     /* *******************
@@ -143,10 +142,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
         JsonTData<List<T>> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class,
                 typeFactory.constructParametricType(List.class, kls)));
 
-        if (!data.isSuccess()) {
-            throw new RuntimeException("get list接口调用失败：" + data.getMessage());
+        if (data.getCode() != 0) {
+            throw new RuntimeException("post list接口调用失败：" + data.getMessage());
         }
-        return data.getExtra();
+        return data.getData();
     }
 
     public <T> T get(String urlKey, Class<T> kls) {
@@ -163,11 +162,10 @@ public abstract class BaseApi implements DisposableBean, InitializingBean {
 
         JsonTData<T> data = JsonMapper.buildNonNullMapper().fromJson(r, typeFactory.constructParametricType(JsonTData.class, typeFactory.constructType(kls)));
 
-        if (!data.isSuccess()) {
-            throw new RuntimeException("接口调用失败：" + data.getMessage());
+        if (data.getCode() != 0) {
+            throw new RuntimeException("post list接口调用失败：" + data.getMessage());
         }
-
-        return data.getExtra();
+        return data.getData();
     }
 
     public <T> T httpExecute(Method method, String urlKey, Class<T> kls, Map<String, Object> params, Map<String, String> headers) {

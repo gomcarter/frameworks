@@ -2,7 +2,7 @@ package com.gomcarter.frameworks.base.json;
 
 public class JsonTData<T> extends JsonObject {
 
-    private T extra;
+    private T data;
 
     public JsonTData() {
 
@@ -10,16 +10,15 @@ public class JsonTData<T> extends JsonObject {
 
     public JsonTData(T data) {
         this.code = 0;
-        this.extra = data;
-        this.success = true;
+        this.data = data;
     }
 
-    public T getExtra() {
-        return extra;
+    public T getData() {
+        return data;
     }
 
-    public JsonTData setExtra(T extra) {
-        this.extra = extra;
+    public JsonTData setData(T data) {
+        this.data = data;
         return this;
     }
 }
