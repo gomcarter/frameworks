@@ -35,6 +35,11 @@ public class ReadWriteDataSourceBuilder {
         readWriteDataSource.setWriteDataSource(write);
 
         String splitter = "\\|";
+        // 如果没有配置读库，那么默认读库使用主库
+        if (properties.getProperty(readPrefix + ".jdbc.url") == null) {
+            readPrefix = writePrefix;
+        }
+
         String[] readUrls = properties.getProperty(readPrefix + ".jdbc.url").split(splitter),
                 users = properties.getProperty(readPrefix + ".jdbc.user").split(splitter),
                 passwords = properties.getProperty(readPrefix + ".jdbc.password").split(splitter);

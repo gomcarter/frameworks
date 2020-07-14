@@ -1,6 +1,5 @@
 package com.gomcarter.frameworks.mybatis;
 
-import com.baomidou.mybatisplus.annotation.DbType;
 import com.gomcarter.frameworks.config.utils.BeanRegistrationUtils;
 import com.gomcarter.frameworks.mybatis.annotation.EnableMybatis;
 import com.gomcarter.frameworks.mybatis.factory.NacosReadWriteDataSourceFactory;
@@ -32,7 +31,7 @@ public class EnableMybatisRegistrar implements ImportBeanDefinitionRegistrar {
             throw new RuntimeException("未配置@EnableMybatis的 value");
         }
 
-        MybatisConfigHolder.DB_TYPE = DbType.getDbType(attributes.getString("dbType"));
+        MybatisConfigHolder.DB_TYPE = attributes.getEnum("dbType");
         MybatisConfigHolder.DAO_XML_PATH = attributes.getString("daoXmlPath");
         MybatisConfigHolder.DAO_BASE_PACKAGE = attributes.getStringArray("daoBasePackage");
         MybatisConfigHolder.TRANSACTION_POINTCUT_EXPRESSION = attributes.getString("transactionPointcut");
