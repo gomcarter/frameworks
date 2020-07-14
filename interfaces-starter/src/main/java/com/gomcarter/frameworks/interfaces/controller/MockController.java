@@ -2,15 +2,14 @@ package com.gomcarter.frameworks.interfaces.controller;
 
 import com.gomcarter.frameworks.interfaces.utils.InterfacesRegister;
 import com.gomcarter.frameworks.interfaces.utils.MockUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +33,6 @@ public class MockController {
                 .map(Map.Entry::getValue)
                 .orElse(null);
 
-        return handlerMethod == null ? null : MockUtils.mock(new InterfacesRegister().generateReturns(handlerMethod));
+        return handlerMethod == null ? null : MockUtils.mock(new InterfacesRegister().generateReturns(handlerMethod.getMethod(), handlerMethod.getBeanType()));
     }
 }

@@ -1,8 +1,6 @@
 package com.gomcarter.frameworks.interfaces.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gomcarter.frameworks.interfaces.dto.ApiInterface;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -21,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * @author gomcarter
@@ -28,7 +27,7 @@ import java.nio.charset.Charset;
 public class InterfacesSynchronizer {
     private static final Logger logger = LoggerFactory.getLogger(InterfacesSynchronizer.class);
 
-    public static void sync() {
+    public static void sync(List<ApiInterface> interfaces) {
         String interfaceDomainKey = "interfaces.domain";
         String domain = System.getProperty(interfaceDomainKey);
         String javaId = System.getProperty("interfaces.javaId");
@@ -51,17 +50,10 @@ public class InterfacesSynchronizer {
                 .setDefaultRequestConfig(defaultRequestConfig)
                 .build()) {
 
-            ObjectMapper mapper = new ObjectMapper()
-                    //设置输出时包含属性的风格
-                    .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                    //禁止使用int代表Enum的order()來反序列化Enum,非常危險
-                    .configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
-
             // build http client
             URIBuilder uriBuilder = new URIBuilder(URI.create(domain + "publics/interfaces?javaId=" + javaId));
             HttpPost httpPost = new HttpPost(uriBuilder.build());
-            httpPost.setEntity(new StringEntity(mapper.writeValueAsString(InterfacesRegister.register()), ContentType.APPLICATION_JSON));
+            httpPost.setEntity(new StringEntity(JsonMapper.buildNonNullMapper().toJson(interfaces), ContentType.APPLICATION_JSON));
 
             httpClientLocal.execute(httpPost, (response) -> {
                 StatusLine statusLine = response.getStatusLine();
