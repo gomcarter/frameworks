@@ -1,7 +1,6 @@
 package com.gomcarter.frameworks.interfaces.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -18,7 +17,7 @@ import java.util.List;
  * <p>
  * 封装不同的输出风格, 使用不同的builder函数创建实例.
  *
- * @author gomcarter
+ * @author gomcarter 2019-12-02 09:23:09
  */
 public class JsonMapper {
 

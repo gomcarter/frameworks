@@ -1,12 +1,13 @@
 package com.gomcarter.frameworks.interfaces.dto;
 
+
 import com.gomcarter.frameworks.interfaces.annotation.Notes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author gomcarter on 2019-12-02 09:23:09
+ * @author gomcarter 2019-12-02 09:23:09
  */
 public class ApiBean {
     @Notes("name of field")
@@ -22,13 +23,19 @@ public class ApiBean {
     private Object defaults;
 
     @Notes("this mock value")
-    private Object mock;
+    private String mock;
+
+    @Notes("this mock value")
+    private Integer mockLength;
 
     @Notes("comment for this field @Notes(value='****') ")
     private String comment;
 
     @Notes("the data type of this field")
     private String type;
+
+    @Notes("the class name of this field")
+    private String className;
 
     @Notes("children，only for this field is a POJO or Iterable")
     private List<ApiBean> children;
@@ -78,6 +85,15 @@ public class ApiBean {
         return this;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public ApiBean setClassName(String className) {
+        this.className = className;
+        return this;
+    }
+
     public List<ApiBean> getChildren() {
         return children;
     }
@@ -104,12 +120,21 @@ public class ApiBean {
         return this;
     }
 
-    public Object getMock() {
+    public String getMock() {
         return mock;
     }
 
-    public ApiBean setMock(Object mock) {
+    public ApiBean setMock(String mock) {
         this.mock = mock;
+        return this;
+    }
+
+    public Integer getMockLength() {
+        return mockLength == null ? 1 : mockLength;
+    }
+
+    public ApiBean setMockLength(Integer mockLength) {
+        this.mockLength = mockLength;
         return this;
     }
 }

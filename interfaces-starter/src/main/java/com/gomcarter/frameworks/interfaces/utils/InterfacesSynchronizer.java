@@ -22,14 +22,14 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * @author gomcarter
+ * @author gomcarter 2019-12-02 09:23:09
  */
 public class InterfacesSynchronizer {
     private static final Logger logger = LoggerFactory.getLogger(InterfacesSynchronizer.class);
 
     public static void sync(List<ApiInterface> interfaces) {
         String interfaceDomainKey = "interfaces.domain";
-        String domain = System.getProperty(interfaceDomainKey);
+        String domain = System.getProperty(interfaceDomainKey, "http://developer.dev.66buy.com.cn/");
         String javaId = System.getProperty("interfaces.javaId");
 
         if (domain == null || !domain.startsWith("http") || javaId == null) {
@@ -67,7 +67,9 @@ public class InterfacesSynchronizer {
                     throw new ClientProtocolException("Response no content return.");
                 }
 
-                return EntityUtils.toString(entity, Charset.forName("UTF-8"));
+                String result = EntityUtils.toString(entity, Charset.forName("UTF-8"));
+                logger.info("调用接口中心结果：{}", result);
+                return result;
             });
         } catch (Exception e) {
             logger.error("some error happened when interfaces sync: ", e);

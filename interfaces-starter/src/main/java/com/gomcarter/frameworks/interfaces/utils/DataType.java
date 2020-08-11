@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @author gomcarter on 2019-12-02 09:23:09
+ * @author gomcarter 2019-12-02 09:23:09
  */
 public enum DataType {
     /**

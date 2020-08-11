@@ -13,16 +13,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -31,15 +27,13 @@ import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import javax.validation.constraints.NotNull;
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.*;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @author gomcarter on 2019-12-02 09:23:09
+ * @author gomcarter 2019-12-02 09:23:09
  */
 @Order
 public class InterfacesRegister implements ApplicationContextAware {
@@ -305,24 +299,36 @@ public class InterfacesRegister implements ApplicationContextAware {
 
                 Type cache = actualTypeArguments[0];
                 if (cache.getTypeName().contains(".")) {
-                    // 包含点，证明是一个类
+                    // 包含点，证明是一个类，不是模板： 类似T这样
                     actualType = actualTypeArguments[0];
                 } else {
-                    // 是个模板
+                    // 是个模板，类似T这样，那么就沿用传入的actualType，传入的actualType再为空时取T
                     actualType = actualType == null ? actualTypeArguments[0] : actualType;
                 }
                 generateChildrenBean(child, key, actualType, null);
             } else {
-                generateChildrenBean(parent, key, thisClass, actualTypeArguments[0]);
+                actualType = actualTypeArguments[0];
+                generateChildrenBean(parent, key, thisClass, actualType);
             }
 
+            parent.setClassName(thisClass.getName() + "<" + actualType.getTypeName() + ">");
+
         } else if (parentType instanceof TypeVariableImpl) {
-            parent.setType(Object.class.getSimpleName());
+            parent.setType(Object.class.getSimpleName())
+                    .setClassName(parentType.getTypeName());
         } else {
             Class parentKls = (Class) parentType;
 
             if (parentKls.isArray()) {
                 throw new RuntimeException("simple POJO or Iterable only for parameters and returns, you have to make it as: List，Set or Collection");
+            }
+
+            parent.setClassName(parentKls.getName());
+            // 如果类上打了mock，那么就存类上的
+            if (parentKls.isAnnotationPresent(Notes.class)) {
+                Notes notes = (Notes) parentKls.getAnnotation(Notes.class);
+                parent.setMock(notes.mock())
+                        .setMockLength(notes.length());
             }
 
             DataType dataType = DataType.get(parentKls);
@@ -365,7 +371,7 @@ public class InterfacesRegister implements ApplicationContextAware {
                         } else if (field.isAnnotationPresent(ApiParam.class)) {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
                             notNull = notNull || apiParam.required();
-                            defaults = ObjectUtils.defaultIfNull(defaults, convert(apiParam.defaultValue(), field));
+                            defaults = ObjectUtils.defaultIfNull(defaults, MockUtils.convert(apiParam.defaultValue(), field));
                             comment = StringUtils.isBlank(comment) ? apiParam.value() : comment;
                             mock = StringUtils.isBlank(mock) ? apiParam.example() : mock;
                         }
@@ -376,7 +382,7 @@ public class InterfacesRegister implements ApplicationContextAware {
                             .setNotNull(notNull)
                             .setComment(comment)
                             .setDefaults(defaults)
-                            .setMock(StringUtils.isNotBlank(mock) ? convert(mock, field) : defaults);
+                            .setMock(mock);
 
                     generateChildrenBean(child, StringUtils.defaultString(key, field.getName()), field.getGenericType(), actualType);
                     return child;
@@ -386,41 +392,6 @@ public class InterfacesRegister implements ApplicationContextAware {
 
         parent.setChildren(children)
                 .setType(Object.class.getSimpleName());
-    }
-
-    /**
-     * 将string转出field对应的值
-     *
-     * @param sourceValue string value
-     * @param field       字段
-     * @return 具体的值
-     */
-    private Object convert(String sourceValue, Field field) {
-        try {
-            Class<?> kls = field.getType();
-            if (BeanUtils.isSimpleProperty(kls) || kls == Object.class) {
-                SimpleTypeConverter typeConverter = new SimpleTypeConverter();
-                typeConverter.setConversionService(new GenericConversionService());
-                typeConverter.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss"), false));
-                return typeConverter.convertIfNecessary(sourceValue, kls);
-            } else if (kls.isArray() || Collection.class.isAssignableFrom(kls)) {
-                ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-                kls = (Class) parameterizedType.getActualTypeArguments()[0];
-                Class<? extends Collection> collectionClass = (Class<? extends Collection>) parameterizedType.getRawType();
-
-                return JsonMapper.buildNonNullMapper().fromJsonToCollection(sourceValue, collectionClass, kls);
-            } else if (Properties.class.isAssignableFrom(kls) || File.class.isAssignableFrom(kls)) {
-                Properties properties = new Properties();
-                InputStream is = new BufferedInputStream(new ByteArrayInputStream(sourceValue.getBytes()));
-                BufferedReader bf = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-                properties.load(bf);
-                return properties;
-            } else {
-                return JsonMapper.buildNonNullMapper().fromJson(sourceValue, kls);
-            }
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private boolean terminal(String key, Type type) {
@@ -600,5 +571,4 @@ public class InterfacesRegister implements ApplicationContextAware {
             e.printStackTrace();
         }
     }
-
 }

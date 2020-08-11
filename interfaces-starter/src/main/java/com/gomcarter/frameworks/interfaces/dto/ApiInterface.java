@@ -1,11 +1,13 @@
 package com.gomcarter.frameworks.interfaces.dto;
 
+
 import com.gomcarter.frameworks.interfaces.annotation.Notes;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * @author gomcarter on 2019-12-02 09:23:09
+ * @author gomcarter 2019-12-02 09:23:09
  */
 public class ApiInterface {
     @Notes("which controller")
@@ -102,5 +104,20 @@ public class ApiInterface {
     public ApiInterface setParameters(List<ApiBean> parameters) {
         this.parameters = parameters;
         return this;
+    }
+
+    public String getReturnClassName() {
+        return Optional.ofNullable(this.returns).map(ApiBean::getClassName).orElse(null);
+    }
+
+    public String getParameterClassNames() {
+        if (null == this.parameters) {
+            return null;
+        }
+        return this.parameters.stream()
+                .map(s -> s.getClassName() == null ? "null" : s.getClassName())
+                .sorted()
+                .reduce((a, b) -> a + ";" + b)
+                .orElse(null);
     }
 }
