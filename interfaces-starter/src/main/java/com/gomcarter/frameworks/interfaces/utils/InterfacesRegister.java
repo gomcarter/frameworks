@@ -314,8 +314,12 @@ public class InterfacesRegister implements ApplicationContextAware {
             parent.setClassName(thisClass.getName() + "<" + actualType.getTypeName() + ">");
 
         } else if (parentType instanceof TypeVariableImpl) {
-            parent.setType(Object.class.getSimpleName())
-                    .setClassName(parentType.getTypeName());
+            if (actualType == null) {
+                parent.setType(Object.class.getSimpleName())
+                        .setClassName(parentType.getTypeName());
+            } else {
+                generateChildrenBean(parent, key, actualType, null);
+            }
         } else {
             Class parentKls = (Class) parentType;
 
