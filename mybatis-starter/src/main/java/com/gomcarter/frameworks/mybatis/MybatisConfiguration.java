@@ -1,19 +1,23 @@
 package com.gomcarter.frameworks.mybatis;
 
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
+import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSource;
 import com.gomcarter.frameworks.mybatis.datasource.ReadWriteDataSourceProcessor;
 import com.gomcarter.frameworks.mybatis.injector.CustomSqlInjector;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.aop.aspectj.*;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
@@ -23,6 +27,7 @@ import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * mybatis配置
@@ -32,6 +37,34 @@ import java.util.Collections;
 @Aspect
 @Component
 public class MybatisConfiguration {
+
+    /**
+     * 支持子包来决定使用什么injector
+     */
+    public static class Holder {
+        public static ISqlInjector injector;
+
+        static {
+            List<ISqlInjector> injectorList = SpringFactoriesLoader.loadFactories(ISqlInjector.class, null);
+            if (CollectionUtils.isEmpty(injectorList)) {
+                injector = new CustomSqlInjector();
+            } else {
+                injector = injectorList.stream()
+                        .min((a, b) -> {
+                            int aSort = 0;
+                            int bSort = 0;
+                            if (a.getClass().isAnnotationPresent(Order.class)) {
+                                aSort = a.getClass().getAnnotation(Order.class).value();
+                            }
+                            if (b.getClass().isAnnotationPresent(Order.class)) {
+                                bSort = b.getClass().getAnnotation(Order.class).value();
+                            }
+                            return aSort - bSort;
+                        })
+                        .orElse(new CustomSqlInjector());
+            }
+        }
+    }
 
     /**
      * @param source source
@@ -45,7 +78,7 @@ public class MybatisConfiguration {
 
         // 自定义 sql 注入器
         GlobalConfig globalConfig = GlobalConfigUtils.defaults();
-        globalConfig.setSqlInjector(new CustomSqlInjector());
+        globalConfig.setSqlInjector(Holder.injector);
         factoryBean.setGlobalConfig(globalConfig);
 
         // 分页插件

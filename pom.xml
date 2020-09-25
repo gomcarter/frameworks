@@ -18,6 +18,7 @@
         <module>interfaces-starter</module>
         <module>mybatis-starter</module>
         <module>redis-starter</module>
+        <module>fsm-starter</module>
         <module>xml-excel</module>
         <module>config-center</module>
         <module>config-center-nacos</module>
@@ -413,6 +414,12 @@
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
+                <artifactId>fsm-starter</artifactId>
+                <version>${version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.gomcarter.frameworks</groupId>
                 <artifactId>interfaces-starter</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -423,11 +430,11 @@
                 <version>${version}</version>
             </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>com.gomcarter.frameworks</groupId>-->
-            <!--                <artifactId>mybatis-starter</artifactId>-->
-            <!--                <version>${version}</version>-->
-            <!--            </dependency>-->
+            <dependency>
+                <groupId>com.gomcarter.frameworks</groupId>
+                <artifactId>mybatis-starter</artifactId>
+                <version>${version}</version>
+            </dependency>
 
             <!--            <dependency>-->
             <!--                <groupId>com.gomcarter.frameworks</groupId>-->
