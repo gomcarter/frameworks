@@ -64,7 +64,7 @@
 
         <log4j-api.version>2.11.1</log4j-api.version>
 
-        <log4j-core.version>2.11.1</log4j-core.version>
+        <log4j-core.version>2.13.2</log4j-core.version>
 
         <lombok.version>1.18.12</lombok.version>
 
