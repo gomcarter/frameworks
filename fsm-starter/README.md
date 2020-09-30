@@ -1,3 +1,7 @@
+### 写在前面
+状态机自动完成主表状态切换，日志记录，状态事件切换通知等功能，自主在fsm_context中配置状态流转。
+
+
 ### 一、建表
 ```
 CREATE TABLE `fsm_context` (
@@ -28,7 +32,7 @@ CREATE TABLE `fsm_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='状态机日志';
 ```
 
-### 一、使用
+### 二、使用
 ```
 引入jar包
  <dependency>
