@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * @author gomcarter
- * @date 2017-11-30 18:20:33
  */
 @Slf4j
 public abstract class AbstractFsmService<T extends FsmObject> {
@@ -25,12 +24,12 @@ public abstract class AbstractFsmService<T extends FsmObject> {
     protected FsmContextMapper fsmContextMapper;
 
     /**
-     * 状态机的业务类型
+     * @return 状态机的业务类型
      */
     public abstract String type();
 
     /**
-     * 业务对象mapper
+     * @return 业务对象mapper
      */
     public abstract FsmObjectMapper<T> mapper();
 

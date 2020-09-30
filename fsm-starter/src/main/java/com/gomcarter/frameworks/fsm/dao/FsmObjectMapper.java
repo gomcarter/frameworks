@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 /**
  * @author 李银
- * @date 2020年09月24日11:05:20
  */
 public interface FsmObjectMapper<T extends FsmObject> extends BaseMapper<T> {
 
