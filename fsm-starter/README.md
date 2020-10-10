@@ -28,7 +28,7 @@ CREATE TABLE `fsm_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='状态机日志';
 ```
 
-### 一、使用
+### 二、使用
 ```
 引入jar包
  <dependency>
