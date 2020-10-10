@@ -21,6 +21,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
 import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
@@ -36,6 +38,7 @@ import java.util.List;
  */
 @Aspect
 @Component
+@EnableTransactionManagement
 public class MybatisConfiguration {
 
     /**
@@ -148,8 +151,7 @@ public class MybatisConfiguration {
     @Bean
     public AspectJExpressionPointcutAdvisor transactionAdvisor(ReadWriteDataSource dataSource, NameMatchTransactionAttributeSource attributeSource) {
         /* 事务管理器 */
-        DataSourceTransactionManager transactionManager = new DataSourceTransactionManager();
-        transactionManager.setDataSource(dataSource);
+        TransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 
         /* 事务切面 */
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();

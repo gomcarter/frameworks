@@ -2,7 +2,7 @@ package com.gomcarter.frameworks.mybatis;
 
 import com.gomcarter.frameworks.config.utils.BeanRegistrationUtils;
 import com.gomcarter.frameworks.mybatis.annotation.EnableMybatis;
-import com.gomcarter.frameworks.mybatis.factory.NacosReadWriteDataSourceFactory;
+import com.gomcarter.frameworks.mybatis.factory.ReadWriteDataSourceFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -39,7 +39,7 @@ public class EnableMybatisRegistrar implements ImportBeanDefinitionRegistrar {
 
         // 注入datasource
         BeanRegistrationUtils.registerBeanDefinitionIfNotExists(registry, "readWriteDataSource",
-                NacosReadWriteDataSourceFactory.class, new HashMap<String, Object>(2, 1) {{
+                ReadWriteDataSourceFactory.class, new HashMap<String, Object>(2, 1) {{
                     put("keys", keys);
                 }});
 

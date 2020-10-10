@@ -17,9 +17,9 @@ import java.util.Properties;
  *
  * @author gomcarter on 2018年2月28日 11:26:07
  */
-public class NacosReadWriteDataSourceFactory implements FactoryBean<ReadWriteDataSource>, InitializingBean, DisposableBean {
+public class ReadWriteDataSourceFactory implements FactoryBean<ReadWriteDataSource>, InitializingBean, DisposableBean {
 
-    private static final Logger logger = LoggerFactory.getLogger(NacosReadWriteDataSourceFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReadWriteDataSourceFactory.class);
 
     private String[] keys;
 
@@ -66,7 +66,7 @@ public class NacosReadWriteDataSourceFactory implements FactoryBean<ReadWriteDat
         return keys;
     }
 
-    public NacosReadWriteDataSourceFactory setKeys(String[] keys) {
+    public ReadWriteDataSourceFactory setKeys(String[] keys) {
         this.keys = keys;
         return this;
     }
