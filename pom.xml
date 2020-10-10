@@ -14,11 +14,12 @@
     <modules>
         <module>base</module>
         <module>dubbo-starter</module>
-        <module>http-api-starter</module>
+        <module>http-starter</module>
         <module>interfaces-starter</module>
         <module>mybatis-starter</module>
         <module>redis-starter</module>
         <module>fsm-starter</module>
+        <module>skywalking-starter</module>
         <module>xml-excel</module>
         <module>config-center</module>
         <module>config-center-nacos</module>
@@ -72,7 +73,7 @@
 
         <swagger.version>1.6.0</swagger.version>
 
-        <spring.version>2.2.5.RELEASE</spring.version>
+        <spring.version>2.3.0.RELEASE</spring.version>
 
         <baomidou.version>3.3.1</baomidou.version>
 
