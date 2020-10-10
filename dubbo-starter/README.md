@@ -1,47 +1,22 @@
-在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/dubbo-starter
-
-### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">注册中心配置参考</a>）
-如：
+### Apollo中配置
+* 建议放在apollo中叫做op.dubbo的namespace中，方便管理，可以放在单独项目中
+* 每个项目可以根据需要覆盖或者增加更多选项，具体参考dubbo官方文档
+```properties
+# 该处默认取app.id的值，如果需要更改可以关联该配置覆盖即可
+dubbo.application.name = ${app.id:unknown}
+dubbo.registry.address = zookeeper://127.0.0.1:2181
+dubbo.protocol.name = dubbo
+# 暴露端口，如果多项目部署在同一个虚拟机中，对应项目也需要覆盖该选项
+dubbo.protocol.port = 20880
+dubbo.consumer.timeout = 3000
 ```
-@SpringBootApplication
-// 服务提供方和服务消费方都加上标签
-@EnableNacosDubbo(port = 20880)
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-}
 
-// 服务提供
-import org.apache.dubbo.config.annotation.Service;
-
-@Service
-public class FooApiImpl implements FooApi {
-
-    @Resource
-    private FooService fooService;
-
-    @Override
-    public Foo getById(Integer id) {
-        return fooService.getById(id);
-    }
-}
-
-// 服务消费方
-// 服务提供
-import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.stereotype.Service;
-
-@Service
-public class BarService {
-
-    @Reference
-    private FooApi fooApi;
-
-    public void doSomething(Integer id) {
-    	// ...
-	Foo foo = fooApi.getById(id);
-	// ...
-    }
+### 项目中使用
+* 参考官方annotation注解使用配置方式，由于我们通过apollo加载配置，所以不需要在properties里做对应配置，如果需要请按照格式在apollo里关联扩展
+* http://dubbo.apache.org/zh-cn/docs/user/configuration/annotation.html
+```java
+@Configuration
+@EnableDubbo(scanBasePackages = "com.gomcarter.**.dubbo")
+public class DubboConfig {
 }
 ```
