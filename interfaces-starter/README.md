@@ -77,6 +77,8 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
 
     -Dinterfaces.domain：接口中心地址
     -Dinterfaces.javaId：接口中心配置的后端服务id
+    
+    注：springboot项目可以直接用，springmvc项目需先注入bean：com.tiangou.frameworks.interfaces.utils.InterfacesRegister
 ```
 
 **e，单controller导入接口模式**
