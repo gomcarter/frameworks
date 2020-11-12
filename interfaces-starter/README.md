@@ -73,17 +73,17 @@ name将被读取到接口中心作为接口名称，没有设置接口名称将�
 
 **d，启动服务全量导入接口模式**
 ```
-    java -jar -Xms1g -Xmx2g -Dinterfaces.domain=接口中心地址 -Dinterfaces.javaId=接口中心配置的后端服务模块id xx-project.jar &
+    java -jar -Xms1g -Xmx2g -Dinterfaces.domain=接口中心地址 -Dinterfaces.javaId=接口中心配置的后端服务id xx-project.jar &
 
     -Dinterfaces.domain：接口中心地址
-    -Dinterfaces.javaId：接口中心配置的后端服务模块id
+    -Dinterfaces.javaId：接口中心配置的后端服务id
 ```
 
 **e，单controller导入接口模式**
 ```
     public static void main(String[] args) {
         System.setProperty("interfaces.domain", "接口中心地址");
-        System.setProperty("interfaces.javaId", "接口中心配置的后端服务模块id");
+        System.setProperty("interfaces.javaId", "接口中心配置的后端服务id");
         // 导入整个controller中所有接口
         InterfacesRegister.registerFrom(FoobarController.class);
         // 只导入某个方法
