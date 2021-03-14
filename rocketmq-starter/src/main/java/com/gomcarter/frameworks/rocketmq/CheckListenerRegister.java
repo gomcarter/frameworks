@@ -5,11 +5,8 @@ import com.google.common.collect.Maps;
 
 import java.util.concurrent.ConcurrentMap;
 
-import static com.gomcarter.frameworks.rocketmq.util.MsgUtil.genDestination;
-
 /**
- * @author gaopeng
- * @date 2020/6/19
+ * @author gomcarter 2021-01-29
  */
 public class CheckListenerRegister {
 

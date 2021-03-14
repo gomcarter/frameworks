@@ -22,7 +22,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.NameMatchTransactionAttributeSource;
 import org.springframework.transaction.interceptor.RollbackRuleAttribute;
 import org.springframework.transaction.interceptor.RuleBasedTransactionAttribute;
@@ -34,11 +33,10 @@ import java.util.List;
 /**
  * mybatis配置
  *
- * @author gomcarter
+ * @author 李银 2020年03月17日17:17:33
  */
 @Aspect
 @Component
-@EnableTransactionManagement
 public class MybatisConfiguration {
 
     /**
@@ -90,7 +88,9 @@ public class MybatisConfiguration {
         paginationInterceptor.setDbType(MybatisConfigHolder.DB_TYPE);
         factoryBean.setPlugins(paginationInterceptor);
 
-        factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(MybatisConfigHolder.DAO_XML_PATH));
+        factoryBean.setMapperLocations(
+                new PathMatchingResourcePatternResolver().getResources(MybatisConfigHolder.DAO_XML_PATH)
+        );
         return factoryBean;
     }
 

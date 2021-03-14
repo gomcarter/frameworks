@@ -29,8 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @author gaopeng
- * @date 2020/6/23
+ * @author gomcarter 2021-01-29
  */
 @Slf4j
 public abstract class AbstractRocketMQListener implements RocketMQListener<MessageExt>, RocketMQPushConsumerLifecycleListener, ApplicationContextAware {

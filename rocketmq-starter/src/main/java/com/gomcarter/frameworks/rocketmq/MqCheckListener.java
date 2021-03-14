@@ -7,8 +7,7 @@ import org.springframework.messaging.Message;
 import javax.annotation.PostConstruct;
 
 /**
- * @author gaopeng
- * @date 2020/6/19
+ * @author gomcarter 2021-01-29
  */
 public interface MqCheckListener<T> {
 

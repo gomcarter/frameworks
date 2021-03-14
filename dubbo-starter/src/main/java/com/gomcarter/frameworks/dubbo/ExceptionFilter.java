@@ -12,7 +12,7 @@ import org.apache.dubbo.rpc.service.GenericService;
 import java.lang.reflect.Method;
 
 /**
- * @author gaopeng
+ * @author gomcarter 2021-01-29
  */
 @Activate(group = CommonConstants.PROVIDER, order = -1)
 public class ExceptionFilter implements Filter, Filter.Listener {

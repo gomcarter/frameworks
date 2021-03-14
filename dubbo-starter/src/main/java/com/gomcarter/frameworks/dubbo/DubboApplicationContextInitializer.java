@@ -4,8 +4,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * @author gaopeng
- * @date 2020/5/20
+ * @author gomcarter 2021-01-29 09:40:02
  */
 public class DubboApplicationContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

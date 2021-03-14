@@ -3,8 +3,7 @@ package com.gomcarter.frameworks.rocketmq.consume;
 import com.gomcarter.frameworks.rocketmq.util.MsgUtil;
 
 /**
- * @author gaopeng
- * @date 2020/6/23
+ * @author gomcarter 2021-01-29
  */
 public interface MqListener<T> {
 

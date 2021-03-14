@@ -14,8 +14,7 @@ import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
- * @author gaopeng
- * @date 2020/6/23
+ * @author gomcarter 2021-01-29
  */
 @Slf4j
 public class MsgUtil {

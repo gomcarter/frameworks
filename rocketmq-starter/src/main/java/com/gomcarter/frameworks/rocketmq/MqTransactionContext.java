@@ -6,8 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * @author gaopeng
- * @date 2020/6/17
+ * @author gomcarter 2021-01-29
  */
 @Data
 @RequiredArgsConstructor

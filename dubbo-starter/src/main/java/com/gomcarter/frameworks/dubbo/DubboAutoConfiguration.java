@@ -4,7 +4,7 @@ import org.apache.dubbo.common.serialize.hessian2.Hessian2SerializerFactory;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author gaopeng
+ * @author gomcarter 2021-01-29
  */
 @Configuration
 public class DubboAutoConfiguration {

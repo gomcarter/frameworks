@@ -8,8 +8,7 @@ import org.apache.rocketmq.spring.support.RocketMQUtil;
 import org.springframework.messaging.Message;
 
 /**
- * @author gaopeng
- * @date 2020/6/4
+ * @author gomcarter 2021-01-29
  */
 @Slf4j
 public abstract class MqTransactionListener implements RocketMQLocalTransactionListener {
