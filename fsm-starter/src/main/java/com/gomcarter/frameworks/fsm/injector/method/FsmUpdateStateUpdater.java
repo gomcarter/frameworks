@@ -18,13 +18,13 @@ public class FsmUpdateStateUpdater extends AbstractMethod {
 
     @Override
     public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo ignore) {
-        // sql 模板
+        // sqlTemplate 模板
         String sqlTemplate = "<script>\nUPDATE %s SET state = #{state} where id = #{id}\n</script>";
 
 
         MybatisConfiguration configuration = ignore.getConfiguration();
         Method[] methods = mapperClass.getMethods();
-        // 1，扫描 mapperClass 中存在支持自动加 sql 的方法。
+        // 1，扫描 mapperClass 中存在支持自动加 sqlTemplate 的方法。
         for (Method method : methods) {
             if ("$fsmUpdateState".equals(method.getName())) {
                 String sql = String.format(sqlTemplate, ignore.getTableName());

@@ -7,7 +7,7 @@ import com.gomcarter.frameworks.mybatis.injector.CustomSqlInjector;
 import java.util.List;
 
 /**
- * fsm sql 定制注入器
+ * fsm sqlTemplate 定制注入器
  *
  * @author 李银 2020年03月17日17:17:33
  */

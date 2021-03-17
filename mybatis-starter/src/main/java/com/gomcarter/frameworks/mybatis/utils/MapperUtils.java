@@ -5,12 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.gomcarter.frameworks.base.common.AssertUtils;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.config.converter.Convertable;
 import com.gomcarter.frameworks.config.utils.ReflectionUtils;
-import com.gomcarter.frameworks.mybatis.annotation.*;
+import com.gomcarter.frameworks.mybatis.annotation.Condition;
+import com.gomcarter.frameworks.mybatis.annotation.MatchStrategy;
+import com.gomcarter.frameworks.mybatis.annotation.MatchType;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -171,31 +172,26 @@ public class MapperUtils {
         return fieldName;
     }
 
-    public static String getDatabaseFieldName(Condition condition, String mainTable, String paramName) {
-        String alias = StringUtils.isBlank(mainTable) ? "" : (mainTable + ".");
-
-        String databaseFieldName = null;
+    public static String getDatabaseFieldName(Condition condition, String paramName) {
+        String fieldName = null;
         if (condition != null) {
-            databaseFieldName = condition.field();
-            // 不带. 证明不是副表的字段，是主表的字段
-            if (databaseFieldName.length() > 0 && !databaseFieldName.contains(".")) {
-                databaseFieldName = alias + "`" + databaseFieldName + "`";
-            }
+            fieldName = condition.field();
         }
 
-        if (databaseFieldName == null || databaseFieldName.length() == 0) {
-            databaseFieldName = alias + "`" + CustomStringUtils.camelToUnderline(paramName) + "`";
+        if (fieldName == null || fieldName.length() == 0) {
+            fieldName = CustomStringUtils.camelToUnderline(paramName);
         }
-        return databaseFieldName;
+
+        return "`" + fieldName + "`";
     }
 
-    public static void buildWhereSql(StringBuilder whereSql, Condition condition, String mainTable, String paramName, Class paramsClass) {
-        // 简单类型， 直接 EQ
+    public static void buildWhereSql(StringBuilder whereSql, Condition condition, String paramName, Class paramsClass) {
+        // 简单类型
         if (BeanUtils.isSimpleValueType(paramsClass)) {
             MatchType type = MatchType.getDefaultType(condition, paramsClass);
-            String databaseFieldName = MapperUtils.getDatabaseFieldName(condition, mainTable, paramName);
+            String databaseFieldName = MapperUtils.getDatabaseFieldName(condition, paramName);
 
-            type.sql(whereSql, condition, mainTable, databaseFieldName, paramName, paramsClass);
+            type.sqlTemplate(whereSql, condition, databaseFieldName, paramName, paramsClass);
         } else {
             // 复杂类型取里面的字段
             List<Field> fields = ReflectionUtils.findAllField(paramsClass);
@@ -206,43 +202,13 @@ public class MapperUtils {
                 // 根据字段类型获取默认的匹配类型
                 Condition subCondition = field.getAnnotation(Condition.class);
                 MatchType type = MatchType.getDefaultType(subCondition, fieldClass);
-                String databaseFieldName = getDatabaseFieldName(subCondition, mainTable, field.getName());
+                String databaseFieldName = getDatabaseFieldName(subCondition, field.getName());
 
                 // 开始包装
-                type.sql(whereSql, subCondition, mainTable, databaseFieldName, paramName + "." + field.getName(), fieldClass);
+                type.sqlTemplate(whereSql, subCondition, databaseFieldName, paramName + "." + field.getName(), fieldClass);
                 whereSql.append(" \n");
             }
         }
-    }
-
-
-    /**
-     * 拼接 table join
-     *
-     * @param mainTable mainTable
-     * @param joinables joinables
-     * @return generateTable string
-     */
-    public static String generateTable(String mainTable, Joinable[] joinables) {
-        StringBuilder sql = new StringBuilder(String.format(" %s %s ", mainTable, mainTable));
-        for (Joinable joinable : joinables) {
-            String main = joinable.main(),
-                    target = joinable.target(),
-                    mainKey = joinable.mainKey(),
-                    targetKey = joinable.targetKey();
-            JoinType type = joinable.type();
-            AssertUtils.isTrue(StringUtils.isNotBlank(main), "主表不能空");
-            AssertUtils.isTrue(StringUtils.isNotBlank(target), "副表不能空");
-            AssertUtils.isTrue(StringUtils.isNotBlank(mainKey), "主表 join 键不能空");
-            if (StringUtils.isBlank(targetKey)) {
-                targetKey = main + "_id";
-            }
-
-            sql.append(String.format("%s JOIN %s %s ON %s.%s = %s.%s ",
-                    type.name(), target, target, main, mainKey, target, targetKey));
-
-        }
-        return sql.toString();
     }
 
     /**
@@ -255,5 +221,53 @@ public class MapperUtils {
         return (method.getModifiers()
                 & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC
                 && method.getDeclaringClass().isInterface();
+    }
+
+    public static void buildExistsSql(StringBuilder whereSql, Object params) {
+        // cache
+        List<Field> fields = FIELD_CACHE_MAP.get(params.getClass());
+        if (fields == null) {
+            fields = ReflectionUtils.findAllField(params.getClass());
+            FIELD_CACHE_MAP.put(params.getClass(), fields);
+        }
+
+        // fields never be null
+        for (Field field : fields) {
+            Object value = null;
+            Condition condition = null;
+            boolean fixed = false;
+            if (field.isAnnotationPresent(Condition.class)) {
+                condition = field.getAnnotation(Condition.class);
+                if (fixed = StringUtils.isNotBlank(condition.fixedValue())) {
+                    // 获取默固定认值
+                    Convertable converter = Convertable.getConverter(field.getType());
+                    value = converter.convert(condition.fixedValue(), ObjectUtils.defaultIfNull(field.getGenericType(), field.getType()));
+                }
+            }
+
+            if (value == null) {
+                value = ReflectionUtils.getFieldValue(params, field);
+            }
+
+            if (value != null) {
+                // 根据字段类型获取默认的匹配类型
+                MatchType type = MatchType.getDefaultType(condition, field.getType());
+                // 开始包装
+                type.whereSqlForExists(whereSql, "a." + getDatabaseFieldName(condition, field.getName()), value, fixed);
+            }
+        }
+    }
+
+
+    public static void main(String[] args) {
+        StringBuilder whereSql = new StringBuilder();
+
+        String sql = "select 1 from demo a ";
+        MapperUtils.buildExistsSql(whereSql, new Demo());
+        if (whereSql.length() > 0) {
+            sql += " where 1 = 1 " + whereSql.toString();
+        }
+
+        System.out.println(sql);
     }
 }

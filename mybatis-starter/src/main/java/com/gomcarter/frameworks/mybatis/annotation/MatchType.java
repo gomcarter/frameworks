@@ -2,6 +2,7 @@ package com.gomcarter.frameworks.mybatis.annotation;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.mybatis.utils.MapperUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +23,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -39,6 +40,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" = #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" = ").append(fixed ? fieldValue : JsonMapper.buildNonNullMapper().toJson(fieldValue));
+        }
     },
     /**
      * where table_column &lt;&gt; #{condition}
@@ -50,7 +56,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -67,6 +73,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" &lt;&gt; #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" != ").append(fixed ? fieldValue : JsonMapper.buildNonNullMapper().toJson(fieldValue));
+        }
     },
     /**
      * where table_column LIKE concat('%', #{condition}, '%')
@@ -78,7 +89,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -95,6 +106,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" LIKE concat(\"%\", #{").append(javaFieldName).append("}, \"%\")")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" LIKE \"%").append(fieldValue).append("%\"");
+        }
     },
     /**
      * where table_column NOT LIKE concat('%', #{condition}, '%')
@@ -106,7 +122,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -123,6 +139,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" NOT LIKE concat(\"%\", #{").append(javaFieldName).append("}, \"%\")")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" NOT LIKE \"%").append(fieldValue).append("%\"");
+        }
     },
     /**
      * where table_column LIKE concat(#{condition}, '%')
@@ -134,7 +155,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -151,6 +172,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" LIKE concat(#{").append(javaFieldName).append("}, \"%\")")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" LIKE \"").append(fieldValue).append("%\"");
+        }
     },
     /**
      * where table_column LIKE concat('%', #{condition})
@@ -162,7 +188,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -179,6 +205,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" LIKE concat(\"%\", #{").append(javaFieldName).append("})")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" LIKE \"%").append(fieldValue).append("\"");
+        }
     },
     /**
      * where table_column &gt; #{condition}
@@ -190,7 +221,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -207,6 +238,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" &gt; #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" > ").append(fieldValue);
+        }
     },
     /**
      * where table_column &gt;= #{condition}
@@ -218,7 +254,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -235,6 +271,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" &gt;= #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" >= ").append(fieldValue);
+        }
     },
     /**
      * where table_column &lt; #{condition}
@@ -246,7 +287,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -263,6 +304,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" &lt; #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" < ").append(fieldValue);
+        }
     },
     /**
      * where table_column &lt;= #{condition}
@@ -274,7 +320,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -291,6 +337,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" &lt;= #{").append(javaFieldName).append("}")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" <= ").append(fieldValue);
+        }
     },
     /**
      * where table_column is null
@@ -302,7 +353,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue()) || condition.strategy() == MatchStrategy.IGNORED) {
                     // 设置固定值
@@ -315,6 +366,11 @@ public enum MatchType {
                     .append(" AND ").append(databaseFieldName).append(" IS NULL ")
                     .append("</if>");
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" IS NULL ");
+        }
     },
     /**
      * where table_column is not null
@@ -326,7 +382,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null) {
                 if (StringUtils.isNotBlank(condition.fixedValue()) || condition.strategy() == MatchStrategy.IGNORED) {
                     // 设置固定值
@@ -338,6 +394,11 @@ public enum MatchType {
             sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
                     .append(" AND ").append(databaseFieldName).append(" IS NOT NULL")
                     .append("</if>");
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" IS NOT NULL ");
         }
     },
     /**
@@ -356,7 +417,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                 // 设置固定值
                 sql.append(" AND ").append(databaseFieldName).append(" IN (").append(condition.fixedValue()).append(")");
@@ -380,6 +441,21 @@ public enum MatchType {
                         .append("</foreach>\n")
                         .append("</if>");
             }
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" IN (");
+
+            Class fieldClass = fieldValue.getClass();
+            if (Collection.class.isAssignableFrom(fieldClass) || fieldClass.isArray()) {
+                String v = JsonMapper.buildNonNullMapper().toJson(fieldValue);
+                sql.append(v.substring(0, v.length() - 1).substring(1));
+            } else {
+                sql.append(fixed ? fieldValue : JsonMapper.buildNonNullMapper().toJson(fieldValue));
+            }
+
+            sql.append(")");
         }
     },
     /**
@@ -398,7 +474,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                 // 设置固定值
                 sql.append(" AND ").append(databaseFieldName).append(" NOT IN (").append(condition.fixedValue()).append(")");
@@ -423,9 +499,24 @@ public enum MatchType {
                         .append("</if>");
             }
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            sql.append(" AND ").append(fieldName).append(" NOT IN (");
+
+            Class fieldClass = fieldValue.getClass();
+            if (Collection.class.isAssignableFrom(fieldClass) || fieldClass.isArray()) {
+                String v = JsonMapper.buildNonNullMapper().toJson(fieldValue);
+                sql.append(v.substring(0, v.length() - 1).substring(1));
+            } else {
+                sql.append(fixed ? fieldValue : JsonMapper.buildNonNullMapper().toJson(fieldValue));
+            }
+
+            sql.append(")");
+        }
     },
     /**
-     * where table_column in (#{condition}) —— condition是一个 sql 语句， 如： select id from table where id &lt; 3
+     * where table_column in (#{condition}) —— condition是一个 sqlTemplate 语句， 如： select id from table where id &lt; 3
      * <p>
      * 尽量不要使用这个，有 sql注入 的风险
      */
@@ -436,7 +527,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                 // 设置固定值
                 sql.append(" AND ").append(databaseFieldName).append(" IN (").append(condition.fixedValue()).append(")");
@@ -446,9 +537,14 @@ public enum MatchType {
                         .append("</if>");
             }
         }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            throw new RuntimeException("not support inSql mode");
+        }
     },
     /**
-     * where table_column not in (#{condition}) —— condition是一个 sql 语句： select name from table where id &lt; 3
+     * where table_column not in (#{condition}) —— condition是一个 sqlTemplate 语句： select name from table where id &lt; 3
      * <p>
      * 尽量不要使用这个，有 sql注入 的风险
      */
@@ -459,7 +555,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                 // 设置固定值
                 sql.append(" AND ").append(databaseFieldName).append(" NOT IN (").append(condition.fixedValue()).append(")");
@@ -468,6 +564,11 @@ public enum MatchType {
                         .append(" AND ").append(databaseFieldName).append(" NOT IN (#{").append(javaFieldName).append("})")
                         .append("</if>");
             }
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            throw new RuntimeException("not support notInSql mode");
         }
     },
     /**
@@ -494,13 +595,13 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (BeanUtils.isSimpleValueType(fieldClass)) {
                 // 判断 kls 是否是基本类型，如果是则直接 and 了
-                EQ.sql(sql, condition, mainTable, databaseFieldName, javaFieldName, fieldClass);
+                EQ.sqlTemplate(sql, condition, databaseFieldName, javaFieldName, fieldClass);
             } else if (fieldClass.isArray() || Collection.class.isAssignableFrom(fieldClass)) {
                 // 如果是数组或者是Iterable
-                IN.sql(sql, condition, mainTable, databaseFieldName, javaFieldName, fieldClass);
+                IN.sqlTemplate(sql, condition, databaseFieldName, javaFieldName, fieldClass);
             } else {
                 if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -510,10 +611,29 @@ public enum MatchType {
                     sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
                             .append(" AND ( 1 = 1");
 
-                    MapperUtils.buildWhereSql(sql, condition, mainTable, javaFieldName, fieldClass);
+                    MapperUtils.buildWhereSql(sql, condition, javaFieldName, fieldClass);
 
                     sql.append(")</if>");
                 }
+            }
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            Class fieldClass = fieldValue.getClass();
+            if (BeanUtils.isSimpleValueType(fieldClass)) {
+                // 判断 kls 是否是基本类型，如果是则直接 and 了
+                EQ.whereSqlForExists(sql, fieldName, fieldValue, fixed);
+            } else if (fieldClass.isArray() || Collection.class.isAssignableFrom(fieldClass)) {
+                // 如果是数组或者是Iterable
+                IN.whereSqlForExists(sql, fieldName, fieldValue, fixed);
+            } else {
+                // 否则去 and 这个类对应下面的所有字段的匹配结果
+                sql.append(" AND (");
+
+                MapperUtils.buildExistsSql(sql, fieldValue);
+
+                sql.append(")");
             }
         }
     },
@@ -541,7 +661,7 @@ public enum MatchType {
         }
 
         @Override
-        public void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass) {
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
             if (BeanUtils.isSimpleValueType(fieldClass)) {
                 if (condition != null && StringUtils.isNotBlank(condition.fixedValue())) {
                     // 设置固定值
@@ -586,11 +706,89 @@ public enum MatchType {
                     sql.append("<if test=\"").append(javaFieldName).append(" != null\">")
                             .append("\n OR ( 1 = 1");
 
-                    MapperUtils.buildWhereSql(sql, condition, mainTable, javaFieldName, fieldClass);
+                    MapperUtils.buildWhereSql(sql, condition, javaFieldName, fieldClass);
 
                     sql.append(")\n</if>");
                 }
             }
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            Class fieldClass = fieldValue.getClass();
+            if (BeanUtils.isSimpleValueType(fieldClass)) {
+                // 设置固定值
+                sql.append(" OR ").append(fieldName).append(" = ").append(fixed ? fieldValue : JsonMapper.buildNonNullMapper().toJson(fieldValue));
+            } else if (Collection.class.isAssignableFrom(fieldClass) || fieldClass.isArray()) {
+                String v = JsonMapper.buildNonNullMapper().toJson(fieldValue);
+                sql.append(" OR ").append(fieldName).append(" IN (").append(v.substring(0, v.length() - 1).substring(1)).append(")");
+            } else {
+                // 否则去 and 这个类对应下面的所有字段的匹配结果
+                sql.append(" OR (");
+
+                MapperUtils.buildExistsSql(sql, fieldValue);
+
+                sql.append(")");
+            }
+        }
+    },
+    EXSITS {
+        @Override
+        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+            AbstractWrapper wrapper = ((AbstractWrapper) wr);
+            Class kls = value.getClass();
+            if (BeanUtils.isSimpleValueType(kls) || kls == Object.class || kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
+                // 如果是数组或者是Iterable
+                throw new RuntimeException("EXISTS 不支持类型为：" + kls + "的字段：" + fieldName + "，仅支持普通自定义类。");
+            }
+            StringBuilder whereSql = new StringBuilder();
+
+            MapperUtils.buildExistsSql(whereSql, value);
+            String sql = "select 1 from " + fieldName + " a ";
+            if (whereSql.length() > 0) {
+                sql += " where 1 = 1 " + whereSql.toString();
+            }
+            wrapper.exists(sql);
+        }
+
+        @Override
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            // do nothing
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            throw new RuntimeException("not support nesting of exists");
+        }
+    },
+    NOTEXSITS {
+        @Override
+        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+            if (value != null) {
+                Class kls = value.getClass();
+                if (BeanUtils.isSimpleValueType(kls) || kls == Object.class || kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
+                    // 如果是数组或者是Iterable
+                    throw new RuntimeException("NOTEXISTS 不支持类型为：" + kls + "的字段：" + fieldName + "，仅支持普通自定义类。");
+                }
+                StringBuilder whereSql = new StringBuilder();
+                MapperUtils.buildExistsSql(whereSql, value);
+                String sql = "select 1 from " + fieldName + " a ";
+                if (whereSql.length() > 0) {
+                    sql += " where 1 = 1 " + whereSql.toString();
+                }
+
+                ((AbstractWrapper) wr).notExists(sql);
+            }
+        }
+
+        @Override
+        public void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass) {
+            // do nothing
+        }
+
+        @Override
+        public void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed) {
+            throw new RuntimeException("not support nesting of not exists");
         }
     };
 
@@ -617,5 +815,7 @@ public enum MatchType {
         return type;
     }
 
-    public abstract void sql(StringBuilder sql, Condition condition, String mainTable, String databaseFieldName, String javaFieldName, Class fieldClass);
+    public abstract void sqlTemplate(StringBuilder sql, Condition condition, String databaseFieldName, String javaFieldName, Class fieldClass);
+
+    public abstract void whereSqlForExists(StringBuilder sql, String fieldName, Object fieldValue, boolean fixed);
 }

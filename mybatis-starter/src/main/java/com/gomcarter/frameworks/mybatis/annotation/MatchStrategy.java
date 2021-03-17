@@ -14,6 +14,7 @@ public enum MatchStrategy {
 
     /**
      * &lt;if test="columnProperty != null"&gt;column=#{columnProperty}&lt;/if&gt;
+     * <br>
      * &lt;if test="columnProperty == null"&gt;column is null&lt;/if&gt;
      */
     IGNORED

@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 public @interface Condition {
 
     /**
-     * @return 对应数据库的字段，不写默认为该字段名
+     * @return 对应数据库的字段，不写默认为该字段名； 对于EXSITS 和 NOEXSITS来讲，是子表名称
      */
     String field() default "";
 
@@ -32,6 +32,8 @@ public @interface Condition {
      * 也可以是基本数据。
      * <p>
      * 设置了此属性strategy将失效。将直接加入语句：field = ${fixedValue}
+     *
+     * 对于EXSITS 和 NOEXSITS来讲，此值用做匹配条件
      *
      * @return 此属性强制匹配时使用此值
      */
