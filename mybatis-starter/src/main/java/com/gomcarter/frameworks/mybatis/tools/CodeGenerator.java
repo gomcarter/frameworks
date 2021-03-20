@@ -129,6 +129,8 @@ public class CodeGenerator {
                 generate(config.entityPackage, "/src/main/java/", entity.className + ".java", "entity.ftl", entity, true);
                 generate(config.dtoPackage, "/src/main/java/", entity.className + "Dto.java", "entitydto.ftl", entity, false);
                 generate(config.paramPackage, "/src/main/java/", entity.className + "Param.java", "entityparam.ftl", entity, false);
+                generate(config.paramPackage, "/src/main/java/", entity.className + "CreateParam.java", "entitycreateparam.ftl", entity, false);
+                generate(config.paramPackage, "/src/main/java/", entity.className + "UpdateParam.java", "entityupdateparam.ftl", entity, false);
                 generate(config.actionPackage, "/src/main/java/", entity.className + "Controller.java", "controller.ftl", entity, false);
                 generate(config.servicePackage, "/src/main/java/", entity.className + "Service.java", "service.ftl", entity, false);
                 generate(config.daoPackage, "/src/main/java/", entity.className + "Mapper.java", "IMapperdao.ftl", entity, false);

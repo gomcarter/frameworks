@@ -25,8 +25,7 @@ import java.util.Iterator;
 
 /**
  * 1、万能查询 sqlTemplate 自动生成器
- * 2、支持多表 join
- * 3、支持分页查询
+ * 2、支持分页查询
  * 3、计算总数（返回值设置为Integer,Long类型即可）
  *
  * <p>
