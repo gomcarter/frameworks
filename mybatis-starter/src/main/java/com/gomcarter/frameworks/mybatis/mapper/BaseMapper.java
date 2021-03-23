@@ -66,15 +66,20 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     default int cas(T entity) {
         Field version;
         try {
-            version = entity.getClass().getField("version");
+            version = entity.getClass().getDeclaredField("version");
         } catch (NoSuchFieldException e) {
             return 0;
         }
 
         Integer oldValue = (Integer) ReflectionUtils.getFieldValue(entity, version);
+        Object id = ReflectionUtils.getFieldValue(entity, "id");
+        if (id == null) {
+            return 0;
+        }
+
         ReflectionUtils.setFieldIfNotMatchConvertIt(entity, version, oldValue == null ? 1 : oldValue + 1);
 
-        int affectRow = update(entity, new QueryWrapper<T>().eq("version", oldValue));
+        int affectRow = update(entity, new QueryWrapper<T>().eq("version", oldValue).eq("id", id));
 
         if (affectRow <= 0) {
             // 更新失败，把 version 还原
