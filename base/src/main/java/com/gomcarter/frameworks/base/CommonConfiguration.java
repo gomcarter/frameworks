@@ -1,6 +1,8 @@
 package com.gomcarter.frameworks.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.gomcarter.frameworks.base.aop.CrossAccessFilter;
 import com.gomcarter.frameworks.base.spring.CustomMappingJacksonConverter;
 import com.gomcarter.frameworks.base.spring.SpringContextHolder;
@@ -62,7 +64,12 @@ public class CommonConfiguration {
     public ObjectMapper objectMapper() {
         CustomMappingJacksonConverter jacksonConverter = new CustomMappingJacksonConverter();
         jacksonConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON));
-        return jacksonConverter.getObjectMapper();
+        ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        objectMapper.registerModule(simpleModule);
+        return objectMapper;
     }
 
     /**
