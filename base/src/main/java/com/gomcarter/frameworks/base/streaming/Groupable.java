@@ -4,6 +4,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author gomcarter
@@ -39,11 +41,12 @@ public class Groupable<KEY, VAL> {
         }});
     }
 
-    public <RESULT extends Collection> Streamable flatMap(BiFunction<KEY, VAL, RESULT> mapper) {
-        Map<KEY, VAL> map = this.map;
-        return Streamable.valueOf(new ArrayList<RESULT>() {{
-            map.forEach((k, m) -> Optional.ofNullable(mapper.apply(k, map.get(k))).ifPresent(this::addAll));
-        }});
+    public <RESULT> Streamable<RESULT> map(BiFunction<KEY, VAL, RESULT> mapper) {
+        return Streamable.valueOf(
+                this.map.keySet()
+                        .stream()
+                        .map(s -> mapper.apply(s, map.get(s)))
+        );
     }
 
     public Map<KEY, VAL> collect() {

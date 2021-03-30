@@ -18,7 +18,7 @@ public enum MatchType {
      */
     EQ {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).eq(fieldName, value);
         }
 
@@ -51,7 +51,7 @@ public enum MatchType {
      */
     NE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).ne(fieldName, value);
         }
 
@@ -84,7 +84,7 @@ public enum MatchType {
      */
     LIKE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).like(fieldName, value);
         }
 
@@ -117,7 +117,7 @@ public enum MatchType {
      */
     NOTLIKE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).notLike(fieldName, value);
         }
 
@@ -150,7 +150,7 @@ public enum MatchType {
      */
     RIGHTLIKE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).likeRight(fieldName, value);
         }
 
@@ -183,7 +183,7 @@ public enum MatchType {
      */
     LEFTLIKE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).likeLeft(fieldName, value);
         }
 
@@ -216,7 +216,7 @@ public enum MatchType {
      */
     GT {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).gt(fieldName, value);
         }
 
@@ -249,7 +249,7 @@ public enum MatchType {
      */
     GE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).ge(fieldName, value);
         }
 
@@ -282,7 +282,7 @@ public enum MatchType {
      */
     LT {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).lt(fieldName, value);
         }
 
@@ -315,7 +315,7 @@ public enum MatchType {
      */
     LE {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).le(fieldName, value);
         }
 
@@ -348,7 +348,7 @@ public enum MatchType {
      */
     NULL {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).isNull(fieldName);
         }
 
@@ -377,7 +377,7 @@ public enum MatchType {
      */
     NOTNULL {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).isNotNull(fieldName);
         }
 
@@ -406,7 +406,7 @@ public enum MatchType {
      */
     IN {
         @Override
-        public <T> void wrap(Wrapper<T> w, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> w, Condition condition, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) w);
             Class kls = value.getClass();
             if (Iterable.class.isAssignableFrom(kls)) {
@@ -463,7 +463,7 @@ public enum MatchType {
      */
     NOTIN {
         @Override
-        public <T> void wrap(Wrapper<T> w, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> w, Condition condition, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) w);
             Class kls = value.getClass();
             if (Iterable.class.isAssignableFrom(kls)) {
@@ -522,7 +522,7 @@ public enum MatchType {
      */
     INSQL {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).inSql(fieldName, value + "");
         }
 
@@ -550,7 +550,7 @@ public enum MatchType {
      */
     NOTINSQL {
         @Override
-        public <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value) {
             ((AbstractWrapper) wrapper).notInSql(fieldName, value + "");
         }
 
@@ -577,7 +577,7 @@ public enum MatchType {
      */
     AND {
         @Override
-        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, Condition condition, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) wr);
 
             Class kls = value.getClass();
@@ -587,7 +587,7 @@ public enum MatchType {
                 wrapper.and(w -> ((AbstractWrapper) w).eq(fieldName, value));
             } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
                 // 如果是数组或者是Iterable
-                wrapper.and(w -> IN.wrap(((AbstractWrapper) w), fieldName, value));
+                wrapper.and(w -> IN.wrap(((AbstractWrapper) w), condition, fieldName, value));
             } else {
                 // 否则去 and 这个类对应下面的所有字段的匹配结果
                 wrapper.and(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
@@ -643,7 +643,7 @@ public enum MatchType {
      */
     OR {
         @Override
-        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, Condition condition, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) wr);
 
             Class kls = value.getClass();
@@ -653,7 +653,7 @@ public enum MatchType {
                 wrapper.or(w -> ((AbstractWrapper) w).eq(fieldName, value));
             } else if (kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
                 // 如果是数组或者是Iterable
-                wrapper.or(w -> IN.wrap(((AbstractWrapper) w), fieldName, value));
+                wrapper.or(w -> IN.wrap(((AbstractWrapper) w), condition, fieldName, value));
             } else {
                 // 否则去 or 这个类对应下面的所有字段的匹配结果
                 wrapper.or(w -> MapperUtils.buildWrapper(((AbstractWrapper) w), value));
@@ -732,9 +732,9 @@ public enum MatchType {
             }
         }
     },
-    EXSITS {
+    EXISTS {
         @Override
-        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, Condition condition, String fieldName, Object value) {
             AbstractWrapper wrapper = ((AbstractWrapper) wr);
             Class kls = value.getClass();
             if (BeanUtils.isSimpleValueType(kls) || kls == Object.class || kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
@@ -743,12 +743,20 @@ public enum MatchType {
             }
             StringBuilder whereSql = new StringBuilder();
 
-            MapperUtils.buildExistsSql(whereSql, value);
-            String sql = "select 1 from " + fieldName + " a ";
-            if (whereSql.length() > 0) {
-                sql += " where 1 = 1 " + whereSql.toString();
+            String[] relations = condition.relation();
+            if (relations.length % 2 != 0 || relations.length == 0) {
+                throw new RuntimeException("EXISTS: fieldName：" + fieldName + "的字段：relation: 配置不正确。");
             }
-            wrapper.exists(sql);
+            StringBuilder sql = new StringBuilder("select 1 from " + fieldName + " a where ");
+
+            for(int i = 0; i < relations.length; i = i + 2) {
+                sql.append("a.").append(relations[i]).append(" = ").append(relations[i + 1]);
+            }
+            MapperUtils.buildExistsSql(whereSql, value);
+            if (whereSql.length() > 0) {
+                sql.append(whereSql.toString());
+            }
+            wrapper.exists(sql.toString());
         }
 
         @Override
@@ -761,23 +769,31 @@ public enum MatchType {
             throw new RuntimeException("not support nesting of exists");
         }
     },
-    NOTEXSITS {
+    NOTEXISTS {
         @Override
-        public <T> void wrap(Wrapper<T> wr, String fieldName, Object value) {
+        public <T> void wrap(Wrapper<T> wr, Condition condition, String fieldName, Object value) {
             if (value != null) {
                 Class kls = value.getClass();
                 if (BeanUtils.isSimpleValueType(kls) || kls == Object.class || kls.isArray() || Iterable.class.isAssignableFrom(kls)) {
                     // 如果是数组或者是Iterable
-                    throw new RuntimeException("NOTEXISTS 不支持类型为：" + kls + "的字段：" + fieldName + "，仅支持普通自定义类。");
+                    throw new RuntimeException("NOT EXISTS 不支持类型为：" + kls + "的字段：" + fieldName + "，仅支持普通自定义类。");
                 }
-                StringBuilder whereSql = new StringBuilder();
-                MapperUtils.buildExistsSql(whereSql, value);
-                String sql = "select 1 from " + fieldName + " a ";
-                if (whereSql.length() > 0) {
-                    sql += " where 1 = 1 " + whereSql.toString();
+                String[] relations = condition.relation();
+                if (relations.length % 2 != 0 || relations.length == 0) {
+                    throw new RuntimeException("NOT EXISTS fieldName：" + fieldName + "的字段：relation: 配置不正确。");
+                }
+                StringBuilder sql = new StringBuilder("select 1 from " + fieldName + " a where ");
+                for(int i = 0; i < relations.length; i = i + 2) {
+                    sql.append("a.").append(relations[i]).append(" = ").append(relations[i + 1]);
                 }
 
-                ((AbstractWrapper) wr).notExists(sql);
+                StringBuilder whereSql = new StringBuilder();
+                MapperUtils.buildExistsSql(whereSql, value);
+                if (whereSql.length() > 0) {
+                    sql.append(" where 1 = 1 ").append(whereSql.toString());
+                }
+
+                ((AbstractWrapper) wr).notExists(sql.toString());
             }
         }
 
@@ -792,7 +808,7 @@ public enum MatchType {
         }
     };
 
-    public abstract <T> void wrap(Wrapper<T> wrapper, String fieldName, Object value);
+    public abstract <T> void wrap(Wrapper<T> wrapper, Condition condition, String fieldName, Object value);
 
     public static MatchType getDefaultType(Condition condition, Class kls) {
         MatchType type;

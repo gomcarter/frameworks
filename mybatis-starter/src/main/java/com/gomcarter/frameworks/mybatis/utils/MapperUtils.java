@@ -146,13 +146,13 @@ public class MapperUtils {
             // 如果为 null，则跳过
             if (value == null) {
                 if (strategy == MatchStrategy.IGNORED) {
-                    MatchType.NULL.wrap(wrapper, fieldName, null);
+                    MatchType.NULL.wrap(wrapper, condition, fieldName, null);
                 }
             } else {
                 // 根据字段类型获取默认的匹配类型
                 MatchType type = MatchType.getDefaultType(condition, field.getType());
                 // 开始包装
-                type.wrap(wrapper, fieldName, value);
+                type.wrap(wrapper, condition, fieldName, value);
             }
         }
 
