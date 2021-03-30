@@ -41,7 +41,7 @@ public @interface Condition {
 
     /**
      * MatchType.EXISTS 的时候使用，用于字段关联
-     * 格式如下： {"a","b","c","d"} => select * from t1 exists(select * from t2 where t1.a = t2.b and t1.c = t2.d)
+     * 格式如下： { "a","b","c","d" } =&lt; select * from t1 exists(select * from t2 where t1.a = t2.b and t1.c = t2.d)
      *
      * @return 字段关联
      */
