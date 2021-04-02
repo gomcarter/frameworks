@@ -1,18 +1,14 @@
 package com.gomcarter.frameworks.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.gomcarter.frameworks.base.aop.CrossAccessFilter;
 import com.gomcarter.frameworks.base.spring.CustomMappingJacksonConverter;
 import com.gomcarter.frameworks.base.spring.SpringContextHolder;
-import com.google.common.collect.Lists;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.unit.DataSize;
@@ -62,14 +58,7 @@ public class CommonConfiguration {
     @Primary
     @ConditionalOnMissingBean(ObjectMapper.class)
     public ObjectMapper objectMapper() {
-        CustomMappingJacksonConverter jacksonConverter = new CustomMappingJacksonConverter();
-        jacksonConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON));
-        ObjectMapper objectMapper = jacksonConverter.getObjectMapper();
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
-        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
-        objectMapper.registerModule(simpleModule);
-        return objectMapper;
+        return new CustomMappingJacksonConverter().getObjectMapper();
     }
 
     /**

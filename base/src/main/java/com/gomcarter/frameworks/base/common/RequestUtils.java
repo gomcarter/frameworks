@@ -7,6 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,7 +19,7 @@ import java.util.Map;
 /**
  * @author gomcarter
  */
-public class CookieUtils {
+public class RequestUtils {
 
     /**
      * 获取 cookie to map
@@ -148,5 +153,48 @@ public class CookieUtils {
             }
         }
         return value;
+    }
+
+    public static Map<String, String> headerMap(HttpServletRequest request) {
+        Enumeration<String> headerNames = request.getHeaderNames();
+        Map<String, String> headerMap = new HashMap<>();
+        while (headerNames.hasMoreElements()) {
+            String header = headerNames.nextElement();
+            headerMap.put(header, request.getHeader(header));
+        }
+        return headerMap;
+    }
+
+    /**
+     * get visitor's ip
+     *
+     * @param request HttpServletRequest
+     * @return ip such as "119.22.11.2"
+     */
+    public static String getIp(HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        if (request.getHeader("X-Forwarded-For") != null) {
+            ip = request.getHeader("X-Forwarded-For");
+        } else if (request.getHeader("X-Real-IP") != null) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        return ip;
+    }
+
+    /**
+     * read request body
+     *
+     * @param request HttpServletRequest
+     * @return body content
+     * @throws IOException for read failed
+     */
+    public static String body(HttpServletRequest request) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8));
+        StringBuilder buffer = new StringBuilder();
+        String line;
+        while ((line = in.readLine()) != null) {
+            buffer.append(line);
+        }
+        return buffer.toString();
     }
 }

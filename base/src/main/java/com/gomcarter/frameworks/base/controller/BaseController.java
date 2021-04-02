@@ -1,37 +1,59 @@
 package com.gomcarter.frameworks.base.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gomcarter.frameworks.base.common.RequestUtils;
 import com.gomcarter.frameworks.base.exception.CustomException;
-import com.gomcarter.frameworks.base.json.ErrorCode;
-import com.gomcarter.frameworks.base.json.JsonError;
-import com.gomcarter.frameworks.base.json.JsonObject;
+import com.gomcarter.frameworks.base.json.*;
 import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.management.ReflectionException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author gomcarter  on 2019-11-11 23:17:48
  */
 @ControllerAdvice
 @Slf4j
-public class BaseController {
+public class BaseController implements ResponseBodyAdvice<Object> {
+
+    @Override
+    public boolean supports(MethodParameter methodParameter, Class<? extends HttpMessageConverter<?>> converterType) {
+        return methodParameter.getMethodAnnotation(JsonIgnore.class) == null;
+    }
+
+    @Override
+    public Object beforeBodyWrite(
+            Object obj, MethodParameter methodParameter,
+            MediaType mediaType, Class<? extends HttpMessageConverter<?>> converterType,
+            ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
+
+        if (obj == null) {
+            return new JsonSuccess();
+        } else if (obj instanceof JsonObject) {
+            return obj;
+        } else if (obj instanceof ModelAndView) {
+            return obj;
+        } else {
+            return new JsonData(obj);
+        }
+    }
 
     /**
      * @param request   HttpServletRequest
@@ -50,12 +72,12 @@ public class BaseController {
                 this.getClass().getName(),
                 request.getRequestURI(),
                 request.getMethod(),
-                getIp(request),
+                RequestUtils.getIp(request),
                 request.getHeader("Referer"),
                 request.getHeader("User-Agent"),
                 JsonMapper.buildNonNullMapper().toJson(request.getParameterMap()),
                 JsonMapper.buildNonNullMapper().toJson(request.getCookies()),
-                JsonMapper.buildNonNullMapper().toJson(headerMap(request)),
+                JsonMapper.buildNonNullMapper().toJson(RequestUtils.headerMap(request)),
                 exception);
 
         if (exception instanceof MissingServletRequestParameterException) {
@@ -95,22 +117,6 @@ public class BaseController {
     }
 
     /**
-     * get visitor's ip
-     *
-     * @param request HttpServletRequest
-     * @return ip such as "119.22.11.2"
-     */
-    public static String getIp(HttpServletRequest request) {
-        String ip = request.getRemoteAddr();
-        if (request.getHeader("X-Forwarded-For") != null) {
-            ip = request.getHeader("X-Forwarded-For");
-        } else if (request.getHeader("X-Real-IP") != null) {
-            ip = request.getHeader("X-Real-IP");
-        }
-        return ip;
-    }
-
-    /**
      * spring InitBinder
      *
      * @param binder binder
@@ -119,32 +125,5 @@ public class BaseController {
     public void initBinder(WebDataBinder binder) {
         // binder.registerCustomEditor(String.class, new StringEscapeEditor());
         binder.registerCustomEditor(Date.class, new DateEditor());
-    }
-
-    /**
-     * read request body
-     *
-     * @param request HttpServletRequest
-     * @return body content
-     * @throws IOException for read failed
-     */
-    public static String readBody(HttpServletRequest request) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8));
-        StringBuilder buffer = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            buffer.append(line);
-        }
-        return buffer.toString();
-    }
-
-    public static Map<String, String> headerMap(HttpServletRequest request) {
-        Enumeration<String> headerNames = request.getHeaderNames();
-        Map<String, String> headerMap = new HashMap<>();
-        while (headerNames.hasMoreElements()) {
-            String header = headerNames.nextElement();
-            headerMap.put(header, request.getHeader(header));
-        }
-        return headerMap;
     }
 }
