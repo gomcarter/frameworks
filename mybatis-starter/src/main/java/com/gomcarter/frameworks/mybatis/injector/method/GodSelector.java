@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.gomcarter.frameworks.base.common.CustomStringUtils;
 import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.config.utils.ReflectionUtils;
@@ -20,7 +19,6 @@ import org.springframework.beans.BeanUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.util.Iterator;
 
 /**
@@ -38,11 +36,11 @@ import java.util.Iterator;
 public class GodSelector extends AbstractMethod {
 
     @Override
-    public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo ignore) {
+    public MappedStatement injectMappedStatement(Class<?> mapperClass, Class<?> modelClass, TableInfo tableInfo) {
         // sqlTemplate 模板
         String sqlTemplate = "<script>\nSELECT %s FROM %s %s %s\n</script>";
 
-        MybatisConfiguration configuration = ignore.getConfiguration();
+        MybatisConfiguration configuration = tableInfo.getConfiguration();
         Method[] methods = mapperClass.getDeclaredMethods();
         // 1，扫描 mapperClass 中存在支持自动加 sqlTemplate 的方法。
         for (Method method : methods) {
@@ -56,48 +54,19 @@ public class GodSelector extends AbstractMethod {
             Class returnType = method.getReturnType();
             String pageSql = "";
             boolean count = false;
-            boolean error = false;
-            // 自动注入需满足两个条件中的一个
-            // 1，要么是 java.util.Iterable，且模板类必须是一个带属性的类
-            // 2，必须是一个 java 类（必须包含属性，不能是简单类型和包装类）
-            if (method.getGenericReturnType() instanceof ParameterizedType) {
-                // 模板类
-                if (!Iterable.class.isAssignableFrom(method.getReturnType())) {
-                    error = true;
-                }
-                // 模板类模板超过1个（不能是Map，Tuple等模板类）
-                if (((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments().length > 1) {
-                    error = true;
-                }
-
-                returnType = (Class) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
-            } else if (BeanUtils.isSimpleValueType(returnType)) {
+            // 简单类型返回值仅支持Integer或Long
+            if (BeanUtils.isSimpleValueType(returnType)) {
                 if (Long.class != returnType && Integer.class != returnType) {
-                    error = true;
+                    log.error("自动注入{}的sql失败, 简单类型返回值仅支持Integer或Long", id);
+                    throw new RuntimeException("初始化" + id + "失败");
                 }
                 // 单类返回一条数据
                 count = true;
-            } else {
-                // 单类返回一条数据
-                pageSql = " LIMIT 1 ";
-            }
-
-            if (error || returnType.getDeclaredFields().length == 0 || returnType == void.class) {
-                log.error("初始化{}失败, 自动注入需满足三个条件中的一个：\n" +
-                        "1、要么是 java.util.Iterable，且模板类必须是一个带属性的类 ———— 查询多条。\n" +
-                        "2、要么是直接是一个带属性的类 ———— 查询单条。\n" +
-                        "3、要么是Integer或Long ———— 查询条数。", id);
-                throw new RuntimeException("初始化" + id + "失败");
             }
 
             String table, selectColumns;
 
-            TableInfo tableInfo = ignore;
-            if (returnType != modelClass) {
-                tableInfo = TableInfoHelper.initTableInfo(builderAssistant, returnType);
-            }
-            // 无join
-            table = ignore.getTableName();
+            table = tableInfo.getTableName();
             selectColumns = sqlSelectColumns(tableInfo, false);
 
             StringBuilder whereSql = new StringBuilder();

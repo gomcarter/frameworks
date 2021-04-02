@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -187,7 +188,7 @@ public class MapperUtils {
 
     public static void buildWhereSql(StringBuilder whereSql, Condition condition, String paramName, Class paramsClass) {
         // 简单类型
-        if (BeanUtils.isSimpleValueType(paramsClass)) {
+        if (BeanUtils.isSimpleValueType(paramsClass) || Collection.class.isAssignableFrom(paramsClass) || paramsClass.isArray()) {
             MatchType type = MatchType.getDefaultType(condition, paramsClass);
             String databaseFieldName = MapperUtils.getDatabaseFieldName(condition, paramName);
 
