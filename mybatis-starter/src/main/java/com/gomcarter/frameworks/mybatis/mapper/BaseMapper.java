@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -187,6 +188,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return the entity
      */
     default T getById(Serializable id) {
+        if (id == null) {
+            return null;
+        }
         return selectById(id);
     }
 
@@ -197,6 +201,9 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @return the list of entity
      */
     default List<T> getByIdList(Collection<? extends Serializable> idList) {
+        if (idList == null || idList.isEmpty()) {
+            return new ArrayList<>(0);
+        }
         return selectBatchIds(idList);
     }
 
