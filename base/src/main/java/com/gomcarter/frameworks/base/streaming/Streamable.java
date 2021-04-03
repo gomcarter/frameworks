@@ -379,6 +379,24 @@ public class Streamable<T> {
     }
 
     /**
+     * @param mapper mapper
+     * @param <R>    r
+     * @return Set
+     */
+    public <R> Set<R> toSet(Function<T, R> mapper) {
+        return this.stream.map(mapper).collect(Collectors.toSet());
+    }
+
+    /**
+     * @param mapper mapper
+     * @param <R>    r
+     * @return Set
+     */
+    public <R> List<R> toList(Function<T, R> mapper) {
+        return this.stream.map(mapper).collect(Collectors.toList());
+    }
+
+    /**
      * @return Iterator
      */
     public Iterator iterator() {
