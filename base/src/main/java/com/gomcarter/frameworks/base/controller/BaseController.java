@@ -96,12 +96,8 @@ public class BaseController implements ResponseBodyAdvice<Object> {
             return new JsonError(ErrorCode.sqlError);
         }
 
-        if (exception instanceof RuntimeException) {
-            if (exception instanceof CustomException) {
-                return new JsonError(exception.getMessage(), ((CustomException) exception).getCode());
-            } else {
-                return new JsonError(exception.getMessage());
-            }
+        if (exception instanceof CustomException) {
+            return new JsonError(exception.getMessage(), ((CustomException) exception).getCode());
         }
 
         JsonObject jsonError = addMoreExceptionHandler(request, exception);
