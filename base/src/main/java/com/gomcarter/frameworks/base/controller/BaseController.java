@@ -65,7 +65,7 @@ public class BaseController implements ResponseBodyAdvice<Object> {
     public JsonObject exceptionHandler(HttpServletRequest request, Exception exception) {
         //如果是ClientAbortException, 直接返回null;
         if (StringUtils.contains(exception.getClass().toString(), "ClientAbortException")) {
-            return null;
+            return new JsonError("请求失败！");
         }
 
         log.error("{}操作失败, url:{}, method:{}, ip: {}, Referer: {}, UA: {}, params: {}, cookie: {},header: {},",
