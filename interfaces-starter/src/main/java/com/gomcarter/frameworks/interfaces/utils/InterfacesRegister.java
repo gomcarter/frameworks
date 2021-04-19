@@ -324,7 +324,19 @@ public class InterfacesRegister implements ApplicationContextAware {
             Class parentKls = (Class) parentType;
 
             if (parentKls.isArray()) {
-                throw new RuntimeException("simple POJO or Iterable only for parameters and returns, you have to make it as: List，Set or Collection");
+                String className = parentType.getTypeName().replace("[]", "");
+                try {
+                    Class realType = Class.forName(className);
+                    ApiBean child = new ApiBean();
+                    parent.setType(List.class.getSimpleName())
+                            .addChild(child)
+                            .setClassName("List<" + realType.getTypeName() + ">");
+
+                    generateChildrenBean(child, key, realType, null);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(className + " is not found");
+                }
+                return;
             }
 
             parent.setClassName(parentKls.getName());
