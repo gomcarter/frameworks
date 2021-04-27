@@ -3,6 +3,7 @@ package com.gomcarter.frameworks.mybatis.injector;
 import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.AbstractSqlInjector;
 import com.baomidou.mybatisplus.core.injector.methods.*;
+import com.gomcarter.frameworks.mybatis.injector.method.BatchInsertOrUpdate;
 import com.gomcarter.frameworks.mybatis.injector.method.GodSelector;
 
 import java.util.List;
@@ -38,7 +39,9 @@ public class CustomSqlInjector extends AbstractSqlInjector {
                 new SelectList(),
                 new SelectPage(),
                 // 万能选择器
-                new GodSelector()
+                new GodSelector(),
+                // 批量插入或者更新 insert into on duplicate key update
+                new BatchInsertOrUpdate()
         ).collect(toList());
     }
 }

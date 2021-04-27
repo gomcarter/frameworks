@@ -1,9 +1,9 @@
 package com.gomcarter.frameworks.mybatis.service;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gomcarter.frameworks.base.pager.Pageable;
 import com.gomcarter.frameworks.mybatis.mapper.BaseMapper;
-import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -12,18 +12,15 @@ import java.util.List;
 /**
  * @author 李银 on 2021-04-26 20:19:19
  */
-@Service
-public interface BaseService<T> {
-
-    BaseMapper<T> mapper();
+public class BaseService<M extends BaseMapper<T>, T> extends ServiceImpl<M, T> {
 
     /**
      * 插入一条记录
      *
      * @param entity 实体对象
      */
-    default T insert(T entity) {
-        mapper().insert(entity);
+    public T insert(T entity) {
+        getBaseMapper().insert(entity);
         return entity;
     }
 
@@ -33,8 +30,8 @@ public interface BaseService<T> {
      * @param id 实体对象id
      * @return 删除条数
      */
-    default int deleteById(Serializable id) {
-        return mapper().deleteById(id);
+    public int deleteById(Serializable id) {
+        return getBaseMapper().deleteById(id);
     }
 
     /**
@@ -43,19 +40,20 @@ public interface BaseService<T> {
      * @param idList 实体对象id集合
      * @return 删除条数
      */
-    default int deleteBatchIds(Collection<? extends Serializable> idList) {
-        return mapper().deleteBatchIds(idList);
+    public int deleteBatchIds(Collection<? extends Serializable> idList) {
+        return getBaseMapper().deleteBatchIds(idList);
     }
 
     /**
      * delete entity where condition
+     * vn
      *
      * @param condition 查询条件
      * @param <R>       参数类型
      * @return 被删除总数
      */
-    default <R> int deleteBy(R condition) {
-        return mapper().deleteBy(condition);
+    public <R> int deleteBy(R condition) {
+        return ((BaseMapper<T>) getBaseMapper()).deleteBy(condition);
     }
 
 
@@ -65,8 +63,8 @@ public interface BaseService<T> {
      * @param entity entity
      * @return the entity
      */
-    default T insertNoisy(T entity) {
-        return mapper().insertNoisy(entity);
+    public int insertNoisy(T entity) {
+        return ((BaseMapper<T>) getBaseMapper()).insertNoisy(entity);
     }
 
     /**
@@ -75,8 +73,8 @@ public interface BaseService<T> {
      * @param entity 实体对象
      * @return affect rows
      */
-    default int update(T entity) {
-        return mapper().update(entity);
+    public int update(T entity) {
+        return ((BaseMapper<T>) getBaseMapper()).update(entity);
     }
 
     /**
@@ -86,8 +84,8 @@ public interface BaseService<T> {
      * @param entity entity
      * @return affect rows
      */
-    default int updateCas(T entity) {
-        return mapper().cas(entity);
+    public int updateCas(T entity) {
+        return ((BaseMapper<T>) getBaseMapper()).cas(entity);
     }
 
     /**
@@ -95,8 +93,8 @@ public interface BaseService<T> {
      *
      * @param entity entity
      */
-    default void updateCasNoisy(T entity) {
-        mapper().casNoisy(entity);
+    public void updateCasNoisy(T entity) {
+        ((BaseMapper<T>) getBaseMapper()).casNoisy(entity);
     }
 
     /**
@@ -105,8 +103,8 @@ public interface BaseService<T> {
      * @param id 主键ID
      * @return the entity
      */
-    default T getById(Long id) {
-        return mapper().getById(id);
+    public T getById(Long id) {
+        return ((BaseMapper<T>) getBaseMapper()).getById(id);
     }
 
     /**
@@ -115,8 +113,8 @@ public interface BaseService<T> {
      * @param idList 主键ID
      * @return the list of entity
      */
-    default List<T> getByIdList(Collection<Long> idList) {
-        return mapper().getByIdList(idList);
+    public List<T> getByIdList(Collection<Long> idList) {
+        return ((BaseMapper<T>) getBaseMapper()).getByIdList(idList);
     }
 
     /**
@@ -129,8 +127,8 @@ public interface BaseService<T> {
      * @param <P>      参数类型
      * @return the list of entity
      */
-    default <P> List<T> query(P params, Pageable pageable) {
-        return mapper().query(params, pageable);
+    public <P> List<T> query(P params, Pageable pageable) {
+        return ((BaseMapper<T>) getBaseMapper()).query(params, pageable);
     }
 
     /**
@@ -141,8 +139,8 @@ public interface BaseService<T> {
      * @param <P>    参数类型
      * @return 总数
      */
-    default <P> Integer count(P params) {
-        return mapper().count(params);
+    public <P> Integer count(P params) {
+        return ((BaseMapper<T>) getBaseMapper()).count(params);
     }
 
     /**
@@ -154,8 +152,8 @@ public interface BaseService<T> {
      * @param value  更新成为什么值
      * @return affect rows
      */
-    default int update(Serializable id, String column, Object value) {
-        return mapper().update(id, column, value);
+    public int update(Serializable id, String column, Object value) {
+        return ((BaseMapper<T>) getBaseMapper()).update(id, column, value);
     }
 
     /**
@@ -167,8 +165,8 @@ public interface BaseService<T> {
      * @param value  更新成为什么值
      * @return affect rows
      */
-    default int update(Serializable id, SFunction<T, ?> column, Object value) {
-        return mapper().update(id, column, value);
+    public int update(Serializable id, SFunction<T, ?> column, Object value) {
+        return ((BaseMapper<T>) getBaseMapper()).update(id, column, value);
     }
 
     /**
@@ -180,8 +178,8 @@ public interface BaseService<T> {
      * @param columnsToNull 指定更新为 null 的列名
      * @return affect rows
      */
-    default int update(Serializable id, T entity, String... columnsToNull) {
-        return mapper().update(id, entity, columnsToNull);
+    public int update(Serializable id, T entity, String... columnsToNull) {
+        return ((BaseMapper<T>) getBaseMapper()).update(id, entity, columnsToNull);
     }
 
     /**
@@ -191,8 +189,8 @@ public interface BaseService<T> {
      * @param columnsToNull 指定更新为 null 的列名
      * @return affect rows
      */
-    default int update(T entity, String... columnsToNull) {
-        return mapper().update(entity, columnsToNull);
+    public int update(T entity, String... columnsToNull) {
+        return ((BaseMapper<T>) getBaseMapper()).update(entity, columnsToNull);
     }
 
 
@@ -203,8 +201,8 @@ public interface BaseService<T> {
      * @param <R>    参数类型
      * @return the list of entity
      */
-    default <R> T getUnique(R params) {
-        return mapper().getUnique(params);
+    public <R> T getUnique(R params) {
+        return ((BaseMapper<T>) getBaseMapper()).getUnique(params);
     }
 
     /**
@@ -215,8 +213,8 @@ public interface BaseService<T> {
      * @param columns 返回哪些具体数据
      * @return the list of entity
      */
-    default <R> T getUnique(R params, String... columns) {
-        return mapper().getUnique(params, columns);
+    public <R> T getUnique(R params, String... columns) {
+        return ((BaseMapper<T>) getBaseMapper()).getUnique(params, columns);
     }
 
     /**
@@ -230,8 +228,8 @@ public interface BaseService<T> {
      * @param <R>      参数类型
      * @return the list of entity
      */
-    default <R> List<T> query(R params, Pageable pageable, String... columns) {
-        return mapper().query(params, pageable, columns);
+    public <R> List<T> query(R params, Pageable pageable, String... columns) {
+        return ((BaseMapper<T>) getBaseMapper()).query(params, pageable, columns);
     }
 
     /**
@@ -242,8 +240,8 @@ public interface BaseService<T> {
      * @param <R>       参数类型
      * @return 被更新总数
      */
-    default <R> int updateBy(T entity, R condition) {
-        return mapper().updateBy(entity, condition);
+    public <R> int updateBy(T entity, R condition) {
+        return ((BaseMapper<T>) getBaseMapper()).updateBy(entity, condition);
     }
 
     /**
@@ -255,7 +253,7 @@ public interface BaseService<T> {
      * @param <R>           参数类型
      * @return 被更新总数
      */
-    default <R> int updateBy(T entity, R condition, String... columnsToNull) {
-        return mapper().updateBy(entity, condition, columnsToNull);
+    public <R> int updateBy(T entity, R condition, String... columnsToNull) {
+        return ((BaseMapper<T>) getBaseMapper()).updateBy(entity, condition, columnsToNull);
     }
 }

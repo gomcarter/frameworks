@@ -37,12 +37,12 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param entity entity
      * @return the entity
      */
-    default T insertNoisy(T entity) {
+    default int insertNoisy(T entity) {
         int inserted = insert(entity);
         if (inserted <= 0) {
             throw new RuntimeException("insert failed.");
         }
-        return entity;
+        return inserted;
     }
 
     /**
@@ -315,4 +315,14 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     default <R> int deleteBy(R condition) {
         return this.delete(MapperUtils.buildUpdateWrapper(condition));
     }
+
+    /**
+     * 原理： insert into on duplicate key update
+     * 批量插入或更新
+     *
+     * @param entities 数据
+     * @param <R>      数据类型
+     * @return 影响条数
+     */
+    <R> int batchInsertOrUpdate(Collection<R> entities);
 }
