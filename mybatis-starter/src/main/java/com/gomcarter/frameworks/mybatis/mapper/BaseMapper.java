@@ -51,7 +51,6 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      * @param entity entity
      */
     default void casNoisy(T entity) {
-
         if (cas(entity) <= 0) {
             throw new RuntimeException("update failed, the data is expired.");
         }
@@ -93,7 +92,7 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
     /**
      * 根据 ID 修改
      *
-     * @param entity 实体对象 ： 将字段设置成 null，将不会更新该字段。如果你的需求本身就是要将该字段设置成 null
+     * @param entity 实体对象
      * @return affect rows
      */
     default int update(T entity) {
@@ -304,5 +303,16 @@ public interface BaseMapper<T> extends com.baomidou.mybatisplus.core.mapper.Base
      */
     default <R> int updateBy(T entity, R condition, String... columnsToNull) {
         return this.update(entity, MapperUtils.buildUpdateWrapper(condition, columnsToNull));
+    }
+
+    /**
+     * delete entity where condition
+     *
+     * @param condition 查询条件
+     * @param <R>       参数类型
+     * @return 被删除总数
+     */
+    default <R> int deleteBy(R condition) {
+        return this.delete(MapperUtils.buildUpdateWrapper(condition));
     }
 }
