@@ -59,17 +59,9 @@ public class FsmFoo implements FsmObject {
 service：
 
 public class FsmFooService extends AbstractFsmService<FsmFoo> {
-    @Resource
-    private FsmFooMapper fsmFooMapper;
-    
     @Override
     public String type() {
         return "foo";
-    }
-
-    @Override
-    public FsmObjectMapper<FsmFoo> mapper() {
-        return this.fsmFooMapper;
     }
     
     @Override
