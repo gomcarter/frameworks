@@ -1,11 +1,12 @@
 package com.gomcarter.frameworks.fsm.service;
 
+import com.gomcarter.frameworks.fsm.dao.FsmContextMapper;
 import com.gomcarter.frameworks.fsm.dao.FsmLogMapper;
 import com.gomcarter.frameworks.fsm.dao.FsmObjectMapper;
 import com.gomcarter.frameworks.fsm.entity.FsmContext;
 import com.gomcarter.frameworks.fsm.entity.FsmLog;
 import com.gomcarter.frameworks.fsm.entity.FsmObject;
-import com.gomcarter.frameworks.fsm.dao.FsmContextMapper;
+import com.gomcarter.frameworks.mybatis.service.BaseService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author gomcarter
  */
 @Slf4j
-public abstract class AbstractFsmService<T extends FsmObject> {
+public abstract class AbstractFsmService<M extends FsmObjectMapper<T>, T extends FsmObject> extends BaseService<M, T> {
     @Resource
     private FsmLogMapper fsmLogMapper;
 
@@ -27,11 +28,6 @@ public abstract class AbstractFsmService<T extends FsmObject> {
      * @return 状态机的业务类型
      */
     public abstract String type();
-
-    /**
-     * @return 业务对象mapper
-     */
-    public abstract FsmObjectMapper<T> mapper();
 
     /**
      * 当到达此状态的时候，各个子类需要处理的事
@@ -70,7 +66,7 @@ public abstract class AbstractFsmService<T extends FsmObject> {
             throw new RuntimeException("event 不能空");
         }
 
-        FsmObject object = this.mapper().getById(objectId);
+        FsmObject object = this.baseMapper.getById(objectId);
 
         String stateFrom = object.getState();
         String stateTo = route(stateFrom, event);
@@ -78,7 +74,7 @@ public abstract class AbstractFsmService<T extends FsmObject> {
                 objectId, stateFrom, event, stateTo, operator, mark);
 
         // 更新节点状态
-        this.mapper().$fsmUpdateState(objectId, stateTo);
+        this.baseMapper.$fsmUpdateState(objectId, stateTo);
 
         // 插入操作日志
         this.insertLog(type(), objectId,
@@ -88,7 +84,7 @@ public abstract class AbstractFsmService<T extends FsmObject> {
     }
 
     public void insertLog(Serializable objectId, String event, String user, String mark) {
-        FsmObject object = this.mapper().getById(objectId);
+        FsmObject object = this.baseMapper.getById(objectId);
 
         String stateFrom = object.getState();
         //插入操作日志
