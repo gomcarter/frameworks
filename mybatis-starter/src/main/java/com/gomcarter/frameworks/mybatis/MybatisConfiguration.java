@@ -14,6 +14,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.aop.aspectj.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -73,6 +74,7 @@ public class MybatisConfiguration {
      * @throws Exception Exception
      */
     @Bean
+    @ConditionalOnMissingBean
     public MybatisSqlSessionFactoryBean sqlSessionFactoryBean(ReadWriteDataSource source) throws Exception {
         MybatisSqlSessionFactoryBean factoryBean = new MybatisSqlSessionFactoryBean();
         factoryBean.setDataSource(source);
@@ -98,6 +100,7 @@ public class MybatisConfiguration {
      * @return MapperScannerConfigurer
      */
     @Bean
+    @ConditionalOnMissingBean
     public MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer configurer = new MapperScannerConfigurer();
         configurer.setBasePackage(StringUtils.join(MybatisConfigHolder.DAO_BASE_PACKAGE, ","));
@@ -134,6 +137,7 @@ public class MybatisConfiguration {
      * @return ReadWriteDataSourceProcessor
      */
     @Bean
+    @ConditionalOnMissingBean
     public ReadWriteDataSourceProcessor readWriteDataSourceProcessor(NameMatchTransactionAttributeSource attributeSource) {
         ReadWriteDataSourceProcessor processor = new ReadWriteDataSourceProcessor();
         processor.setForceChoiceReadWhenWrite(false);
@@ -149,6 +153,7 @@ public class MybatisConfiguration {
      * @return AspectJExpressionPointcutAdvisor
      */
     @Bean
+    @ConditionalOnMissingBean
     public AspectJExpressionPointcutAdvisor transactionAdvisor(ReadWriteDataSource dataSource, NameMatchTransactionAttributeSource attributeSource) {
         /* 事务管理器 */
         TransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
@@ -169,6 +174,7 @@ public class MybatisConfiguration {
      * @throws NoSuchMethodException NoSuchMethodException
      */
     @Bean
+    @ConditionalOnMissingBean
     public AspectJExpressionPointcutAdvisor determineReadOrWriteDBAdvisor(ReadWriteDataSourceProcessor readWriteDataSourceProcessor) throws NoSuchMethodException {
         AspectJExpressionPointcutAdvisor advisor = new AspectJExpressionPointcutAdvisor();
         advisor.setExpression(MybatisConfigHolder.TRANSACTION_POINTCUT_EXPRESSION);

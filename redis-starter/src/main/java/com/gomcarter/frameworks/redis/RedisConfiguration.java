@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,6 +23,7 @@ public class RedisConfiguration {
      * @return DataRedisInterceptor
      */
     @Bean
+    @ConditionalOnMissingBean
     public DataRedisInterceptor dataRedisInterceptor(RedisProxy redisProxy) {
         dataRedisInterceptor = new DataRedisInterceptor()
                 .setRedisProxy(redisProxy);

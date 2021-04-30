@@ -31,6 +31,7 @@ public class CommonConfiguration {
      * @return CrossAccessFilter
      */
     @Bean
+    @ConditionalOnMissingBean
     public CrossAccessFilter crossAccessFilter() {
         return new CrossAccessFilter();
     }
@@ -39,6 +40,7 @@ public class CommonConfiguration {
      * @return FormContentFilter
      */
     @Bean
+    @ConditionalOnMissingBean
     public FormContentFilter httpPutFormContentFilter() {
         return new FormContentFilter();
     }
@@ -67,6 +69,7 @@ public class CommonConfiguration {
      * @return multipartConfigElement
      */
     @Bean
+    @ConditionalOnMissingBean
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         // 单个文件最大 --- KB, MB
@@ -80,6 +83,7 @@ public class CommonConfiguration {
      * @return responseBodyConverter
      */
     @Bean
+    @ConditionalOnMissingBean
     public HttpMessageConverter<String> responseBodyConverter() {
         return new StringHttpMessageConverter(Charset.defaultCharset());
     }
