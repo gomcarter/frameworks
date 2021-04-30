@@ -22,11 +22,11 @@ public class HttpClientFactoryBean implements FactoryBean<Object>, InitializingB
         if (proxy == null) {
             String[] keys = (String[]) this.attributes.get("value");
             String host = (String) attributes.get("host");
+            Properties properties = UnifiedConfigService.getInstance().getConfigAsProperties(keys);
             if (!host.startsWith("http")) {
-                Properties properties = UnifiedConfigService.getInstance().getConfigAsProperties(keys);
                 host = properties.getProperty(host);
             }
-            this.proxy = HttpApiProxyHandler.getProxy(this.type, host);
+            this.proxy = HttpApiProxyHandler.getProxy(this.type, host, properties);
         }
         return proxy;
     }

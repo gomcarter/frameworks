@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  *
  * @author gomcarter on 2019-11-15 17:34:26
  */
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurableValue {

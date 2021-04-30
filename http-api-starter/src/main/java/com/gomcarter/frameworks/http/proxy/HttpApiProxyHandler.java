@@ -1,6 +1,8 @@
 package com.gomcarter.frameworks.http.proxy;
 
 import com.gomcarter.frameworks.base.exception.CustomException;
+import com.gomcarter.frameworks.config.annotation.ConfigurableValue;
+import com.gomcarter.frameworks.config.annotation.ConfigurableValues;
 import com.gomcarter.frameworks.config.converter.Convertable;
 import com.gomcarter.frameworks.config.mapper.JsonMapper;
 import com.gomcarter.frameworks.config.utils.ReflectionUtils;
@@ -21,32 +23,31 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HttpApiProxyHandler implements MethodInterceptor {
     private HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY);
     private OkHttpClient client;
     private String host;
+    private Properties config;
 
-    public static <T> T getProxy(Class<T> interfaceClass, String host) {
+    public static <T> T getProxy(Class<T> interfaceClass, String host, Properties config) {
         Enhancer enhancer = new Enhancer();
         // 设置enhancer对象的父类
         enhancer.setSuperclass(interfaceClass);
         // 设置enhancer的回调对象
-        enhancer.setCallback(new HttpApiProxyHandler(host));
+        enhancer.setCallback(new HttpApiProxyHandler(host, config));
         // 创建代理对象
         return (T) enhancer.create();
         // return (T) (Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class[]{interfaceClass}, this));
     }
 
-    public HttpApiProxyHandler(String host) {
+    public HttpApiProxyHandler(String host, Properties config) {
         OkHttpClient.Builder builder = new OkHttpClient().newBuilder()
                 .addInterceptor(loggingInterceptor);
         client = builder.build();
         this.host = host;
+        this.config = config;
     }
 
     public HttpApiProxyHandler setHost(String host) {
@@ -77,6 +78,19 @@ public class HttpApiProxyHandler implements MethodInterceptor {
                 }
                 putParams(params, paramKey, args[i]);
             }
+        }
+
+        ConfigurableValues cvsAnnotation = method.getAnnotation(ConfigurableValues.class);
+        if (cvsAnnotation != null) {
+            for (String cvs : cvsAnnotation.value()) {
+                if (StringUtils.isNotBlank(cvs)) {
+                    params.putIfAbsent(cvs, config.getProperty(cvs));
+                }
+            }
+        }
+        ConfigurableValue cvAnnotation = method.getAnnotation(ConfigurableValue.class);
+        if (cvAnnotation != null && StringUtils.isNotBlank(cvAnnotation.value())) {
+            params.putIfAbsent(cvAnnotation.value(), config.getProperty(cvAnnotation.value()));
         }
 
         return buildRequest(method, builder, params, body).build();
