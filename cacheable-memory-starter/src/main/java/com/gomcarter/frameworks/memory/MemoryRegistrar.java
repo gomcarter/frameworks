@@ -23,8 +23,6 @@ public class MemoryRegistrar implements ImportBeanDefinitionRegistrar {
             throw new RuntimeException("未配置：EnableRedis");
         }
 
-        String[] keys = attributes.getStringArray("value");
-
         // 注入切面
         BeanRegistrationUtils.registerBeanDefinitionIfNotExists(registry, "memoryConfiguration", MemoryConfiguration.class);
     }

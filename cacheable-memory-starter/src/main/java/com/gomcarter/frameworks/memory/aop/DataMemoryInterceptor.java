@@ -1,7 +1,6 @@
 package com.gomcarter.frameworks.memory.aop;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.gomcarter.frameworks.cache.annotation.Cache;
 import com.gomcarter.frameworks.cache.annotation.DelCache;
 import com.gomcarter.frameworks.cache.annotation.Lock;
@@ -46,10 +45,9 @@ public class DataMemoryInterceptor {
         key = this.getKey(key, caches.argsIndex(), joinPoint.getArgs());
         try {
             // 如果有缓存就直接获取缓存数据
-            String value = MemoryCacheManager.get(key);
+            Object value = MemoryCacheManager.get(key);
             if (value != null) {
-                // logger.info(Thread.currentThread().getName() + "有数据，出去咯");
-                return dataMapper.fromJson(value, TypeFactory.defaultInstance().constructType(m.getGenericReturnType()));
+                return value;
             }
         } catch (Exception e) {
             logger.error(joinPoint.getClass().getName() + "存在数据，但是调用缓存失败", e);

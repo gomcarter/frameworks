@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MemoryConfiguration {
 
-    private DataMemoryInterceptor dataRedisInterceptor;
+    private DataMemoryInterceptor dataMemoryInterceptor;
 
     /**
      * @return DataMemoryInterceptor
@@ -23,8 +23,8 @@ public class MemoryConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DataMemoryInterceptor dataRedisInterceptor() {
-        dataRedisInterceptor = new DataMemoryInterceptor();
-        return dataRedisInterceptor;
+        dataMemoryInterceptor = new DataMemoryInterceptor();
+        return dataMemoryInterceptor;
     }
 
     @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.Cache)")
@@ -33,7 +33,7 @@ public class MemoryConfiguration {
 
     @Around("cacheData()")
     public Object cacheData(ProceedingJoinPoint joinPoint) throws Throwable {
-        return dataRedisInterceptor.cacheData(joinPoint);
+        return dataMemoryInterceptor.cacheData(joinPoint);
     }
 
     @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.DelCache)")
@@ -42,7 +42,7 @@ public class MemoryConfiguration {
 
     @AfterReturning("delCache()")
     public void delCache(JoinPoint joinPoint) throws Throwable {
-        dataRedisInterceptor.dropCache(joinPoint);
+        dataMemoryInterceptor.dropCache(joinPoint);
     }
 
     @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.Lock)")
@@ -51,7 +51,7 @@ public class MemoryConfiguration {
 
     @Around("lockCache()")
     public Object lock(ProceedingJoinPoint joinPoint) throws Throwable {
-        return dataRedisInterceptor.lock(joinPoint);
+        return dataMemoryInterceptor.lock(joinPoint);
     }
 
 }
