@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.redis.annotation;
+package com.gomcarter.frameworks.cache.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
