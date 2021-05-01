@@ -8,13 +8,12 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>config-center-nacos</artifactId>
+    <artifactId>cacheable-redis-starter</artifactId>
     <version>${parent.version}</version>
     <packaging>jar</packaging>
-    <description>nacos config center</description>
 
-    <name>config-center-nacos</name>
-    <url>https://github.com/gomcarter/frameworks/tree/master/config-center-nacos</url>
+    <name>cacheable-redis-starter</name>
+    <url>https://github.com/gomcarter/frameworks/tree/master/cacheable-redis-starter</url>
 
     <dependencies>
         <dependency>
@@ -23,19 +22,29 @@
         </dependency>
 
         <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
+            <groupId>com.gomcarter.frameworks</groupId>
+            <artifactId>cacheable-starter</artifactId>
+        </dependency>
+
+        <!-- spring aop动态代理 -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.dubbo</groupId>
-            <artifactId>dubbo-registry-nacos</artifactId>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
         </dependency>
     </dependencies>
-
 </project>

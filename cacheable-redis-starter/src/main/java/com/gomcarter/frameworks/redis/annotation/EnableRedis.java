@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.redis.annotation;
+package com.gomcarter.frameworks.cache.annotation;
 
 import com.gomcarter.frameworks.redis.RedisRegistrar;
 import org.springframework.context.annotation.Import;

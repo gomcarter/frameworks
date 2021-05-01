@@ -3,17 +3,17 @@
     <parent>
         <groupId>com.gomcarter.frameworks</groupId>
         <artifactId>all</artifactId>
-        <version>2.0.8</version>
+        <version>2.0.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>redis-starter</artifactId>
+    <artifactId>cacheable-memory-starter</artifactId>
     <version>${parent.version}</version>
     <packaging>jar</packaging>
 
-    <name>redis-starter</name>
-    <url>https://github.com/gomcarter/frameworks/tree/master/redis-starter</url>
+    <name>cacheable-memory-starter</name>
+    <url>https://github.com/gomcarter/frameworks/tree/master/cacheable-memory-starter</url>
 
     <dependencies>
         <dependency>
@@ -21,15 +21,15 @@
             <artifactId>config-center</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.gomcarter.frameworks</groupId>
+            <artifactId>cacheable-starter</artifactId>
+        </dependency>
+
         <!-- spring aop动态代理 -->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
         </dependency>
 
         <dependency>

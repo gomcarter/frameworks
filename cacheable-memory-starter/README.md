@@ -1,4 +1,4 @@
-在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/redis-starter
+在你的项目中引入依赖: https://mvnrepository.com/artifact/com.gomcarter.frameworks/cacheable-redis-starter
 
 ### 使用指南（目前仅支持多种配置中心，也可自行注入配置中心，<a href="https://github.com/gomcarter/developer/blob/master/README.md">配置中心配置参考</a>）
 
@@ -55,9 +55,9 @@ redis.cache=true
 
 ```
 
-import com.gomcarter.frameworks.redis.annotation.Cache;
-import com.gomcarter.frameworks.redis.annotation.DelCache;
-import com.gomcarter.frameworks.redis.annotation.Lock;
+import com.gomcarter.frameworks.cache.annotation.Cache;
+import com.gomcarter.frameworks.cache.annotation.DelCache;
+import com.gomcarter.frameworks.cache.annotation.Lock;
 
 @Service
 public class FooService {

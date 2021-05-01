@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gomcarter.frameworks</groupId>
     <artifactId>all</artifactId>
-    <version>2.0.8</version>
+    <version>2.0.9-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>the spring web base artifact</description>
 
@@ -14,13 +14,14 @@
     <modules>
         <module>base</module>
         <module>dubbo-starter</module>
-<!--        <module>http-starter</module>-->
+        <module>http-api-starter</module>
         <module>interfaces-starter</module>
         <module>mybatis-starter</module>
-        <module>redis-starter</module>
+        <module>cacheable-starter</module>
+        <module>cacheable-redis-starter</module>
+        <module>cacheable-memory-starter</module>
         <module>fsm-starter</module>
         <module>rocketmq-starter</module>
-<!--        <module>skywalking-starter</module>-->
         <module>xml-excel</module>
         <module>config-center</module>
         <module>config-center-nacos</module>
@@ -68,8 +69,6 @@
         <log4j-core.version>2.11.1</log4j-core.version>
 
         <lombok.version>1.18.12</lombok.version>
-
-        <http.version>4.4.1</http.version>
 
         <swagger.version>1.6.0</swagger.version>
 
@@ -238,25 +237,6 @@
                 <version>${lombok.version}</version>
             </dependency>
 
-            <!-- interface need -->
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>${http.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore</artifactId>
-                <version>${http.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpmime</artifactId>
-                <version>${http.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
@@ -406,11 +386,11 @@
                 <version>${version}</version>
             </dependency>
 
-<!--            <dependency>-->
-<!--                <groupId>com.gomcarter.frameworks</groupId>-->
-<!--                <artifactId>http-api-starter</artifactId>-->
-<!--                <version>${version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>com.gomcarter.frameworks</groupId>
+                <artifactId>http-api-starter</artifactId>
+                <version>${version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
@@ -432,15 +412,15 @@
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
-                <artifactId>mybatis-starter</artifactId>
+                <artifactId>cacheable-starter</artifactId>
                 <version>${version}</version>
             </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>com.gomcarter.frameworks</groupId>-->
-            <!--                <artifactId>redis-starter</artifactId>-->
-            <!--                <version>${version}</version>-->
-            <!--            </dependency>-->
+            <dependency>
+                <groupId>com.gomcarter.frameworks</groupId>
+                <artifactId>mybatis-starter</artifactId>
+                <version>${version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.gomcarter.frameworks</groupId>
@@ -450,41 +430,41 @@
         </dependencies>
     </dependencyManagement>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+<!--    <licenses>-->
+<!--        <license>-->
+<!--            <name>The Apache Software License, Version 2.0</name>-->
+<!--            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>-->
+<!--            <distribution>repo</distribution>-->
+<!--        </license>-->
+<!--    </licenses>-->
 
-    <scm>
-        <url>https://github.com/gomcarter/frameworks</url>
-        <connection>https://github.com/gomcarter/frameworks/tree/master/base</connection>
-    </scm>
+<!--    <scm>-->
+<!--        <url>https://github.com/gomcarter/frameworks</url>-->
+<!--        <connection>https://github.com/gomcarter/frameworks/tree/master/base</connection>-->
+<!--    </scm>-->
 
-    <developers>
-        <developer>
-            <name>gomcarter</name>
-            <id>gomcarter</id>
-            <email>gomcarter@vip.qq.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-    </developers>
+<!--    <developers>-->
+<!--        <developer>-->
+<!--            <name>gomcarter</name>-->
+<!--            <id>gomcarter</id>-->
+<!--            <email>gomcarter@vip.qq.com</email>-->
+<!--            <roles>-->
+<!--                <role>Developer</role>-->
+<!--            </roles>-->
+<!--            <timezone>+8</timezone>-->
+<!--        </developer>-->
+<!--    </developers>-->
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <snapshotRepository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--        </snapshotRepository>-->
+<!--        <repository>-->
+<!--            <id>ossrh</id>-->
+<!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
 
     <build>
         <plugins>
@@ -510,17 +490,17 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.sonatype.plugins</groupId>-->
+<!--                <artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--                <version>1.6.7</version>-->
+<!--                <extensions>true</extensions>-->
+<!--                <configuration>-->
+<!--                    <serverId>ossrh</serverId>-->
+<!--                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>-->
+<!--                    <autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>

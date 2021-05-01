@@ -30,7 +30,7 @@ public class RedisConfiguration {
         return dataRedisInterceptor;
     }
 
-    @Pointcut("@annotation(com.gomcarter.frameworks.redis.annotation.Cache)")
+    @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.Cache)")
     public void cacheData() {
     }
 
@@ -39,7 +39,7 @@ public class RedisConfiguration {
         return dataRedisInterceptor.cacheData(joinPoint);
     }
 
-    @Pointcut("@annotation(com.gomcarter.frameworks.redis.annotation.DelCache)")
+    @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.DelCache)")
     public void delCache() {
     }
 
@@ -48,7 +48,7 @@ public class RedisConfiguration {
         dataRedisInterceptor.dropCache(joinPoint);
     }
 
-    @Pointcut("@annotation(com.gomcarter.frameworks.redis.annotation.Lock)")
+    @Pointcut("@annotation(com.gomcarter.frameworks.cache.annotation.Lock)")
     public void lockCache() {
     }
 

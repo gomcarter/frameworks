@@ -1,12 +1,12 @@
-package com.gomcarter.frameworks.redis.aop;
+package com.gomcarter.frameworks.memory.aop;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.gomcarter.frameworks.cache.annotation.Cache;
+import com.gomcarter.frameworks.cache.annotation.DelCache;
+import com.gomcarter.frameworks.cache.annotation.Lock;
 import com.gomcarter.frameworks.config.mapper.JsonMapper;
-import com.gomcarter.frameworks.redis.annotation.Cache;
-import com.gomcarter.frameworks.redis.annotation.DelCache;
-import com.gomcarter.frameworks.redis.annotation.Lock;
-import com.gomcarter.frameworks.redis.tool.RedisProxy;
+import com.gomcarter.frameworks.memory.tool.MemoryCacheManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.aspectj.lang.JoinPoint;
@@ -22,9 +22,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * @author gomcarter 2018年1月9日 16:45:42
  */
-public class DataRedisInterceptor {
-
-    private RedisProxy redisProxy;
+public class DataMemoryInterceptor {
 
     private JsonMapper dataMapper = new JsonMapper(JsonInclude.Include.ALWAYS);
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -37,11 +35,6 @@ public class DataRedisInterceptor {
      * @throws Throwable Throwable
      */
     public Object cacheData(ProceedingJoinPoint joinPoint) throws Throwable {
-        //如果未开启缓存 则直接关闭
-        if (!redisProxy.needCache()) {
-            return joinPoint.proceed();
-        }
-
         //获取到方法
         Method m = ((MethodSignature) joinPoint.getSignature()).getMethod();
 
@@ -53,7 +46,7 @@ public class DataRedisInterceptor {
         key = this.getKey(key, caches.argsIndex(), joinPoint.getArgs());
         try {
             // 如果有缓存就直接获取缓存数据
-            String value = redisProxy.get(key);
+            String value = MemoryCacheManager.get(key);
             if (value != null) {
                 // logger.info(Thread.currentThread().getName() + "有数据，出去咯");
                 return dataMapper.fromJson(value, TypeFactory.defaultInstance().constructType(m.getGenericReturnType()));
@@ -76,7 +69,7 @@ public class DataRedisInterceptor {
 
         // 默认锁300秒，避免服务挂了，一直锁在哪
         int maxLockTime = 300;
-        while (!redisProxy.lock(lockerKey, maxLockTime)) {
+        while (!MemoryCacheManager.lock(lockerKey, maxLockTime)) {
             if (await <= 0 || count >= sleepTimes) {
                 throw new RuntimeException("服务器繁忙，请稍后重试");
             }
@@ -90,31 +83,19 @@ public class DataRedisInterceptor {
 
         try {
             // 获得锁，查看是否有缓存，有就直接获取缓存数据
-            String value = redisProxy.get(key);
+            Object value = MemoryCacheManager.get(key);
             if (value != null) {
-                return dataMapper.fromJson(value, TypeFactory.defaultInstance().constructType(m.getGenericReturnType()));
+                return value;
             } else {
                 Object object = joinPoint.proceed();
-                // 将返回结果放入缓存
-                // JDATA Mapper谁都不许改！！！！ 因为Jmapper缓存会把jsonIgnore的给去掉
-                String jsonData = dataMapper.toJson(object);
-                if (caches.nullable() || !isEmptyJson(jsonData)) {
-                    int timeout = caches.time();
-                    if (timeout < 0) {
-                        if (!redisProxy.set(key, jsonData)) {
-                            logger.error("{}取到数据，但是存入缓存失败", joinPoint.getClass().getName());
-                        }
-                    } else {
-                        if (!redisProxy.set(key, jsonData, timeout)) {
-                            logger.error("{}取到数据，但是存入缓存失败", joinPoint.getClass().getName());
-                        }
-                    }
+                if (object != null || caches.nullable()) {
+                    MemoryCacheManager.set(key, object);
                 }
                 return object;
             }
         } finally {
             // 释放锁
-            redisProxy.del(lockerKey);
+            MemoryCacheManager.del(lockerKey);
         }
     }
 
@@ -125,22 +106,20 @@ public class DataRedisInterceptor {
      */
     public void dropCache(JoinPoint joinPoint) {
         // 如果未开启缓存 则直接返回
-        if (redisProxy.needCache()) {
-            try {
-                // 如果key为空，则取方法名为key
-                Method m = ((MethodSignature) joinPoint.getSignature()).getMethod();
-                DelCache dropCache = m.getAnnotation(DelCache.class);
+        try {
+            // 如果key为空，则取方法名为key
+            Method m = ((MethodSignature) joinPoint.getSignature()).getMethod();
+            DelCache dropCache = m.getAnnotation(DelCache.class);
 
-                if (StringUtils.isBlank(dropCache.value())) {
-                    this.logger.warn("{}的DelCache标签并未启用，请设置key参数",
-                            joinPoint.getTarget().getClass().getName() + "." + m.getName());
-                    return;
-                }
-
-                redisProxy.del(this.getKey(dropCache.value(), dropCache.argsIndex(), joinPoint.getArgs()));
-            } catch (Exception e) {
-                logger.error(joinPoint.getClass().getName() + "删除缓存失败", e);
+            if (StringUtils.isBlank(dropCache.value())) {
+                this.logger.warn("{}的DelCache标签并未启用，请设置key参数",
+                        joinPoint.getTarget().getClass().getName() + "." + m.getName());
+                return;
             }
+
+            MemoryCacheManager.del(this.getKey(dropCache.value(), dropCache.argsIndex(), joinPoint.getArgs()));
+        } catch (Exception e) {
+            logger.error(joinPoint.getClass().getName() + "删除缓存失败", e);
         }
     }
 
@@ -170,7 +149,7 @@ public class DataRedisInterceptor {
         long sleepTimes = await / sleepPerTimeMs + 1;
         int count = 0;
         //开始锁定，非公平锁，谁运气好谁的
-        while (!redisProxy.lock(key, locker.timeout())) {
+        while (!MemoryCacheManager.lock(key, locker.timeout())) {
             if (await <= 0 || count >= sleepTimes) {
                 throw new TimeoutException();
             }
@@ -188,7 +167,7 @@ public class DataRedisInterceptor {
             return joinPoint.proceed();
         } finally {
             //执行完毕，释放锁
-            redisProxy.del(key);
+            MemoryCacheManager.del(key);
         }
     }
 
@@ -234,11 +213,5 @@ public class DataRedisInterceptor {
      */
     private boolean isEmptyJson(String jsonData) {
         return "null".equalsIgnoreCase(jsonData) || "[]".equals(jsonData);
-    }
-
-
-    public DataRedisInterceptor setRedisProxy(RedisProxy redisProxy) {
-        this.redisProxy = redisProxy;
-        return this;
     }
 }
