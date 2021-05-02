@@ -100,6 +100,10 @@ public class BaseController implements ResponseBodyAdvice<Object> {
             return new JsonError(exception.getMessage(), ((CustomException) exception).getCode());
         }
 
+        if (exception instanceof IllegalArgumentException) {
+            return new JsonError(exception.getMessage());
+        }
+
         JsonObject jsonError = addMoreExceptionHandler(request, exception);
         if (jsonError != null) {
             return jsonError;
