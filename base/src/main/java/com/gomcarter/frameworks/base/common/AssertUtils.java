@@ -7,6 +7,8 @@
  */
 package com.gomcarter.frameworks.base.common;
 
+import com.gomcarter.frameworks.base.exception.CustomException;
+
 import java.util.Collection;
 
 /**
@@ -53,9 +55,9 @@ public abstract class AssertUtils {
     /**
      * @param expression        a boolean expression
      * @param throwIfAssertFail if expression is <code>false</code>
-     * @throws RuntimeException if expression is <code>false</code>
+     * @throws CustomException if expression is <code>false</code>
      */
-    public static void isTrue(boolean expression, RuntimeException throwIfAssertFail) {
+    public static void isTrue(boolean expression, CustomException throwIfAssertFail) {
         if (!expression) {
             throw throwIfAssertFail;
         }
@@ -86,7 +88,7 @@ public abstract class AssertUtils {
         }
     }
 
-    public static void isNull(Object object, RuntimeException throwIfAssertFail) {
+    public static void isNull(Object object, CustomException throwIfAssertFail) {
         if (object != null) {
             throw throwIfAssertFail;
         }
@@ -113,11 +115,11 @@ public abstract class AssertUtils {
      */
     public static void notNull(Object object, String message) {
         if (object == null) {
-            throw new IllegalArgumentException(message);
+            throw new CustomException(message);
         }
     }
 
-    public static void notNull(Object object, RuntimeException throwIfAssertFail) {
+    public static void notNull(Object object, CustomException throwIfAssertFail) {
         if (object == null) {
             throw throwIfAssertFail;
         }
@@ -130,13 +132,13 @@ public abstract class AssertUtils {
      *
      * @param array   the array to check
      * @param message the exception message to use if the assertion fails
-     * @throws IllegalArgumentException if the object array contains a <code>null</code> element
+     * @throws CustomException if the object array contains a <code>null</code> element
      */
     public static void noNullElements(Object[] array, String message) {
         if (array != null) {
             for (Object element : array) {
                 if (element == null) {
-                    throw new IllegalArgumentException(message);
+                    throw new CustomException(message);
                 }
             }
         }
@@ -148,13 +150,13 @@ public abstract class AssertUtils {
      * <pre class="code">Assert.noNullElements(array);</pre>
      *
      * @param array the array to check
-     * @throws IllegalArgumentException if the object array contains a <code>null</code> element
+     * @throws CustomException if the object array contains a <code>null</code> element
      */
     public static void noNullElements(Object[] array) {
         noNullElements(array, "[Assertion failed] - this array must not contain any null elements");
     }
 
-    public static void noNullElements(Object[] array, RuntimeException throwIfAssertFail) {
+    public static void noNullElements(Object[] array, CustomException throwIfAssertFail) {
         if (array != null) {
             for (Object element : array) {
                 if (element == null) {
@@ -171,12 +173,12 @@ public abstract class AssertUtils {
      *
      * @param collection the collection to check
      * @param message    the exception message to use if the assertion fails
-     * @throws IllegalArgumentException if the collection is <code>null</code> or has no elements
+     * @throws CustomException if the collection is <code>null</code> or has no elements
      */
     @SuppressWarnings("rawtypes")
     public static void notEmpty(Collection collection, String message) {
         if (CollectionUtils.isEmpty(collection)) {
-            throw new IllegalArgumentException(message);
+            throw new CustomException(message);
         }
     }
 
@@ -186,16 +188,16 @@ public abstract class AssertUtils {
      * <pre class="code">Assert.notEmpty(collection, "Collection must have elements");</pre>
      *
      * @param collection the collection to check
-     * @throws IllegalArgumentException if the collection is <code>null</code> or has no elements
+     * @throws CustomException if the collection is <code>null</code> or has no elements
      */
     @SuppressWarnings("rawtypes")
     public static void notEmpty(Collection collection) {
         notEmpty(collection,
-                "[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
+                "列表不能为空");
     }
 
     @SuppressWarnings("rawtypes")
-    public static void notEmpty(Collection collection, RuntimeException throwIfAssertFail) {
+    public static void notEmpty(Collection collection, CustomException throwIfAssertFail) {
         if (CollectionUtils.isEmpty(collection)) {
             throw throwIfAssertFail;
         }
@@ -211,14 +213,14 @@ public abstract class AssertUtils {
      *                the function itself, and which may be used to provide context. It should
      *                normally end in a ": " or ". " so that the function generate message looks
      *                ok when prepended to it.
-     * @throws IllegalArgumentException if the object is not an instance of clazz
+     * @throws CustomException if the object is not an instance of clazz
      * @see Class#isInstance
      */
     @SuppressWarnings("rawtypes")
     public static void isInstanceOf(Class type, Object obj, String message) {
         notNull(type, "Type to check against must not be null");
         if (!type.isInstance(obj)) {
-            throw new IllegalArgumentException(message + "Object of class ["
+            throw new CustomException(message + "Object of class ["
                     + (obj != null ? obj.getClass().getName() : "null") + "] must be an instance of " + type);
         }
     }
@@ -238,7 +240,7 @@ public abstract class AssertUtils {
     }
 
     @SuppressWarnings("rawtypes")
-    public static void isInstanceOf(Class type, Object obj, RuntimeException throwIfAssertFail) {
+    public static void isInstanceOf(Class type, Object obj, CustomException throwIfAssertFail) {
         notNull(type, "Type to check against must not be null");
         if (!type.isInstance(obj)) {
             throw throwIfAssertFail;
@@ -255,13 +257,13 @@ public abstract class AssertUtils {
      *                  the function itself, and which may be used to provide context. It should
      *                  normally end in a ": " or ". " so that the function generate message looks
      *                  ok when prepended to it.
-     * @throws IllegalArgumentException if the classes are not assignable
+     * @throws CustomException if the classes are not assignable
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void isAssignable(Class superType, Class subType, String message) {
         notNull(superType, "Type to check against must not be null");
         if (subType == null || !superType.isAssignableFrom(subType)) {
-            throw new IllegalArgumentException(message + subType + " is not assignable to " + superType);
+            throw new CustomException(message + subType + " is not assignable to " + superType);
         }
     }
 
@@ -271,7 +273,7 @@ public abstract class AssertUtils {
      *
      * @param superType the super type to check
      * @param subType   the sub type to check
-     * @throws IllegalArgumentException if the classes are not assignable
+     * @throws CustomException if the classes are not assignable
      */
     @SuppressWarnings("rawtypes")
     public static void isAssignable(Class superType, Class subType) {
@@ -286,23 +288,23 @@ public abstract class AssertUtils {
      *
      * @param expression a boolean expression
      * @param message    the exception message to use if the assertion fails
-     * @throws IllegalStateException if expression is <code>false</code>
+     * @throws CustomException if expression is <code>false</code>
      */
     public static void state(boolean expression, String message) {
         if (!expression) {
-            throw new IllegalStateException(message);
+            throw new CustomException(message);
         }
     }
 
     /**
-     * Assert a boolean expression, throwing {@link IllegalStateException}
+     * Assert a boolean expression, throwing {@link CustomException}
      * if the test result is <code>false</code>.
      * <p>Call {@link #isTrue(boolean)} if you wish to
-     * throw {@link IllegalArgumentException} on an assertion failure.
+     * throw {@link CustomException} on an assertion failure.
      * <pre class="code">Assert.state(id == null);</pre>
      *
      * @param expression a boolean expression
-     * @throws IllegalStateException if the supplied expression is <code>false</code>
+     * @throws CustomException if the supplied expression is <code>false</code>
      */
     public static void state(boolean expression) {
         state(expression, "[Assertion failed] - this state invariant must be true");
