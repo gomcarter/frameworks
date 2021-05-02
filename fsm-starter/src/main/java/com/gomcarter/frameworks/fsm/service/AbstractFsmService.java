@@ -59,6 +59,17 @@ public abstract class AbstractFsmService<M extends FsmObjectMapper<T>, T extends
      * @param objectId 业务id
      * @param event    执行事件
      * @param operator 操作者
+     */
+    public void processEvent(Serializable objectId, String event, String operator) {
+        this.processEvent(objectId, event, operator, null);
+    }
+
+    /**
+     * 执行事件
+     *
+     * @param objectId 业务id
+     * @param event    执行事件
+     * @param operator 操作者
      * @param mark     备注
      */
     public void processEvent(Serializable objectId, String event, String operator, String mark) {
