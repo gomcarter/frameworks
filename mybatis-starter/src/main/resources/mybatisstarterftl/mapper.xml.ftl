@@ -5,12 +5,12 @@
 <mapper namespace="${entity.daoPackageName}.${entity.className}Mapper">
     <resultMap type="${entity.entityPackageName}.${entity.className}" id="${entity.classInstanceName}Map">
         <id column="${entity.idColumn}" property="${entity.idName}"/>
-        <#list entity.propList as prop>
-            <result column="${prop.column}" property="${prop.propName}"/>
-        </#list>
         <#if entity.hasHibernateVersion>
-            <result column="version" property="version"/>
+        <result column="version" property="version"/>
         </#if>
+        <#list entity.propList as prop>
+        <result column="${prop.column}" property="${prop.propName}"/>
+        </#list>
     </resultMap>
     <!-- //@NotReplaceableStart -->
     <!-- 重新生成代码时，NotReplaceableStart -> NotReplaceableEnd 中间的内容不会被覆盖 -->

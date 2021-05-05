@@ -20,16 +20,10 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 public class ${entity.className}UpdateParam {
 
-    /**
-     * 主键
-     */
     @Notes("主键")
     private ${entity.idSimpleType} ${entity.idName};
-
 <#list entity.propList as prop>
-    /**
-     * ${prop.note}
-     */
+
     @Notes("${prop.note}")
     private ${prop.simpleType} ${prop.propName};
 </#list>

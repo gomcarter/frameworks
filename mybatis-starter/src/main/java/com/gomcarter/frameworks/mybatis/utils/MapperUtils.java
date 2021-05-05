@@ -42,13 +42,13 @@ public class MapperUtils {
         Page<T> page = new Page<>(pageable.getStartNum() / pageable.getPageCount() + 1, pageable.getPageCount(), false);
         String orderColumn = pageable.getOrderColumn();
         if (orderColumn != null && (orderColumn = orderColumn.trim()).length() > 0) {
-            String[] sortby = orderColumn.split(split);
+            String[] sortBy = orderColumn.split(split);
             String[] orderTypes = (pageable.getOrderType() == null ? "" : pageable.getOrderType())
                     .trim().split(split);
 
             List<OrderItem> orderItemList = new ArrayList<>();
-            for (int i = 0; i < sortby.length; ++i) {
-                String sort = sortby[i];
+            for (int i = 0; i < sortBy.length; ++i) {
+                String sort = sortBy[i];
                 boolean asc = orderTypes.length >= i + 1 && "asc".equalsIgnoreCase(orderTypes[i]);
 
                 OrderItem orderItem = new OrderItem();
