@@ -7,6 +7,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -99,11 +100,15 @@ public class CustomDateUtils extends DateUtils {
      * @return date
      */
     public static Date getDay(Date date, int index) {
-        date = DateUtils.setHours(date, 0);
-        date = DateUtils.setMinutes(date, 0);
-        date = DateUtils.setSeconds(date, 0);
-        date = DateUtils.setMilliseconds(date, 0);
-        return DateUtils.addDays(date, index);
+        final Calendar c = Calendar.getInstance();
+        c.setLenient(false);
+        c.setTime(date);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        c.add(Calendar.DAY_OF_MONTH, index);
+        return c.getTime();
     }
 
     /**
@@ -140,12 +145,7 @@ public class CustomDateUtils extends DateUtils {
      * @return date of index to current date
      */
     public static Date getDay(int index) {
-        Date date = new Date();
-        date = DateUtils.setHours(date, 0);
-        date = DateUtils.setMinutes(date, 0);
-        date = DateUtils.setSeconds(date, 0);
-        date = DateUtils.setMilliseconds(date, 0);
-        return DateUtils.addDays(date, index);
+        return getDay(new Date(), index);
     }
 
     /**
@@ -154,13 +154,14 @@ public class CustomDateUtils extends DateUtils {
      * @return 当月第一天
      */
     public static Date getCurrentMonth() {
-        Date date = new Date();
-        date = DateUtils.setDays(date, 1);
-        date = DateUtils.setHours(date, 0);
-        date = DateUtils.setMinutes(date, 0);
-        date = DateUtils.setSeconds(date, 0);
-        date = DateUtils.setMilliseconds(date, 0);
-        return date;
+        final Calendar c = Calendar.getInstance();
+        c.setLenient(false);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return c.getTime();
     }
 
     /**
@@ -225,10 +226,9 @@ public class CustomDateUtils extends DateUtils {
      * @param begin begin
      * @return how many date between begin and end
      */
-    public static Integer dateDiff(Date end, Date begin) {
+    public static int dateDiff(Date end, Date begin) {
         long diff = end.getTime() - begin.getTime();
-        Long day = diff / (24 * 60 * 60 * 1000);
-        return day.intValue();
+        return (int) (diff / 0x5265C00);
     }
 
     /**
