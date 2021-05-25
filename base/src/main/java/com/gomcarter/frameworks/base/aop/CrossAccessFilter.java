@@ -24,7 +24,6 @@ public class CrossAccessFilter extends OncePerRequestFilter {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE");
         response.addHeader("Access-Control-Allow-Headers", this.accessControlAllowHeaders);
-        response.addHeader("Access-Control-Max-Age", "172800");
     }
 
     @Override
