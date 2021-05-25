@@ -4,13 +4,11 @@ import jxl.CellView;
 import jxl.Range;
 import jxl.Sheet;
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
-import jxl.write.*;
 import jxl.write.Number;
+import jxl.write.*;
 import jxl.write.biff.RowsExceededException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,14 +19,14 @@ import java.util.*;
  */
 public class ExcelUtils {
 
-    protected static List<Map<String, String>> upload(InputStream is, String fileName) {
+    protected static List<Map<String, String>> upload(InputStream in, String fileName) {
         String fileSuffix = getFileSuffix(fileName);
         if (!"xls".contains(fileSuffix)) {
             throw new RuntimeException("excel解析失败，请上传excel2003格式的文档！");
         }
         List<Map<String, String>> dataList = null;
         try {
-            dataList = ExcelUtils.readWithHeader(is);
+            dataList = ExcelUtils.readWithHeader(in);
         } catch (Exception e1) {
             throw new RuntimeException("excel解析失败，请上传excel2003格式的文档！", e1);
         }
@@ -38,15 +36,14 @@ public class ExcelUtils {
         return dataList;
     }
 
-    public static List<Map<String, String>> readWithHeader(File file, Integer sheetNumber) throws BiffException, IOException {
-
-        Workbook book = Workbook.getWorkbook(file);
+    public static List<Map<String, String>> readWithHeader(InputStream in, Integer sheetNumber) throws Exception {
+        Workbook book = Workbook.getWorkbook(in);
         Sheet sheet = book.getSheet(sheetNumber);
         return _readSheet(sheet);
     }
 
-    public static List<Map<String, String>> readWithHeader(File file, String sheetName) throws BiffException, IOException {
-        Workbook book = Workbook.getWorkbook(file);
+    public static List<Map<String, String>> readWithHeader(InputStream in, String sheetName) throws Exception {
+        Workbook book = Workbook.getWorkbook(in);
         for (Sheet sheet : book.getSheets()) {
             if (sheetName.equals(sheet.getName().trim())) {
                 return _readSheet(sheet);
@@ -122,14 +119,8 @@ public class ExcelUtils {
         return result;
     }
 
-    public static List<Map<String, String>> readWithHeader(File file) throws BiffException, IOException {
-        Workbook book = Workbook.getWorkbook(file);
-        Sheet sheet = book.getSheet(0);
-        return _readSheet(sheet);
-    }
-
-    public static List<Map<String, String>> readWithHeader(InputStream is) throws IOException, BiffException {
-        Workbook book = Workbook.getWorkbook(is);
+    public static List<Map<String, String>> readWithHeader(InputStream in) throws Exception {
+        Workbook book = Workbook.getWorkbook(in);
         Sheet sheet = book.getSheet(0);
         return _readSheet(sheet);
     }
