@@ -104,16 +104,7 @@ public class BaseController implements ResponseBodyAdvice<Object> {
             return new JsonError(exception.getMessage());
         }
 
-        JsonObject jsonError = addMoreExceptionHandler(request, exception);
-        if (jsonError != null) {
-            return jsonError;
-        }
-
         return new JsonError("请求失败！");
-    }
-
-    protected JsonObject addMoreExceptionHandler(HttpServletRequest request, Exception exception) {
-        return null;
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.gomcarter.frameworks.xmlexcel;
+package com.gomcarter.frameworks.xmlexcel.writer;
 
 import com.gomcarter.frameworks.xmlexcel.config.Format;
 import com.gomcarter.frameworks.xmlexcel.config.Header;
@@ -121,15 +121,6 @@ public class Appender {
 
     public static byte[] sheet(String sheetName) {
         //TODO: consider the column width to be configurable
-//        return ("<Worksheet ss:Name=\"" + sheetName + "\">\n" +
-//                "  <Table ss:ExpandedColumnCount=\"16\" ss:ExpandedRowCount=\"6\" x:FullColumns=\"1\"\n" +
-//                "   x:FullRows=\"1\" ss:DefaultColumnWidth=\"80.25\" ss:DefaultRowHeight=\"50.0625\">\n" +
-//                "   <Column ss:Index=\"2\" ss:AutoFitWidth=\"0\" ss:Width=\"219.75\"/>\n" +
-//                "   <Column ss:AutoFitWidth=\"0\" ss:Width=\"194.25\"/>\n" +
-//                "   <Column ss:Index=\"10\" ss:Width=\"81\" ss:Span=\"4\"/>\n" +
-//                "   <Column ss:Index=\"15\" ss:StyleID=\"s71\" ss:Width=\"156.75\"/>\n" +
-//                "   <Column ss:Width=\"156.75\"/>").getBytes(DEFAULT_CHARSET);
-
         return ("<Worksheet ss:Name=\"" + sheetName + "\">" +
                 "<Table x:FullColumns=\"1\" x:FullRows=\"1\" " +
                 "ss:ExpandedColumnCount=\"16\" " +

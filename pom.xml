@@ -86,8 +86,6 @@
 
         <freemarker.version>2.3.30</freemarker.version>
 
-        <jexcelapi.version>2.6.12</jexcelapi.version>
-
         <jedis.version>3.0.1</jedis.version>
 
         <slf4j-api.version>1.7.25</slf4j-api.version>
@@ -300,19 +298,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-annotation</artifactId>
                 <version>${baomidou.version}</version>
-            </dependency>
-
-            <!-- excel -->
-            <dependency>
-                <groupId>net.sourceforge.jexcelapi</groupId>
-                <artifactId>jxl</artifactId>
-                <version>${jexcelapi.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- redis need -->

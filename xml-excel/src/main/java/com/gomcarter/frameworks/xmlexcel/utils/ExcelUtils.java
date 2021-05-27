@@ -17,6 +17,7 @@ import java.util.*;
 /**
  * @author gomcarter 2017年12月2日 08:10:35
  */
+@Deprecated
 public class ExcelUtils {
 
     protected static List<Map<String, String>> upload(InputStream in, String fileName) {

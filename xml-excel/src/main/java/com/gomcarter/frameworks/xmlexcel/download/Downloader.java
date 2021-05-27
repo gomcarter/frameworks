@@ -1,116 +1,148 @@
 //package com.gomcarter.frameworks.xmlexcel.download;
 //
-//
-//import com.gomcarter.frameworks.base.config.UnifiedConfigService;
 //import com.google.common.collect.Lists;
-//import com.gomcarter.frameworks.base.common.AssertUtils;
-//import com.gomcarter.frameworks.base.common.CustomDateUtils;
-//import com.gomcarter.frameworks.base.common.CustomStringUtils;
-//import com.gomcarter.frameworks.base.mapper.JsonMapper;
-//import com.gomcarter.frameworks.redis.tool.RedisProxy;
+//import java.io.File;
+//import java.io.OutputStream;
+//import java.util.Collections;
+//import java.util.Date;
+//import java.util.HashMap;
+//import java.util.Iterator;
+//import java.util.List;
+//import java.util.Map;
+//import java.util.UUID;
+//import java.util.concurrent.ArrayBlockingQueue;
+//import java.util.concurrent.ExecutorService;
+//import java.util.concurrent.Executors;
+//import java.util.concurrent.ThreadPoolExecutor;
+//import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
+//import java.util.function.Consumer;
+//import javax.servlet.http.HttpServletRequest;
+//import org.apache.commons.io.FileUtils;
 //import org.apache.shiro.crypto.hash.Md5Hash;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //
-//import java.util.*;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
-//import java.util.function.Function;
-//
-///**
-// * @author gomcarter 2017年12月2日 08:10:35
-// */
 //public class Downloader {
-//
 //    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-//
-//    private Map</**下载类型*/String, Downloadable> downloaderMap;
-//
+//    private Map<String, Downloadable> downloaderMap;
 //    private String appName;
-//
 //    private String downloadDomain;
-//
-//    /**
-//     * 生成下载文件的缓存类型
-//     *
-//     * @see StorageType
-//     */
-//    private StorageType storageType = StorageType.nfs;
-//
-//    @Resource
-//    private RedisProxy redisProxy;
-//
+//    private TgRedisTool redisTool;
+//    private StorageType storageType;
+//    private final ExecutorService executor;
+//    private String rootDir;
 //    public static final String DOWNLOAD_TITLES = "downloadTitles";
+//    private static String DOWNLOAD_URL_PREFIX = "download_url_prefix_";
+//
+//    public Downloader() {
+//        this.storageType = StorageType.nfs;
+//        this.executor = new ThreadPoolExecutor(5, 50, 5L, TimeUnit.MINUTES, new ArrayBlockingQueue(500), Executors.defaultThreadFactory(), new CallerRunsPolicy());
+//    }
 //
 //    public String getRootDir() {
-//        return UnifiedConfigService.getInstance().getConfig("xx", "xx");
-//    }
-//
-//    /**
-//     * 文件保存路径，按文件日期分档
-//     *
-//     * @return 获取保存目录
-//     */
-//    public String getSavePath() {
-//        return this.getRootDir() + CustomDateUtils.toString(new Date(), "yyyy-MM-dd") + "/";
-//    }
-//
-//    public TaskStateDto check(String key) throws Exception {
-//
-//        Boolean has = _hasProcessingTask(key);
-//        if (!has) {
-//            /*没有任务在跑，要么重来没跑过，要么跑完了， 直接返回完成，并把url返到前端*/
-//            String url = _getDownloadUrl(key);
-//            if (CustomStringUtils.isNotBlank(url)) {
-//                return new TaskStateDto(State.finish, key, url);
-//            } else {
-//                return new TaskStateDto(State.nothing, key, null);
+//        if (this.rootDir == null) {
+//            switch(EnvConstants.getType()) {
+//            case dev:
+//            case test:
+//            case pre:
+//            case online:
+//                this.rootDir = "/download/" + this.appName + "/";
+//                break;
+//            default:
+//                this.rootDir = "C://download/" + this.appName + "/";
 //            }
 //        }
 //
-//        return new TaskStateDto(State.running, key, null);
+//        return this.rootDir;
 //    }
 //
-//    public TaskStateDto generate(
-//            Map<String, Object> params,
-//            final List<DownloaderTitles> titles,
-//            final String type,
-//            final String userId,
-//            final Object... extraData) throws Exception {
+//    public String getSavePath() {
+//        return this.getRootDir() + JPDateUtils.toString(new Date(), "yyyy-MM-dd") + "/";
+//    }
 //
-//        /*if (titles == null) {
-//            throw new CustomException("未设置下载表头");
-//        }*/
-//
-//        /*生成唯一计算任务key*/
-//        final String key = _generateKey(type, userId, params);
-//
-//        /*取此任务对应的进行状态*/
-//        Boolean has = _hasProcessingTask(key);
+//    public TaskState check(String key) throws Exception {
+//        Boolean has = this._hasProcessingTask(key);
 //        if (!has) {
-//            /*不存在runing中的任务， 开始跑生成数据任务*/
-//            Downloadable downloadable = downloaderMap.get(type);
+//            String url = this._getDownloadUrl(key);
+//            return JPStringUtils.isNotBlank(url) ? new TaskState(State.finish, key, url) : new TaskState(State.nothing, key, (String)null);
+//        } else {
+//            return new TaskState(State.running, key, (String)null);
+//        }
+//    }
+//
+//    public TaskState generate(String key, String filename, Consumer<OutputStream> task) {
+//        boolean has = this._hasProcessingTask(key);
+//        if (!has) {
+//            String savePath = this.getSavePath() + filename;
+//            this.doGenerate(key, savePath, task);
+//        }
+//
+//        return new TaskState(State.running, key, (String)null);
+//    }
+//
+//    private void doGenerate(final String key, final String savePath, final Consumer<OutputStream> task) {
+//        try {
+//            boolean success = this.redisTool.lock(key, State.running.name(), 600L);
+//            if (!success) {
+//                this.logger.info("key:[" + key + "]发生并发！");
+//                return;
+//            }
+//        } catch (Exception var5) {
+//            this.logger.error("key:[" + key + "]调用redis失败！", var5);
+//            return;
+//        }
+//
+//        this._deleteDownloadUrl(key);
+//        this.executor.submit(new Runnable() {
+//            public void run() {
+//                try {
+//                    task.accept(FileUtils.openOutputStream(new File(savePath)));
+//                    Downloader.this._setDownloadUrl(key, savePath);
+//                } catch (Exception var10) {
+//                    Downloader.this.logger.error("key:[" + key + "]跑任务失败了", var10);
+//                } finally {
+//                    try {
+//                        Downloader.this.redisTool.unlock(key);
+//                    } catch (Exception var9) {
+//                        Downloader.this.logger.error("key:[" + key + "] 解锁删除失败了", var9);
+//                    }
+//
+//                }
+//
+//            }
+//        });
+//    }
+//
+//    public TaskState generate(Map<String, Object> params, List<DownloaderTitles> titles, String type, String userId, Object... extraData) throws Exception {
+//        String key = this._generateKey(type, userId, params);
+//        boolean has = this._hasProcessingTask(key);
+//        if (!has) {
+//            Downloadable downloadable = (Downloadable)this.downloaderMap.get(type);
 //            AssertUtils.notNull(downloadable, "未知下载类型 ：【" + type + "】");
-//
-//            /*获取下载文件名*/
-//            final String filePath = getSavePath() + _generateUniqueFileName(downloadable.getFileName());
-//
-//            Map<String, Object> cloneParams = new HashMap<>();
+//            String filePath = this.getSavePath() + _generateUniqueFileName(downloadable.getFileName());
+//            Map<String, Object> cloneParams = new HashMap();
 //            if (params != null) {
-//                for (String pKey : params.keySet()) {
-//                    if (!CustomStringUtils.equals(DOWNLOAD_TITLES, pKey)) {
+//                Iterator var11 = params.keySet().iterator();
+//
+//                while(var11.hasNext()) {
+//                    String pKey = (String)var11.next();
+//                    if (!JPStringUtils.equals("downloadTitles", pKey)) {
 //                        cloneParams.put(pKey, params.get(pKey));
 //                    }
 //                }
 //            }
-////            _runTask(key, downloadable, cloneParams, titles,
-////                    filePath, (Object o) -> {
-////
-////                    },
-////                    extraData);
+//
+//            this._runTask(key, downloadable, cloneParams, titles, filePath, new Callback() {
+//                public void doCmd(Object... o) {
+//                    if ((Boolean)o[0]) {
+//                    }
+//
+//                }
+//            }, extraData);
 //        }
 //
-//        return new TaskStateDto(State.running, key, null);
+//        return new TaskState(State.running, key, (String)null);
 //    }
 //
 //    public static void main(String[] args) {
@@ -125,134 +157,111 @@
 //    }
 //
 //    private static String _generateUniqueFileName(String fileName) {
-//        if (CustomStringUtils.isBlank(fileName)) {
+//        if (JPStringUtils.isBlank(fileName)) {
 //            return UUID.randomUUID().toString() + ".xls";
-////            throw new CustomException("文件名为空");
 //        } else {
-//            String suffix = CustomStringUtils.getFileSuffix(fileName);
-////            System.out.println("--------------" + suffix);
-//            if (CustomStringUtils.equals(suffix, fileName)) {
+//            String suffix = JPStringUtils.getFileSuffix(fileName);
+//            if (JPStringUtils.equals(suffix, fileName)) {
 //                fileName = fileName + "-" + UUID.randomUUID().toString() + ".xls";
 //            } else {
-//                fileName = fileName.substring(0, Math.max(fileName.length() - suffix.length() - 1, 0))
-//                        + "-" + UUID.randomUUID().toString() + "." + suffix;
+//                fileName = fileName.substring(0, Math.max(fileName.length() - suffix.length() - 1, 0)) + "-" + UUID.randomUUID().toString() + "." + suffix;
 //            }
+//
+//            return fileName;
 //        }
-//        return fileName;
 //    }
 //
-//    public TaskStateDto generate(Map<String, Object> params, final String type, final String userId, final Object... extraData) throws Exception {
-//        return generate(params,
-//                JsonMapper.buildNonNullMapper().fromJsonToList(String.valueOf(params.get(DOWNLOAD_TITLES)), DownloaderTitles.class),
-//                type,
-//                userId,
-//                extraData);
+//    public TaskState generate(Map<String, Object> params, String type, String userId, Object... extraData) throws Exception {
+//        return this.generate(params, JsonMapper.buildNonNullMapper().fromJsonToList(String.valueOf(params.get("downloadTitles")), DownloaderTitles.class), type, userId, extraData);
 //    }
 //
-//    private void _runTask(final String key,
-//                          final Downloadable downloader,
-//                          final Map<String, Object> params,
-//                          final List<DownloaderTitles> titles,
-//                          final String savePath,
-//                          final Function callback,
-//                          final Object... extraData) {
+//    public TaskState generate(HttpServletRequest request, String type, String userId, Object... extraData) throws Exception {
+//        return this.generate(ServletUtils.getParametersStartingWith(request, (String)null), type, userId, extraData);
+//    }
 //
+//    private void _runTask(final String key, final Downloadable downloader, final Map<String, Object> params, final List<DownloaderTitles> titles, final String savePath, final Callback callback, final Object... extraData) {
 //        try {
-//            /*锁定最多10分钟， 也就是说一个任务十分钟都没跑完是有问题 或者需要优化的*/
-//            boolean success = redisProxy.lock(key, State.running.name(), 600L);
+//            boolean success = this.redisTool.lock(key, State.running.name(), 600L);
 //            if (!success) {
 //                this.logger.info("key:[" + key + "]发生并发！");
 //                return;
 //            }
-//        } catch (Exception e) {
-//            this.logger.error("key:[" + key + "]调用redis失败！", e);
+//        } catch (Exception var9) {
+//            this.logger.error("key:[" + key + "]调用redis失败！", var9);
 //            return;
 //        }
 //
-//        /*删除已经存在的 url */
-//        _deleteDownloadUrl(key);
-//
-//        //启动线程开始生成数据
-//        ExecutorService executorService = Executors.newCachedThreadPool();
-//        executorService.submit(() -> {
-//            try {
-////                    DownloaderUtils.generateFile(downloader, params, titles, savePath, extraData);
-//
-//                _setDownloadUrl(key, savePath);
-//
-//                if (callback != null) {
-//                    callback.apply(Boolean.TRUE);
-//                }
-//
-//            } catch (Exception e) {
-//
-//                logger.error("key:[" + key + "]跑任务失败了，参数：" + params, e);
-//                if (callback != null) {
-//                    callback.apply(false);
-//                }
-//
-//            } finally {
+//        this._deleteDownloadUrl(key);
+//        this.executor.submit(new Runnable() {
+//            public void run() {
 //                try {
-//                    redisProxy.del(key);
-//                } catch (Exception e) {
-//                    logger.error("key:[" + key + "] 解锁删除失败了", e);
+//                    DownloaderUtils.generateFile(downloader, params, titles, savePath, extraData);
+//                    Downloader.this._setDownloadUrl(key, savePath);
+//                    if (callback != null) {
+//                        callback.doCmd(new Object[]{Boolean.TRUE});
+//                    }
+//                } catch (Exception var10) {
+//                    Downloader.this.logger.error("key:[" + key + "]跑任务失败了，参数：" + params, var10);
+//                    if (callback != null) {
+//                        callback.doCmd(new Object[]{false});
+//                    }
+//                } finally {
+//                    try {
+//                        Downloader.this.redisTool.unlock(key);
+//                    } catch (Exception var9) {
+//                        Downloader.this.logger.error("key:[" + key + "] 解锁删除失败了", var9);
+//                    }
+//
 //                }
+//
 //            }
 //        });
-//
-//        executorService.shutdown();
 //    }
 //
-//    private static String DOWNLOAD_URL_PREFIX = "download_url_prefix_";
-//
 //    private void _setDownloadUrl(String key, String fileName) {
-//        redisProxy.set(DOWNLOAD_URL_PREFIX + key,
-//                this.storageType.getDownloadUrl(this, fileName),
-//                3600L * 24L);
+//        this.redisTool.setValue(DOWNLOAD_URL_PREFIX + key, this.storageType.getDownloadUrl(this, fileName), 1L, TimeUnit.DAYS);
 //    }
 //
 //    private String _getDownloadUrl(String key) throws Exception {
-//        return redisProxy.get(DOWNLOAD_URL_PREFIX + key);
+//        return this.redisTool.getValue(DOWNLOAD_URL_PREFIX + key);
 //    }
 //
 //    private void _deleteDownloadUrl(String key) {
-//        redisProxy.del(DOWNLOAD_URL_PREFIX + key);
+//        this.redisTool.delValue(DOWNLOAD_URL_PREFIX + key);
 //    }
 //
-//    private String _getTaskState(String key) throws Exception {
-//        return redisProxy.get(key);
+//    private String _getTaskState(String key) {
+//        return this.redisTool.getValue(key);
 //    }
 //
-//    /**
-//     * @param key
-//     * @return
-//     * @throws Exception
-//     */
-//    private boolean _hasProcessingTask(String key) throws Exception {
-//        String state = _getTaskState(key);
-//        return CustomStringUtils.isNotBlank(state);
-//        //return State.running.name().equals(state);
+//    private boolean _hasProcessingTask(String key) {
+//        String state = this._getTaskState(key);
+//        return JPStringUtils.isNotBlank(state);
 //    }
 //
 //    private String _generateKey(String type, String userId, Map<String, Object> params) {
 //        List<String> paramKeyList = Lists.newArrayList();
 //        if (params != null) {
-//            for (String key : params.keySet()) {
+//            Iterator var5 = params.keySet().iterator();
+//
+//            while(var5.hasNext()) {
+//                String key = (String)var5.next();
 //                paramKeyList.add(key + String.valueOf(params.get(key)));
 //            }
 //        }
+//
 //        Collections.sort(paramKeyList);
 //        StringBuilder source = new StringBuilder();
-//        /*如果没有参数， 则需要置一个默认的数保证不重复*/
 //        if (paramKeyList.size() > 0) {
-//            for (String key : paramKeyList) {
+//            Iterator var9 = paramKeyList.iterator();
+//
+//            while(var9.hasNext()) {
+//                String key = (String)var9.next();
 //                source.append(key);
 //            }
-//        }/* else {
-//            source.append(UUID.randomUUID().toString());
-//        }*/
+//        }
 //
-//        return this.appName + "_" + type + "_" + new Md5Hash(userId + "_" + source.toString()).toHex();
+//        return this.appName + "_" + type + "_" + (new Md5Hash(userId + "_" + source.toString())).toHex();
 //    }
 //
 //    public void setDownloaderMap(Map<String, Downloadable> downloaderMap) {
@@ -263,20 +272,19 @@
 //        this.appName = appName;
 //    }
 //
+//    public void setRedisTool(TgRedisTool redisTool) {
+//        this.redisTool = redisTool;
+//    }
+//
 //    public void setStorageType(String storageType) {
-//        try {
-//            this.storageType = StorageType.valueOf(storageType);
-//        } catch (Exception e) {
-//            this.storageType = StorageType.nfs;
-//        }
 //    }
 //
 //    public String getAppName() {
-//        return appName;
+//        return this.appName;
 //    }
 //
 //    public String getDownloadDomain() {
-//        return downloadDomain;
+//        return this.downloadDomain;
 //    }
 //
 //    public void setDownloadDomain(String downloadDomain) {
