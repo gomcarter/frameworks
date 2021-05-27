@@ -11,12 +11,12 @@ import java.lang.annotation.*;
 public @interface ResponseFile {
 
     /**
-     * 文件名
+     * @return 文件名
      */
     String name() default "";
 
     /**
-     * 是否异步下载文件
+     * @return 是否异步下载文件
      */
     boolean async() default false;
 }

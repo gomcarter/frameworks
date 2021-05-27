@@ -14,8 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 /**
- * @author gaopeng
- * @date 2020/8/26
+ * @author gaopeng 2020/8/26
  */
 @Configuration
 public class UpdownAutoConfiguration implements WebMvcConfigurer, ApplicationContextAware {

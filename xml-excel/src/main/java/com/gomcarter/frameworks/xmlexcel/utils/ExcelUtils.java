@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.*;
 
 /**
+ * 请使用 RequestFile
  * @author gomcarter 2017年12月2日 08:10:35
  */
 @Deprecated
