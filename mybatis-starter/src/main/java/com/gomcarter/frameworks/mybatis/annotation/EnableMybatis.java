@@ -51,7 +51,8 @@ public @interface EnableMybatis {
      * @return transactionRequiredNameMap
      */
     String[] transactionRequiredNameMap() default {
-            "add*", "edit*", "remove*", "insert*", "save*", "update*", "modify*", "delete*", "do*", "process*", "on*", "create*"
+            "add*", "edit*", "remove*", "insert*", "save*", "update*",
+            "modify*", "delete*", "do*", "process*", "on*", "create*", "batchInsert*"
     };
 
     /**
