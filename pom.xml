@@ -52,7 +52,7 @@
 
         <servlet.version>4.0.1</servlet.version>
 
-        <shiro-core.version>1.5.1</shiro-core.version>
+        <shiro-core.version>1.8.0</shiro-core.version>
 
         <commons-codec.version>1.14</commons-codec.version>
 
