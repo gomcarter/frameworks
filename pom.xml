@@ -72,7 +72,7 @@
 
         <swagger.version>1.6.0</swagger.version>
 
-        <spring.version>2.3.0.RELEASE</spring.version>
+        <spring.version>2.5.12</spring.version>
 
         <baomidou.version>3.3.1</baomidou.version>
 
