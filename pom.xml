@@ -76,7 +76,7 @@
 
         <baomidou.version>3.3.1</baomidou.version>
 
-        <mysql-connector.version>8.0.19</mysql-connector.version>
+        <mysql-connector.version>8.0.28</mysql-connector.version>
 
         <mybatis.version>3.5.4</mybatis.version>
 
