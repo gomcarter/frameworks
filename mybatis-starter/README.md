@@ -311,31 +311,8 @@ public class Generator {
 }
 ```
 
-### 四、自动联表分页查询
-```
-mapper:
+### 四、分页查询
 
-import com.gomcarter.frameworks.base.pager.Pageable;
-import com.gomcarter.frameworks.mybatis.annotation.Joinable;
-import com.gomcarter.frameworks.mybatis.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-
-public interface FooMapper extends BaseMapper<Foo> {
-
-    // 1，必须标注Joinable
-    // 2，返回类型必须是 java.util.Collection 才支持联表分页查询。
-    // 3，不考虑笛卡尔积，如果有这种情况，请自行实现
-    // 尽量写上Pageable，不然一次性查出太多数据，把自己卡死。
-    // 下面写法等同于： select * from foo foo inner join bar bar on foo.id = bar.foo_id LEFT JOIN baz baz on bar.id = baz.bar_id
-    @Joinable(main = "foo", target = "bar", mainKey = "id", targetKey = "foo_id", type = JoinType.INNER)
-    @Joinable(main = "bar", target = "baz", mainKey = "id", targetKey = "bar_id", type = JoinType.LEFT)
-    List<FooDto> query(@Param("params") FooParam params, @Param("pager") Pageable pager);
-
-    // 下面写法等同于： select count(1) from foo foo inner join bar bar on foo.id = bar.foo_id LEFT JOIN baz baz on bar.id = baz.bar_id
-    @Joinable(main = "foo", target = "bar", mainKey = "id", targetKey = "foo_id", type = JoinType.INNER)
-    @Joinable(main = "bar", target = "baz", mainKey = "id", targetKey = "bar_id", type = JoinType.LEFT)
-    Integer count(@Param("params") FooParam params);
-}
 ```
 
 FooParam:
@@ -410,13 +387,6 @@ public class FooParam {
     @Condition(type = MatchType.AND)
     private FooChildrenParams children;
     
-    // 副表字段
-    @Condition(field = "bar.name", type = MatchType.LIKE)
-    private String barName;
-    
-    // 副表字段
-    @Condition(field = "bar.id", type = MatchType.EQ)
-    private String barId;
     ...
 }
 ```
